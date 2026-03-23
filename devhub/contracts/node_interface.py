@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Literal
 
 
@@ -86,6 +87,165 @@ class NodeReport:
             raise ValueError("node_id is required")
         if not self.timestamp:
             raise ValueError("timestamp is required")
+
+
+class Severity(Enum):
+    """Health finding severity level."""
+
+    P1_CRITICAL = "P1"  # Platform broken, data loss risk
+    P2_DEGRADED = "P2"  # Core functionality impaired
+    P3_ATTENTION = "P3"  # Quality issues, no direct impact
+    P4_INFO = "P4"  # Trends, minor deviations
+
+
+class HealthStatus(Enum):
+    """Overall health status."""
+
+    HEALTHY = "healthy"  # ✅ Gezond
+    ATTENTION = "attention"  # ⚠️ Actie nodig
+    CRITICAL = "critical"  # ❌ Kritiek
+
+
+@dataclass(frozen=True)
+class HealthFinding:
+    """Een bevinding uit een health check.
+
+    Elke bevinding is actionable: het beschrijft wat er mis is,
+    waarom het ertoe doet, en wat de aanbevolen actie is.
+    """
+
+    component: str  # e.g. "tests", "dependencies", "architecture"
+    severity: Severity
+    message: str  # Korte beschrijving
+    detail: str = ""  # Uitgebreide info
+    recommended_action: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.component:
+            raise ValueError("component is required")
+        if not self.message:
+            raise ValueError("message is required")
+
+
+@dataclass(frozen=True)
+class HealthCheckResult:
+    """Resultaat van een health check dimensie (e.g. tests, deps, architecture)."""
+
+    dimension: str  # e.g. "code_quality", "dependencies", "architecture"
+    status: HealthStatus
+    summary: str  # 1-zin samenvatting
+    findings: tuple[HealthFinding, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.dimension:
+            raise ValueError("dimension is required")
+
+
+@dataclass(frozen=True)
+class FullHealthReport:
+    """Volledig health rapport voor een managed node.
+
+    Combineert alle dimensies tot een overall status.
+    De overall status is de ergste status van alle dimensies.
+    """
+
+    node_id: str
+    timestamp: str  # ISO 8601
+    checks: tuple[HealthCheckResult, ...] = ()
+    overall: HealthStatus = HealthStatus.HEALTHY
+
+    def __post_init__(self) -> None:
+        if not self.node_id:
+            raise ValueError("node_id is required")
+        # Auto-compute overall from worst check status
+        if self.checks:
+            worst = HealthStatus.HEALTHY
+            for check in self.checks:
+                if check.status == HealthStatus.CRITICAL:
+                    worst = HealthStatus.CRITICAL
+                    break
+                if check.status == HealthStatus.ATTENTION:
+                    worst = HealthStatus.ATTENTION
+            if worst != self.overall:
+                object.__setattr__(self, "overall", worst)
+
+    @property
+    def p1_findings(self) -> list[HealthFinding]:
+        """Alle P1 (kritieke) bevindingen."""
+        return [f for c in self.checks for f in c.findings if f.severity == Severity.P1_CRITICAL]
+
+    @property
+    def p2_findings(self) -> list[HealthFinding]:
+        """Alle P2 (degraded) bevindingen."""
+        return [f for c in self.checks for f in c.findings if f.severity == Severity.P2_DEGRADED]
+
+    @property
+    def alert_findings(self) -> list[HealthFinding]:
+        """P1 + P2 = findings die een GitHub Issue verdienen."""
+        return self.p1_findings + self.p2_findings
+
+
+class DeveloperPhase(Enum):
+    """O-B-B developer coaching fase."""
+
+    ORIENTEREN = "ORIËNTEREN"  # Lezen, begrijpen, vragen stellen
+    BOUWEN = "BOUWEN"  # Implementeren, testen, PRs
+    BEHEERSEN = "BEHEERSEN"  # Architectuurbeslissingen, mentoring
+
+
+class CoachingSignal(Enum):
+    """Coaching-signaal voor developer voortgang."""
+
+    GREEN = "GROEN"  # Actief, tests groeien, geen blockers
+    ATTENTION = "AANDACHT"  # Blocker >2 dagen, of tests dalen
+    STAGNATION = "STAGNATIE"  # Geen entries >5 dagen, of lang in ORIËNTEREN
+
+
+@dataclass(frozen=True)
+class DeveloperProfile:
+    """Developer voortgangsprofiel — node-agnostisch.
+
+    Bevat alle data die de mentor-skill nodig heeft om fase te detecteren
+    en coaching-signalen te genereren.
+    """
+
+    current_phase: DeveloperPhase
+    streak_days: int  # Aaneengesloten actieve dagen
+    blockers_open: int  # Entries met open blockers
+    tests_delta_total: int  # Netto test-groei in periode
+    recent_entry_count: int  # Aantal entries in periode
+    last_entry_date: str | None = None  # ISO datum van laatst entry
+    coaching_signal: CoachingSignal = CoachingSignal.GREEN
+
+    def __post_init__(self) -> None:
+        if self.streak_days < 0:
+            raise ValueError("streak_days cannot be negative")
+        if self.recent_entry_count < 0:
+            raise ValueError("recent_entry_count cannot be negative")
+
+
+@dataclass(frozen=True)
+class CoachingResponse:
+    """Gestructureerd coaching-antwoord.
+
+    Bevat fase-detectie, signaal, observatie en concrete actiestappen.
+    """
+
+    date: str  # ISO datum
+    phase: DeveloperPhase
+    signal: CoachingSignal
+    observation: str  # Wat de mentor ziet
+    actions: tuple[str, ...]  # Concrete volgende stappen
+    check_question: str  # Begrips-/voortgangsvraag
+    risk_alert: str = ""  # Optioneel: alleen bij AANDACHT/STAGNATIE
+
+    def __post_init__(self) -> None:
+        if not self.observation:
+            raise ValueError("observation is required")
+        if not self.actions:
+            raise ValueError("at least one action is required")
+        if not self.check_question:
+            raise ValueError("check_question is required")
 
 
 class NodeInterface(ABC):
