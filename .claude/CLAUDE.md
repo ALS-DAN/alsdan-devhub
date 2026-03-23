@@ -39,6 +39,9 @@ De AI-interface — agents en skills die Claude Code gebruikers toegang geven to
 |-----------|-----|
 | dev-lead (orchestrator) | `agents/dev-lead.md` |
 | coder (implementatie) | `agents/coder.md` |
+| reviewer (code review) | `agents/reviewer.md` |
+| researcher (kennisverrijking) | `agents/researcher.md` |
+| planner (sprint planning) | `agents/planner.md` |
 | 5 skills | `.claude/skills/devhub-*/` |
 
 ### Laag 3: Second Brain (`docs/`, `knowledge/`)
