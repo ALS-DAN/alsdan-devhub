@@ -1,0 +1,14 @@
+# NodeRegistry configuratie — Managed project nodes
+# Elk project dat door het DEV systeem beheerd wordt staat hier geregistreerd.
+
+nodes:
+  - node_id: boris-buurts
+    name: "BORIS — Buurts Ecosysteem"
+    path: "/Users/nielspostma/buurts-ecosysteem"
+    adapter: "devhub.adapters.boris_adapter.BorisAdapter"
+    enabled: true
+    devagents_enabled: true
+    tags:
+      - zorgdomein
+      - rag
+      - multi-agent
