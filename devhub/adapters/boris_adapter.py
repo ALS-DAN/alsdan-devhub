@@ -105,6 +105,141 @@ class BorisAdapter(NodeInterface):
             logger.warning("BorisAdapter: pytest execution failed: %s", e)
             return TestResult(total=0, passed=0, failed=0, errors=1, duration_seconds=0.0)
 
+    # --- Sprint & Governance reads ---
+
+    def read_file(self, relative_path: str) -> str | None:
+        """Lees een bestand uit de BORIS repo. Read-only."""
+        full = self.boris_path / relative_path
+        if not full.exists():
+            return None
+        try:
+            return full.read_text()
+        except OSError:
+            logger.warning("BorisAdapter: cannot read %s", full)
+            return None
+
+    def read_claude_md(self) -> str | None:
+        """Lees CLAUDE.md (hot cache: actieve sprint, constraints)."""
+        return self.read_file("CLAUDE.md")
+
+    def read_overdracht(self) -> str | None:
+        """Lees OVERDRACHT.md (sessie-overdracht, recente beslissingen)."""
+        return self.read_file(".claude/OVERDRACHT.md")
+
+    def read_cowork_brief(self) -> str | None:
+        """Lees COWORK_BRIEF.md (sprint queue, inbox status)."""
+        return self.read_file("docs/planning/COWORK_BRIEF.md")
+
+    def list_sprint_docs(self) -> list[str]:
+        """Lijst actieve sprint-documenten."""
+        sprint_dir = self.boris_path / "docs" / "planning" / "sprints"
+        if not sprint_dir.exists():
+            return []
+        return [
+            f.name for f in sprint_dir.glob("SPRINT_*.md")
+        ]
+
+    def read_sprint_doc(self, name: str) -> str | None:
+        """Lees een specifiek sprint-document."""
+        return self.read_file(f"docs/planning/sprints/{name}")
+
+    def list_inbox(self) -> list[dict[str, str]]:
+        """Lijst inbox-bestanden (SPRINT_INTAKE_*, IDEA_*)."""
+        inbox_dir = self.boris_path / "docs" / "planning" / "inbox"
+        if not inbox_dir.exists():
+            return []
+        items = []
+        for f in sorted(inbox_dir.glob("*.md")):
+            items.append({
+                "name": f.name,
+                "type": "intake" if "SPRINT_INTAKE" in f.name else "idea",
+                "path": str(f.relative_to(self.boris_path)),
+            })
+        return items
+
+    def read_goals(self) -> str | None:
+        """Lees GOALS.md (top-goals en roadmap-context)."""
+        return self.read_file("docs/planning/GOALS.md")
+
+    def read_backlog(self) -> str | None:
+        """Lees IDEEEN_BACKLOG.md."""
+        return self.read_file("docs/planning/IDEEEN_BACKLOG.md")
+
+    def run_lint(self) -> tuple[bool, str]:
+        """Voer ruff check uit. Returns (clean, output)."""
+        venv_python = self.boris_path / ".venv" / "bin" / "python"
+        if not venv_python.exists():
+            return False, "venv not found"
+        try:
+            result = subprocess.run(
+                [str(venv_python), "-m", "ruff", "check", "."],
+                capture_output=True,
+                text=True,
+                cwd=str(self.boris_path),
+                timeout=60,
+            )
+            return result.returncode == 0, result.stdout + result.stderr
+        except Exception as e:
+            return False, str(e)
+
+    def run_herald_sync(self, reason: str) -> tuple[bool, str]:
+        """Trigger HERALD sync (overdracht + cowork_brief update).
+
+        Dit is de enige WRITE-operatie — triggert een BORIS-intern script.
+        """
+        script = self.boris_path / "scripts" / "herald_commit.sh"
+        if not script.exists():
+            return False, "herald_commit.sh not found"
+        try:
+            result = subprocess.run(
+                ["bash", str(script), reason],
+                capture_output=True,
+                text=True,
+                cwd=str(self.boris_path),
+                timeout=60,
+            )
+            return result.returncode == 0, result.stdout + result.stderr
+        except Exception as e:
+            return False, str(e)
+
+    def run_curator_audit(self) -> tuple[bool, str]:
+        """Voer curator_audit.py uit. Returns (clean, output)."""
+        venv_python = self.boris_path / ".venv" / "bin" / "python"
+        if not venv_python.exists():
+            return False, "venv not found"
+        try:
+            result = subprocess.run(
+                [str(venv_python), "scripts/curator_audit.py"],
+                capture_output=True,
+                text=True,
+                cwd=str(self.boris_path),
+                timeout=60,
+            )
+            return result.returncode == 0, result.stdout + result.stderr
+        except Exception as e:
+            return False, str(e)
+
+    def run_sprint_deps_check(self, sprint_doc: str) -> tuple[bool, str]:
+        """Voer check_sprint_deps.py uit voor een sprint-doc."""
+        venv_python = self.boris_path / ".venv" / "bin" / "python"
+        if not venv_python.exists():
+            return False, "venv not found"
+        try:
+            result = subprocess.run(
+                [
+                    str(venv_python),
+                    "scripts/check_sprint_deps.py",
+                    f"docs/planning/sprints/{sprint_doc}",
+                ],
+                capture_output=True,
+                text=True,
+                cwd=str(self.boris_path),
+                timeout=30,
+            )
+            return result.returncode == 0, result.stdout + result.stderr
+        except Exception as e:
+            return False, str(e)
+
     # --- Private helpers ---
 
     def _read_lumen_report(self) -> dict | None:
