@@ -1,0 +1,3 @@
+[submodule "projects/buurts-ecosysteem"]
+	path = projects/buurts-ecosysteem
+	url = ../buurts-ecosysteem

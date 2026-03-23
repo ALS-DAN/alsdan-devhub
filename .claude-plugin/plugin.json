@@ -1,0 +1,10 @@
+{
+  "name": "alsdan-devhub",
+  "version": "0.1.0",
+  "description": "Second Development Brain — project-agnostisch development-systeem met agents, skills en governance",
+  "author": {
+    "name": "Niels Postma"
+  },
+  "repository": "https://github.com/nielspostma/alsdan-devhub",
+  "keywords": ["development", "governance", "shape-up", "multi-project"]
+}
