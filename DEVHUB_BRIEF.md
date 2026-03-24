@@ -1,6 +1,6 @@
 # DevHub Sessiebriefing
 _Levend document — bijgewerkt door Claude Code bij elke sprint-afsluiting._
-_Bijgewerkt: 2026-03-24 | sprint: DEVHUB_FASE2_SKILLS_GOVERNANCE_
+_Bijgewerkt: 2026-03-24 | sprint: RED_TEAM_AGENT_
 
 ---
 
@@ -8,12 +8,12 @@ _Bijgewerkt: 2026-03-24 | sprint: DEVHUB_FASE2_SKILLS_GOVERNANCE_
 
 | Sprint | Status | Tests |
 |--------|--------|-------|
-| DEVHUB_FASE2_SKILLS_GOVERNANCE | actief | 299 tests (startpunt) |
+| RED_TEAM_AGENT | actief | 307 tests (startpunt) |
 
-**Vorige sprint:** FASE1_BOOTSTRAP ✅ (2026-03-23) — +81 tests
+**Vorige sprint:** DEVHUB_FASE2_SKILLS_GOVERNANCE ✅ (2026-03-24) — +8 tests
 
 **Fase-positie:**
-`Fase 0 (fundament) ✅ → Fase 1 (kernagents + infra) ✅ → **Fase 2 (skills + governance)** 🔄 → Fase 3 (knowledge + memory) 🔲`
+`Fase 0 (fundament) ✅ → Fase 1 (kernagents + infra) ✅ → Fase 2 (skills + governance) ✅ → **Fase 2b (red team)** 🔄 → Fase 3 (knowledge + memory) 🔲`
 
 ---
 
@@ -26,6 +26,7 @@ _Bijgewerkt: 2026-03-24 | sprint: DEVHUB_FASE2_SKILLS_GOVERNANCE_
 | reviewer | `agents/reviewer.md` | `.claude/agent-memory/reviewer/` | operationeel |
 | researcher | `agents/researcher.md` | `.claude/agent-memory/researcher/` | operationeel |
 | planner | `agents/planner.md` | `.claude/agent-memory/planner/` | operationeel |
+| red-team | `agents/red-team.md` | — | operationeel |
 
 ---
 
@@ -53,6 +54,7 @@ _Bijgewerkt: 2026-03-24 | sprint: DEVHUB_FASE2_SKILLS_GOVERNANCE_
 | devhub-sprint-prep | `.claude/skills/devhub-sprint-prep/` | ✅ |
 | devhub-research-loop | `.claude/skills/devhub-research-loop/` | ✅ Fase 2 |
 | devhub-governance-check | `.claude/skills/devhub-governance-check/` | ✅ Fase 2 |
+| devhub-redteam | `.claude/skills/devhub-redteam/` | ✅ Fase 2b |
 
 ---
 
@@ -76,21 +78,21 @@ _Geen open beslissingen._
 
 ## Planning Notes voor Cowork
 
-- Fase 2 sprint actief: 2 nieuwe skills + 5 Golden Path templates + sprint-skill retrospective-uitbreiding
-- `docs/golden-paths/` is nu aangemaakt — templates beschikbaar
-- Sprint-skill uitgebreid met retrospective-generatie (stap E)
+- RED_TEAM_AGENT sprint actief: security contracts, red team agent, devhub-redteam skill
+- OWASP ASI 2026 framework geïmplementeerd als Python contracts
+- DeepTeam integratie uitgesteld naar volgende sprint
 
 ---
 
 ## Sinds vorige sessie
 
-- Fase 1 volledig afgerond (5 agents, 5 skills, 299 tests)
-- Fase 2 gestart: devhub-research-loop + devhub-governance-check skills
-- 5 Golden Path templates geschreven
-- Sprint-skill uitgebreid met retrospective-generatie
+- Fase 2 volledig afgerond (7 skills, 307 tests, 5 Golden Paths)
+- RED_TEAM_AGENT sprint: security_contracts.py, red-team agent, devhub-redteam skill
+- 6 agents operationeel (dev-lead, coder, reviewer, researcher, planner, red-team)
+- Tests: 307 → 339 (+32)
 
 ---
 
 ## Aanbevolen startpunt volgende sessie
 
-Fase 3: knowledge + memory (knowledge base structuur, agent-memory systeem, retrospective Loop 1 activeren)
+DeepTeam integratie (externe red team tooling) of Fase 3: knowledge + memory

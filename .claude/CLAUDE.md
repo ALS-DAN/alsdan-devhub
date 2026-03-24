@@ -15,6 +15,7 @@ De runtime — analyseert, decomponeert, checkt kwaliteit.
 |-----------|-----|---------|
 | NodeInterface ABC | `devhub/contracts/node_interface.py` | Vendor-free interface (13 frozen dataclasses) |
 | Dev contracts | `devhub/contracts/dev_contracts.py` | DevTask, QAReport, DocGenRequest |
+| Security contracts | `devhub/contracts/security_contracts.py` | SecurityFinding, SecurityAuditReport (OWASP ASI) |
 | BorisAdapter | `devhub/adapters/boris_adapter.py` | Read-only adapter voor BORIS (38 methodes) |
 | DevOrchestrator | `devhub/agents/orchestrator.py` | Taakdecompositie, doc queue |
 | DocsAgent | `devhub/agents/docs_agent.py` | Diátaxis documentatie-generatie |
@@ -42,7 +43,8 @@ De AI-interface — agents en skills die Claude Code gebruikers toegang geven to
 | reviewer (code review) | `agents/reviewer.md` |
 | researcher (kennisverrijking) | `agents/researcher.md` |
 | planner (sprint planning) | `agents/planner.md` |
-| 5 skills | `.claude/skills/devhub-*/` |
+| red-team (security audit) | `agents/red-team.md` |
+| 8 skills | `.claude/skills/devhub-*/` |
 
 ### Laag 3: Second Brain (`docs/`, `knowledge/`)
 Het geheugen — governance, kennis, beslissingen.
@@ -89,3 +91,4 @@ Node-configuratie: `config/nodes.yml`
 | `/devhub-review` | Code review + anti-patronen |
 | `/devhub-research-loop` | Kennisverrijking + bronnenonderzoek |
 | `/devhub-governance-check` | DEV_CONSTITUTION compliance audit |
+| `/devhub-redteam` | OWASP ASI 2026 security audit |
