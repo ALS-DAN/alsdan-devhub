@@ -19,7 +19,7 @@ Synthetiseer alle beschikbare bronnen tot een beslissingsklare SPRINT_INPUT. Het
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))

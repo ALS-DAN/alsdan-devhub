@@ -1,0 +1,15 @@
+[project]
+name = "devhub-vectorstore"
+version = "0.1.0"
+description = "Vector store interface and adapters for DevHub (Weaviate, ChromaDB)"
+requires-python = ">=3.11"
+dependencies = [
+    "devhub-core",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+devhub-core = { workspace = true }

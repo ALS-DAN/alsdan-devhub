@@ -16,7 +16,7 @@ De kracht: (1) fase-detectie voorkomt over- of onderschatting van de developer, 
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
@@ -46,7 +46,7 @@ overdracht = adapter.read_overdracht()
 Het profiel bevat automatisch de fase op basis van de afgelopen 7 dagen:
 
 ```python
-from devhub.contracts.node_interface import DeveloperPhase
+from devhub_core.contracts.node_interface import DeveloperPhase
 
 phase = profile.current_phase  # ORIENTEREN / BOUWEN / BEHEERSEN
 ```
@@ -64,7 +64,7 @@ phase = profile.current_phase  # ORIENTEREN / BOUWEN / BEHEERSEN
 ### Stap 2: Coaching-signaal evalueren
 
 ```python
-from devhub.contracts.node_interface import CoachingSignal
+from devhub_core.contracts.node_interface import CoachingSignal
 
 signal = profile.coaching_signal  # GREEN / ATTENTION / STAGNATION
 ```
@@ -113,7 +113,7 @@ signal = profile.coaching_signal  # GREEN / ATTENTION / STAGNATION
 Gebruik het `CoachingResponse` contract:
 
 ```python
-from devhub.contracts.node_interface import CoachingResponse
+from devhub_core.contracts.node_interface import CoachingResponse
 
 response = CoachingResponse(
     date="2026-03-23",

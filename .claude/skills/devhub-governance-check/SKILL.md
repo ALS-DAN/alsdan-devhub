@@ -13,8 +13,8 @@ De kracht: (1) systematische check van alle 8 artikelen — niets wordt overgesl
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
-from devhub.agents.qa_agent import QAAgent
+from devhub_core.registry import NodeRegistry
+from devhub_core.agents.qa_agent import QAAgent
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
@@ -102,7 +102,7 @@ anti_patterns = ctx.get("anti_patterns", [])
 ### Stap 3: QA Agent integratie
 
 ```python
-from devhub.contracts.dev_contracts import DevTaskResult
+from devhub_core.contracts.dev_contracts import DevTaskResult
 
 task_result = DevTaskResult(
     task_id="governance-audit",

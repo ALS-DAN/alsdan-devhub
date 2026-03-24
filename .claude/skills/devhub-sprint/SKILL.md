@@ -17,7 +17,7 @@ Voordat deze skill werkt, moet de target node geregistreerd zijn in `config/node
 De skill gebruikt de BorisAdapter (of andere NodeInterface-implementatie) om node-data te lezen.
 
 ```python
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
@@ -75,7 +75,7 @@ Lees altijd (via adapter):
 
 Gebruik de DevOrchestrator voor taakdecompositie:
 ```python
-from devhub.agents.orchestrator import DevOrchestrator
+from devhub_core.agents.orchestrator import DevOrchestrator
 
 orch = DevOrchestrator(registry)
 task = orch.create_task(
@@ -114,7 +114,7 @@ orch.decompose_for_docs(task, diataxis_category="reference", ...)
 
 **B — QA Agent review:**
 ```python
-from devhub.agents.qa_agent import QAAgent
+from devhub_core.agents.qa_agent import QAAgent
 
 qa = QAAgent()
 task_result = orch.record_task_result(task_id=..., files_changed=[...], tests_added=N)

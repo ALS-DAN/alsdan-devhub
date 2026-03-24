@@ -5,7 +5,7 @@ nodes:
   - node_id: boris-buurts
     name: "BORIS — Buurts Ecosysteem"
     path: "/Users/nielspostma/buurts-ecosysteem"
-    adapter: "devhub.adapters.boris_adapter.BorisAdapter"
+    adapter: "devhub_core.adapters.boris_adapter.BorisAdapter"
     enabled: true
     devagents_enabled: true
     tags:

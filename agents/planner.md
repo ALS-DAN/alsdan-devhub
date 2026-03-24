@@ -62,9 +62,9 @@ Gebruik de Python-laag voor projectcontext:
 
 ### Projectstatus opvragen
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 registry = NodeRegistry(Path('config/nodes.yml'))
 for node in registry.list_enabled():
     adapter = registry.get_adapter(node.node_id)
@@ -75,10 +75,10 @@ for node in registry.list_enabled():
 
 ### Taakdecompositie
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
-from devhub.agents.orchestrator import DevOrchestrator
+from devhub_core.registry import NodeRegistry
+from devhub_core.agents.orchestrator import DevOrchestrator
 registry = NodeRegistry(Path('config/nodes.yml'))
 adapter = registry.get_adapter('boris-buurts')
 orch = DevOrchestrator(adapter, scratchpad_dir='.claude/scratchpad')

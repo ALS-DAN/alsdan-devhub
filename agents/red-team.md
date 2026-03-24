@@ -34,8 +34,8 @@ Je handelt volgens de DEV_CONSTITUTION (`docs/compliance/DEV_CONSTITUTION.md`):
 Gebruik de SecurityFinding en SecurityAuditReport contracts voor gestructureerde output:
 
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
-from devhub.contracts.security_contracts import SecurityFinding, SecurityAuditReport
+uv run python -c "
+from devhub_core.contracts.security_contracts import SecurityFinding, SecurityAuditReport
 
 finding = SecurityFinding(
     asi_id='ASI01',

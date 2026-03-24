@@ -8,25 +8,32 @@ DevHub is de ontwikkelaar. Projecten (zoals buurts-ecosysteem/BORIS) zijn wat De
 
 ## Drie-lagen architectuur
 
-### Laag 1: Python-systeem (`devhub/`)
-De runtime — analyseert, decomponeert, checkt kwaliteit.
+### Laag 1: Python-systeem (`packages/devhub-core/devhub_core/`)
+De runtime — analyseert, decomponeert, checkt kwaliteit. Gemanaged als uv workspace.
 
 | Component | Pad | Functie |
 |-----------|-----|---------|
-| NodeInterface ABC | `devhub/contracts/node_interface.py` | Vendor-free interface (13 frozen dataclasses) |
-| Dev contracts | `devhub/contracts/dev_contracts.py` | DevTask, QAReport, DocGenRequest |
-| Security contracts | `devhub/contracts/security_contracts.py` | SecurityFinding, SecurityAuditReport (OWASP ASI) |
-| BorisAdapter | `devhub/adapters/boris_adapter.py` | Read-only adapter voor BORIS (38 methodes) |
-| DevOrchestrator | `devhub/agents/orchestrator.py` | Taakdecompositie, doc queue |
-| DocsAgent | `devhub/agents/docs_agent.py` | Diátaxis documentatie-generatie |
-| QA Agent | `devhub/agents/qa_agent.py` | 12 code + 6 doc checks, adversarial |
-| NodeRegistry | `devhub/registry.py` | YAML-driven, multi-node (`config/nodes.yml`) |
+| NodeInterface ABC | `packages/devhub-core/devhub_core/contracts/node_interface.py` | Vendor-free interface (13 frozen dataclasses) |
+| Dev contracts | `packages/devhub-core/devhub_core/contracts/dev_contracts.py` | DevTask, QAReport, DocGenRequest |
+| Security contracts | `packages/devhub-core/devhub_core/contracts/security_contracts.py` | SecurityFinding, SecurityAuditReport (OWASP ASI) |
+| BorisAdapter | `packages/devhub-core/devhub_core/adapters/boris_adapter.py` | Read-only adapter voor BORIS (38 methodes) |
+| DevOrchestrator | `packages/devhub-core/devhub_core/agents/orchestrator.py` | Taakdecompositie, doc queue |
+| DocsAgent | `packages/devhub-core/devhub_core/agents/docs_agent.py` | Diátaxis documentatie-generatie |
+| QA Agent | `packages/devhub-core/devhub_core/agents/qa_agent.py` | 12 code + 6 doc checks, adversarial |
+| NodeRegistry | `packages/devhub-core/devhub_core/registry.py` | YAML-driven, multi-node (`config/nodes.yml`) |
+
+**Workspace packages:**
+| Package | Pad | Status |
+|---------|-----|--------|
+| devhub-core | `packages/devhub-core/` | Actief (v0.2.0) |
+| devhub-storage | `packages/devhub-storage/` | Stub (v0.1.0) |
+| devhub-vectorstore | `packages/devhub-vectorstore/` | Stub (v0.1.0) |
 
 **Aanroepen vanuit agents:**
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 registry = NodeRegistry(Path('config/nodes.yml'))
 adapter = registry.get_adapter('boris-buurts')
 report = adapter.get_report()

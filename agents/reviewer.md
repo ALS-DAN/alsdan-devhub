@@ -27,10 +27,10 @@ Gebruik het Python QA-systeem voor gestructureerde checks:
 
 ### Full review (code + docs)
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.agents.qa_agent import QAAgent
-from devhub.contracts.dev_contracts import DevTaskResult
+from devhub_core.agents.qa_agent import QAAgent
+from devhub_core.contracts.dev_contracts import DevTaskResult
 
 qa = QAAgent(reports_path=Path('.claude/scratchpad/qa_reports'))
 report = qa.full_review(
@@ -47,10 +47,10 @@ for f in report.code_findings + report.doc_findings:
 
 ### Code-only review
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.agents.qa_agent import QAAgent
-from devhub.contracts.dev_contracts import DevTaskResult
+from devhub_core.agents.qa_agent import QAAgent
+from devhub_core.contracts.dev_contracts import DevTaskResult
 
 qa = QAAgent()
 findings = qa.review_code(

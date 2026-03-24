@@ -29,9 +29,9 @@ Het Python-systeem in `devhub/` is je analytische laag. Gebruik het voor:
 
 ### NodeRegistry — projecten ophalen
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 registry = NodeRegistry(Path('config/nodes.yml'))
 nodes = registry.list_enabled()
 print([n.node_id for n in nodes])
@@ -40,9 +40,9 @@ print([n.node_id for n in nodes])
 
 ### BorisAdapter — projectstatus opvragen
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 registry = NodeRegistry(Path('config/nodes.yml'))
 adapter = registry.get_adapter('boris-buurts')
 report = adapter.get_report()
@@ -52,10 +52,10 @@ print(f'node_id={report.node_id}, health={report.health.status}')
 
 ### DevOrchestrator — taakdecompositie
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
+uv run python -c "
 from pathlib import Path
-from devhub.registry import NodeRegistry
-from devhub.agents.orchestrator import DevOrchestrator
+from devhub_core.registry import NodeRegistry
+from devhub_core.agents.orchestrator import DevOrchestrator
 registry = NodeRegistry(Path('config/nodes.yml'))
 adapter = registry.get_adapter('boris-buurts')
 orch = DevOrchestrator(adapter, scratchpad_dir='.claude/scratchpad')
@@ -66,8 +66,8 @@ print(task)
 
 ### QA Agent — kwaliteitscheck
 ```bash
-PYTHONPATH=/Users/nielspostma/alsdan-devhub python3 -c "
-from devhub.agents.qa_agent import QAAgent
+uv run python -c "
+from devhub_core.agents.qa_agent import QAAgent
 qa = QAAgent()
 # qa.review_code(files, context) → QAReport
 # qa.review_docs(docs, context) → QAReport

@@ -16,9 +16,9 @@ De kracht: (1) de QA Agent checklist garandeert dat standaard-checks nooit verge
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
-from devhub.agents.qa_agent import QAAgent
-from devhub.contracts.dev_contracts import DevTaskResult
+from devhub_core.registry import NodeRegistry
+from devhub_core.agents.qa_agent import QAAgent
+from devhub_core.contracts.dev_contracts import DevTaskResult
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
@@ -93,7 +93,7 @@ Automatisch al in `ctx["anti_patterns"]` — node-specifieke violations:
 Als er docs gewijzigd zijn:
 
 ```python
-from devhub.contracts.dev_contracts import DocGenRequest
+from devhub_core.contracts.dev_contracts import DocGenRequest
 
 doc_requests = [DocGenRequest(...)]  # Op basis van gewijzigde docs
 doc_findings = qa.review_docs(doc_requests)

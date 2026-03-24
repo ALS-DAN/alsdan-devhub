@@ -15,7 +15,7 @@ De kracht: (1) het vaste contract (`FullHealthReport`) met severity levels zorgt
 De target node moet geregistreerd zijn in `config/nodes.yml`.
 
 ```python
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
@@ -41,7 +41,7 @@ Noteer de laatst gerapporteerde testcount uit OVERDRACHT.md voor vergelijking.
 De kern van deze skill — roep de geïntegreerde health check aan:
 
 ```python
-from devhub.contracts.node_interface import FullHealthReport
+from devhub_core.contracts.node_interface import FullHealthReport
 
 health_report: FullHealthReport = adapter.run_full_health_check()
 ```

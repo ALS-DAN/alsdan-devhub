@@ -13,8 +13,8 @@ De kracht: (1) systematische 10-punts OWASP ASI audit — niets wordt overgeslag
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
-from devhub.contracts.security_contracts import SecurityFinding, SecurityAuditReport
+from devhub_core.registry import NodeRegistry
+from devhub_core.contracts.security_contracts import SecurityFinding, SecurityAuditReport
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))

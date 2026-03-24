@@ -13,7 +13,7 @@ De kracht: (1) Art. 2 verificatieplicht is ingebakken — elke claim wordt gelab
 ## Setup
 
 ```python
-from devhub.registry import NodeRegistry
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
