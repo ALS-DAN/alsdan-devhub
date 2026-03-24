@@ -1,0 +1,118 @@
+name: Governance Check
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  governance:
+    name: DEV_CONSTITUTION Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Voor diff HEAD~1..HEAD
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install detect-secrets pyyaml
+
+      - name: Run governance checks
+        id: governance
+        run: |
+          python scripts/governance_check.py \
+            --output-format=json \
+            > governance_report.json 2>&1 || true
+
+          # Parse verdict
+          verdict=$(python3 -c "
+          import json
+          try:
+              with open('governance_report.json') as f:
+                  data = json.load(f)
+              print(data.get('verdict', 'ERROR'))
+          except:
+              print('ERROR')
+          ")
+          echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+
+          # Parse findings count
+          findings=$(python3 -c "
+          import json
+          try:
+              with open('governance_report.json') as f:
+                  data = json.load(f)
+              print(len(data.get('findings', [])))
+          except:
+              print(0)
+          ")
+          echo "findings_count=$findings" >> "$GITHUB_OUTPUT"
+
+      # ── Stil bij PASS (geen ruis) ──────────────────────────────────────────
+
+      - name: Create governance issue
+        if: steps.governance.outputs.verdict != 'PASS'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('governance_report.json', 'utf8'));
+            const verdict = report.verdict;
+            const findings = report.findings || [];
+
+            // Bouw issue body
+            const lines = [
+              `## Governance Check — ${report.commit_sha?.substring(0, 8) || 'unknown'}`,
+              '',
+              `**Verdict: ${verdict}**`,
+              `**Commit:** \`${report.commit_sha || 'unknown'}\``,
+              `**Message:** ${report.commit_message || 'unknown'}`,
+              '',
+              '### Findings',
+              '',
+              '| Check | Severity | Detail |',
+              '|-------|----------|--------|',
+            ];
+
+            for (const f of findings) {
+              lines.push(`| ${f.check} | ${f.severity} | ${f.detail} |`);
+            }
+
+            lines.push('', '---', '_Automated by DevHub Governance Check (Art. 2, 4, 5, 7, 8)_');
+
+            const labels = ['governance-violation', 'automated'];
+            if (verdict === 'BLOCK') labels.push('P1');
+            if (verdict === 'NEEDS_REVIEW') labels.push('P2');
+
+            // Maak labels aan als ze niet bestaan
+            for (const label of labels) {
+              try {
+                await github.rest.issues.getLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label
+                });
+              } catch {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name: label,
+                  color: label === 'P1' ? 'cb2431' : label === 'P2' ? 'fbca04' : 'ededed'
+                });
+              }
+            }
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `[GOV ${verdict}] Governance violation in ${report.commit_sha?.substring(0, 8) || 'unknown'}`,
+              body: lines.join('\n'),
+              labels
+            });

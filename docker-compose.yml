@@ -1,0 +1,49 @@
+services:
+  postgres-n8n:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${N8N_POSTGRES_PASSWORD}
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_n8n_devhub_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    build:
+      context: ./n8n
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "5679:5678"  # 5679 extern — voorkomt conflict met BORIS n8n op 5678
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres-n8n
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${N8N_POSTGRES_PASSWORD}
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=${N8N_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_PASSWORD}
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+      - N8N_DEFAULT_LOCALE=nl
+      - WEBHOOK_URL=http://localhost:5679/
+      - N8N_RUNNERS_ENABLED=true
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - n8n_devhub_data:/home/node/.n8n
+      - ./:/devhub:ro
+      - ./n8n/scripts:/scripts:ro
+    depends_on:
+      postgres-n8n:
+        condition: service_healthy
+
+volumes:
+  n8n_devhub_data:
+  postgres_n8n_devhub_data:

@@ -1,0 +1,246 @@
+{
+  "name": "WF-1: DevHub Health Check",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Daily 18:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [220, 300]
+    },
+    {
+      "parameters": {
+        "command": "/scripts/run_health_check.sh /devhub"
+      },
+      "id": "run-checks",
+      "name": "Run Health Checks",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [440, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse health check JSON output en bepaal acties\nconst raw = $input.first().json.stdout;\nlet report;\ntry {\n  report = JSON.parse(raw);\n} catch (e) {\n  return [{ json: { severity: 'RED', error: 'Failed to parse health check output', raw } }];\n}\n\nconst { severity, checks, timestamp } = report;\n\n// Bouw issue body\nconst lines = [\n  `## DevHub Health Check — ${timestamp}`,\n  '',\n  `**Severity: ${severity}**`,\n  '',\n  '| Check | Status | Details |',\n  '|-------|--------|---------|',\n];\n\n// pytest\nconst testStatus = checks.pytest.exit_code === 0 ? 'PASS' : 'FAIL';\nlines.push(`| Tests | ${testStatus} | ${checks.pytest.summary} |`);\n\n// ruff\nconst ruffStatus = checks.ruff.error_count === 0 ? 'PASS' : 'FAIL';\nlines.push(`| Lint (ruff) | ${ruffStatus} | ${checks.ruff.error_count} errors |`);\n\n// pip-audit\nconst auditStatus = checks.pip_audit.cve_count === 0 ? 'PASS' : 'FAIL';\nlines.push(`| Security (pip-audit) | ${auditStatus} | ${checks.pip_audit.cve_count} vulnerabilities |`);\n\n// outdated\nconst outdatedStatus = checks.outdated.count <= 5 ? 'OK' : 'WARN';\nlines.push(`| Outdated deps | ${outdatedStatus} | ${checks.outdated.count} packages |`);\n\nlines.push('', '---', '_Automated by n8n WF-1: DevHub Health Check_');\n\nconst priority = severity === 'RED' ? 'P1' : 'P2';\nconst issueTitle = `[HEALTH ${severity}] DevHub Health Check — ${timestamp.split('T')[0]}`;\n\nreturn [{\n  json: {\n    severity,\n    priority,\n    issueTitle,\n    issueBody: lines.join('\\n'),\n    timestamp,\n    checks\n  }\n}];"
+      },
+      "id": "parse-results",
+      "name": "Parse & Format Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [660, 300]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "rules": [
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.severity }}",
+                    "rightValue": "GREEN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputLabel": "GREEN"
+            },
+            {
+              "conditions": {
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.severity }}",
+                    "rightValue": "YELLOW",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputLabel": "YELLOW"
+            }
+          ],
+          "fallbackOutput": {
+            "renameOutput": true,
+            "outputLabel": "RED"
+          }
+        },
+        "options": {}
+      },
+      "id": "severity-switch",
+      "name": "Severity Router",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [880, 300]
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "getAll",
+        "owner": "ALS-DAN",
+        "repository": "alsdan-devhub",
+        "returnAll": false,
+        "limit": 5,
+        "filters": {
+          "labels": "health-alert",
+          "state": "open"
+        }
+      },
+      "id": "check-existing-issue",
+      "name": "Check Existing Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [1100, 200],
+      "credentials": {
+        "githubApi": {
+          "id": "github-pat",
+          "name": "GitHub PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "create",
+        "owner": "ALS-DAN",
+        "repository": "alsdan-devhub",
+        "title": "={{ $('Parse & Format Results').item.json.issueTitle }}",
+        "body": "={{ $('Parse & Format Results').item.json.issueBody }}",
+        "labels": ["health-alert", "={{ $('Parse & Format Results').item.json.priority }}"]
+      },
+      "id": "create-issue",
+      "name": "Create GitHub Issue",
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [1320, 200],
+      "credentials": {
+        "githubApi": {
+          "id": "github-pat",
+          "name": "GitHub PAT"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $env.GMAIL_USER }}",
+        "subject": "=[CRITICAL] DevHub Health Check Failed — {{ $('Parse & Format Results').item.json.timestamp.split('T')[0] }}",
+        "emailType": "text",
+        "message": "=DevHub Health Check FAILED met severity RED.\n\nDetails:\n{{ $('Parse & Format Results').item.json.issueBody }}\n\nGitHub Issue: bekijk https://github.com/ALS-DAN/alsdan-devhub/issues"
+      },
+      "id": "send-email",
+      "name": "Email Notification (RED)",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1540, 400],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "gmail-oauth",
+          "name": "Gmail"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Daily 18:00": {
+      "main": [
+        [
+          {
+            "node": "Run Health Checks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Health Checks": {
+      "main": [
+        [
+          {
+            "node": "Parse & Format Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse & Format Results": {
+      "main": [
+        [
+          {
+            "node": "Severity Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Severity Router": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Check Existing Issue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Existing Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Issue": {
+      "main": [
+        [
+          {
+            "node": "Create GitHub Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create GitHub Issue": {
+      "main": [
+        [
+          {
+            "node": "Email Notification (RED)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Amsterdam"
+  },
+  "tags": [
+    {
+      "name": "health-check"
+    },
+    {
+      "name": "automated"
+    }
+  ]
+}
