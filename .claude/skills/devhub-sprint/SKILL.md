@@ -141,7 +141,13 @@ Akkoord voor afsluiting?
 success, output = adapter.run_herald_sync("Sprint NAAM afgerond")
 ```
 
-**E — Cleanup:**
+**E — Retrospective genereren (na akkoord):**
+- Genereer sprint-retrospective op basis van `docs/golden-paths/SPRINT_RETROSPECTIVE.md` template
+- Data ophalen: git log, test-delta, QA rapport, deliverable-status
+- Schrijf naar `knowledge/retrospectives/RETRO_<SPRINT_NAAM>.md`
+- Gradering: SILVER (gevalideerd door 1 sprint)
+
+**F — Cleanup:**
 - Orchestrator cleanup: `orch.clear_task()`, `orch.clear_doc_queue()`
 
 ---

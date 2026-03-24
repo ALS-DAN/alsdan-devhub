@@ -87,3 +87,5 @@ Node-configuratie: `config/nodes.yml`
 | `/devhub-mentor` | O-B-B developer coaching |
 | `/devhub-sprint-prep` | Sprint voorbereiding |
 | `/devhub-review` | Code review + anti-patronen |
+| `/devhub-research-loop` | Kennisverrijking + bronnenonderzoek |
+| `/devhub-governance-check` | DEV_CONSTITUTION compliance audit |
