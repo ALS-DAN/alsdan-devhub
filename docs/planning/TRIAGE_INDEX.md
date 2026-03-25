@@ -4,8 +4,8 @@
 laatst_bijgewerkt: 2026-03-25
 getriaged_door: "Claude Code — alsdan-devhub"
 huidige_fase: 3 (Track A afgerond, Track B+C beschikbaar)
-actieve_sprint: geen (transitie)
-test_baseline: 394
+actieve_sprint: geen (operationele validatie afgerond)
+test_baseline: 395
 ---
 
 ## Fase-positie
@@ -59,6 +59,7 @@ Track A (uv workspace) is afgerond. Track B (storage) en Track C (vectorstore) z
 | SPRINT_FASE2_SKILLS_GOVERNANCE | 2 | 299 → 339 (+40) | 2026-03-23 |
 | SPRINT_N8N_CICD_FOUNDATION | 2→3 | 339 → 370 (+31) | 2026-03-24/25 |
 | SPRINT_CODE_CHECK_ARCHITECTUUR | 2→3 | 370 → 394 (+24) | 2026-03-25 |
+| SPRINT_OPERATIONELE_VALIDATIE | 3 | 394 → 395 (+1) | 2026-03-25 |
 
 Gearchiveerde intakes in `sprints/`:
 - SPRINT_INTAKE_RED_TEAM_AGENT (operationeel: agent + skill + 40 tests)
@@ -75,6 +76,7 @@ Gearchiveerde intakes in `sprints/`:
 
 ```
 Track A: UV Workspace ✅ (afgerond, 394 tests)
+    ├── Operationele Validatie ✅ (alle 3 lagen bewezen, 395 tests)
     ├── Track B: Storage Interface (3-4 sprints, P2) ──┐
     ├── Track C: Vectorstore (2-3 sprints, P2) ────────┤── KWP DEV setup
     └── Code Check Architectuur (1 sprint, P3)          │
@@ -91,6 +93,6 @@ Track A: UV Workspace ✅ (afgerond, 394 tests)
 | Backlog | 2 |
 | Inbox | 4 |
 | Geparkeerd | 14 |
-| Afgeronde sprints | 4 |
-| Gearchiveerde intakes | 7 |
-| Test baseline | 394 |
+| Afgeronde sprints | 5 |
+| Gearchiveerde intakes | 8 |
+| Test baseline | 395 |

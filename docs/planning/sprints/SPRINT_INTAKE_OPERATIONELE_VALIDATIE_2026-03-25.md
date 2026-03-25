@@ -2,7 +2,7 @@
 
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
-status: DONE
+status: INBOX
 fase: 3
 prioriteit: P1
 sprint_type: SPIKE

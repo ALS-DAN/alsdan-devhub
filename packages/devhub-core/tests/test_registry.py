@@ -158,6 +158,12 @@ nodes:
         assert "test" in d
         assert d["test"]["tags"] == ["tag1"]
 
+    def test_get_report_unknown_node_raises_key_error(self):
+        """get_report() should propagate KeyError for non-existent node IDs."""
+        registry = NodeRegistry()
+        with pytest.raises(KeyError, match="nonexistent-node"):
+            registry.get_report("nonexistent-node")
+
     def test_invalid_adapter_import(self):
         registry = NodeRegistry()
         cfg = NodeConfig(node_id="bad", name="Bad", path="/tmp", adapter="nonexistent.module.Class")
