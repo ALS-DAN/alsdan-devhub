@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import subprocess
 from pathlib import Path
 
@@ -757,6 +758,8 @@ class BorisAdapter(NodeInterface):
         - error: optional str
         """
         try:
+            n8n_port = os.environ.get("N8N_PORT", "5678")
+            base_url = f"http://localhost:{n8n_port}"
             result = subprocess.run(
                 [
                     "curl",
@@ -765,7 +768,7 @@ class BorisAdapter(NodeInterface):
                     "/dev/null",
                     "-w",
                     "%{http_code}",
-                    "http://localhost:5678/api/v1/workflows",
+                    f"{base_url}/api/v1/workflows",
                 ],
                 capture_output=True,
                 text=True,
@@ -777,7 +780,7 @@ class BorisAdapter(NodeInterface):
             if reachable:
                 # Haal workflow count op
                 count_result = subprocess.run(
-                    ["curl", "-s", "http://localhost:5678/api/v1/workflows"],
+                    ["curl", "-s", f"{base_url}/api/v1/workflows"],
                     capture_output=True,
                     text=True,
                     timeout=10,
@@ -1174,6 +1177,17 @@ class BorisAdapter(NodeInterface):
         from datetime import datetime
 
         health = self.get_health()
+        # Verrijk health met actuele testdata als LUMEN ontbreekt
+        if health.test_count == 0:
+            test_result = self.run_tests()
+            if test_result.total > 0:
+                health = NodeHealth(
+                    status=health.status,
+                    components=health.components,
+                    test_count=test_result.total,
+                    test_pass_rate=test_result.pass_rate,
+                    coverage_pct=test_result.coverage_pct or 0.0,
+                )
         docs = self.list_docs()
         doc_status = NodeDocStatus(
             total_pages=len(docs),

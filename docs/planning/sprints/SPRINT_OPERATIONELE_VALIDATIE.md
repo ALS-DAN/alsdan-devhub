@@ -52,7 +52,7 @@ Valideer dat de drie operationele lagen van DevHub (n8n bewaking, agent-orkestra
 1. `get_report()` health.test_count=0 — fallback mode (LUMEN report niet gevonden). Severity: NICE-TO-HAVE
 2. `check_n8n_status()` → reachable=False — kijkt naar port 5678, n8n draait op 5679. Severity: BELANGRIJK
 3. `run_pip_audit()` → pip-audit niet in BORIS .venv. Severity: NICE-TO-HAVE
-4. Intake doc noemde `run_tests()` retourneert tuple — het is `TestResult` dataclass. Severity: DOC-UPDATE
+4. Intake doc noemde `run_tests()` retourneert tuple — het is `TestResult` dataclass. Severity: DOC-UPDATE — ✅ opgelost in Sprint Quick Fixes (QF-05)
 
 ### Fase 3: Skill Validatie
 

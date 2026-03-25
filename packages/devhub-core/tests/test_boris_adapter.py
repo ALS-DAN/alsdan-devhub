@@ -1,10 +1,12 @@
 """Tests voor BorisAdapter."""
 
 import json
+from unittest.mock import patch
+
 import pytest
 
 from devhub_core.adapters.boris_adapter import BorisAdapter
-from devhub_core.contracts.node_interface import NodeReport
+from devhub_core.contracts.node_interface import NodeReport, TestResult
 
 
 class TestBorisAdapter:
@@ -81,9 +83,14 @@ class TestBorisAdapter:
 
     def test_get_report_fallback_no_lumen(self, tmp_path):
         adapter = BorisAdapter(str(tmp_path))
-        report = adapter.get_report()
+        # Mock run_tests zodat fallback testdata gebruikt
+        mock_result = TestResult(total=395, passed=395, failed=0, errors=0, duration_seconds=0.3)
+        with patch.object(adapter, "run_tests", return_value=mock_result):
+            report = adapter.get_report()
         assert report.node_id == "boris-buurts"
         assert report.health.status == "UP"
+        assert report.health.test_count == 395
+        assert report.health.test_pass_rate == 1.0
 
     def test_list_docs_no_mkdocs(self, tmp_path):
         adapter = BorisAdapter(str(tmp_path))
