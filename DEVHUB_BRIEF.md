@@ -1,6 +1,6 @@
 # DevHub Sessiebriefing
 _Levend document — bijgewerkt door Claude Code bij elke sprint-afsluiting._
-_Bijgewerkt: 2026-03-24 | sprint: RED_TEAM_AGENT_
+_Bijgewerkt: 2026-03-25 | sprint: TRIAGE_UPDATE_FASE3_OVERGANG_
 
 ---
 
@@ -8,12 +8,24 @@ _Bijgewerkt: 2026-03-24 | sprint: RED_TEAM_AGENT_
 
 | Sprint | Status | Tests |
 |--------|--------|-------|
-| RED_TEAM_AGENT | actief | 307 tests (startpunt) |
+| — | Transitie (geen actieve sprint) | 394 tests (baseline) |
 
-**Vorige sprint:** DEVHUB_FASE2_SKILLS_GOVERNANCE ✅ (2026-03-24) — +8 tests
+**Vorige sprint:** CODE_CHECK_ARCHITECTUUR ✅ (2026-03-25) — 370 → 394 tests (+24)
 
 **Fase-positie:**
-`Fase 0 (fundament) ✅ → Fase 1 (kernagents + infra) ✅ → Fase 2 (skills + governance) ✅ → **Fase 2b (red team)** 🔄 → Fase 3 (knowledge + memory) 🔲`
+`Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → **Fase 3** 🔄`
+
+Track A (uv workspace) afgerond. Track B (storage) en Track C (vectorstore) beschikbaar.
+
+---
+
+## Workspace-structuur
+
+| Package | Pad | Status |
+|---------|-----|--------|
+| devhub-core | `packages/devhub-core/` | Actief (v0.2.0) |
+| devhub-storage | `packages/devhub-storage/` | Stub (v0.1.0) |
+| devhub-vectorstore | `packages/devhub-vectorstore/` | Stub (v0.1.0) |
 
 ---
 
@@ -38,8 +50,7 @@ _Bijgewerkt: 2026-03-24 | sprint: RED_TEAM_AGENT_
 | DEV_CONSTITUTION | ✅ v1.0 (8 artikelen) |
 | BorisAdapter | ✅ 38 methodes |
 | NodeRegistry | ✅ boris-buurts geregistreerd |
-| Python tests | ✅ 218 passed |
-| Plugin-laag tests | ✅ 81 passed |
+| Tests totaal | ✅ 394 passed |
 
 ---
 
@@ -51,10 +62,24 @@ _Bijgewerkt: 2026-03-24 | sprint: RED_TEAM_AGENT_
 | devhub-health | `.claude/skills/devhub-health/` | ✅ |
 | devhub-mentor | `.claude/skills/devhub-mentor/` | ✅ |
 | devhub-review | `.claude/skills/devhub-review/` | ✅ |
-| devhub-sprint-prep | `.claude/skills/devhub-sprint-prep/` | ✅ |
+| devhub-sprint-prep | `.claude/skills/devhub-sprint-prep/` | ✅ (+backlog scanning) |
 | devhub-research-loop | `.claude/skills/devhub-research-loop/` | ✅ Fase 2 |
 | devhub-governance-check | `.claude/skills/devhub-governance-check/` | ✅ Fase 2 |
 | devhub-redteam | `.claude/skills/devhub-redteam/` | ✅ Fase 2b |
+
+---
+
+## Planningssysteem
+
+| Directory | Aantal | Inhoud |
+|-----------|--------|--------|
+| `docs/planning/inbox/` | 4 | Storage, Vectorstore, Mentor Supervisor, Claude Optimalisatie |
+| `docs/planning/backlog/` | 2 | Code Check Architectuur, Planning Governance |
+| `docs/planning/sprints/` | 11 | 4 sprint-docs + 7 gearchiveerde intakes |
+| `docs/planning/parked/` | 14 | Items buiten huidige fase |
+
+Centraal overzicht: `docs/planning/TRIAGE_INDEX.md`
+Strategische roadmap: `docs/planning/ROADMAP.md`
 
 ---
 
@@ -76,23 +101,19 @@ _Geen open beslissingen._
 
 ---
 
-## Planning Notes voor Cowork
-
-- RED_TEAM_AGENT sprint actief: security contracts, red team agent, devhub-redteam skill
-- OWASP ASI 2026 framework geïmplementeerd als Python contracts
-- DeepTeam integratie uitgesteld naar volgende sprint
-
----
-
 ## Sinds vorige sessie
 
-- Fase 2 volledig afgerond (7 skills, 307 tests, 5 Golden Paths)
-- RED_TEAM_AGENT sprint: security_contracts.py, red-team agent, devhub-redteam skill
-- 6 agents operationeel (dev-lead, coder, reviewer, researcher, planner, red-team)
-- Tests: 307 → 339 (+32)
+- Fase 2 + 2b volledig afgerond (8 skills, 6 agents, 5 Golden Paths)
+- N8N CICD Foundation sprint: Health Check, Governance Check, PR Quality Gate
+- Code Check Architectuur sprint: ADR-002, pre-commit hooks, reviewer upgrade
+- UV Workspace migratie: `devhub/` → `packages/devhub-core/devhub_core/`
+- Planning governance: triage, backlog/parked structuur, ROADMAP
+- Tests: 218 → 394 (+176 over 4 sprints)
 
 ---
 
 ## Aanbevolen startpunt volgende sessie
 
-DeepTeam integratie (externe red team tooling) of Fase 3: knowledge + memory
+1. **Track B: Storage Interface** (P2, 3-4 sprints) — `inbox/SPRINT_INTAKE_STORAGE_INTERFACE_2026-03-24.md`
+2. **Track C: Vectorstore** (P2, 2-3 sprints) — `inbox/SPRINT_INTAKE_VECTORSTORE_2026-03-24.md`
+3. Track B en C kunnen parallel lopen (onafhankelijk van elkaar)

@@ -49,6 +49,26 @@ Dit levert een dict met:
 | `sprint_docs` | Actieve sprint-documenten |
 | `adr_files` | Beschikbare ADR bestanden |
 
+### Stap 1b: DevHub planningssysteem scannen
+
+Naast project-specifieke context, scan de DevHub planning directories:
+
+```
+docs/planning/inbox/      — Nieuwe items (SPRINT_INTAKE_*, IDEA_*, RESEARCH_*)
+docs/planning/backlog/    — Shaped items klaar voor sprint
+docs/planning/sprints/    — Afgeronde en actieve sprints
+docs/planning/parked/     — Buiten huidige fase, niet vergeten
+docs/planning/TRIAGE_INDEX.md    — Overzicht van alle items + tellingen
+docs/planning/ROADMAP.md         — Strategische roadmap + fase-positie
+```
+
+**Acties:**
+1. Lees `docs/planning/TRIAGE_INDEX.md` voor actuele tellingen en fase-positie
+2. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
+3. Scan `docs/planning/inbox/` voor nieuwe items die nog getriaged moeten worden
+4. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden
+5. Vermeld het aantal items per directory in de SPRINT_INPUT output
+
 ### Stap 2: Systeem-status analyseren
 
 ```python

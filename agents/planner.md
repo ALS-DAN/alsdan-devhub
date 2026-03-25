@@ -122,15 +122,46 @@ Produceer een sprint-plan als gestructureerd rapport:
 | ... | ... | ... |
 ```
 
+## Planningssysteem
+
+DevHub gebruikt een gelaagde planning-structuur:
+
+```
+docs/planning/inbox/      — Nieuwe ideeën en intakes (ongefilterd)
+docs/planning/backlog/    — Shaped items klaar voor sprint (getriaged, geprioriteerd)
+docs/planning/sprints/    — Actieve en afgeronde sprints
+docs/planning/parked/     — Buiten huidige fase, bewaard voor later
+docs/planning/TRIAGE_INDEX.md  — Centraal overzicht + tellingen
+docs/planning/ROADMAP.md       — Strategische roadmap + fase-positie
+```
+
+### Backlog-promotie
+
+Evalueer bij elke planningssessie of backlog-items naar actieve sprint gepromoveerd moeten worden:
+
+1. **Lees TRIAGE_INDEX.md** voor actuele prioriteiten en fase-positie
+2. **Scan backlog/** voor items die voldoen aan de DoR
+3. **Beoordeel afhankelijkheden** — geblokkeerde items niet promoveren
+4. **Controleer appetite** — past het item in de sprint-capaciteit?
+5. **Adviseer Niels** welke backlog-items sprint-ready zijn (Art. 1: menselijke regie)
+
+Criteria voor promotie:
+- Item heeft SPRINT_INTAKE document met scope, grenzen en appetite
+- Afhankelijkheden zijn afgerond
+- Impact-zone past bij huidige sprint-capaciteit (GREEN/YELLOW)
+- Item staat op het kritiek pad OF lost een P1/P2 blocker op
+
 ## Werkwijze
 
 1. **Ontvang planningsverzoek** van dev-lead
 2. **Verzamel context** via Python-systeem (NodeRegistry, adapter)
-3. **Analyseer scope** met Shape Up framework
-4. **Classificeer** via Cynefin
-5. **Doorloop DoR-checklist** — identificeer blokkeerders
-6. **Produceer sprint-plan** als gestructureerd rapport
-7. **Rapporteer aan dev-lead** met GO/NO-GO advies
+3. **Scan planningssysteem** (inbox, backlog, TRIAGE_INDEX, ROADMAP)
+4. **Analyseer scope** met Shape Up framework
+5. **Classificeer** via Cynefin
+6. **Doorloop DoR-checklist** — identificeer blokkeerders
+7. **Evalueer backlog-promotie** — welke items zijn sprint-ready?
+8. **Produceer sprint-plan** als gestructureerd rapport
+9. **Rapporteer aan dev-lead** met GO/NO-GO advies
 
 ## Beperkingen
 
