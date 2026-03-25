@@ -1,7 +1,5 @@
 """Tests voor F6 BorisAdapter sprint-prep methods."""
 
-from pathlib import Path
-
 import pytest
 
 from devhub_core.adapters.boris_adapter import BorisAdapter
@@ -163,6 +161,7 @@ class TestGetSprintPrepContext:
 
     def test_context_without_health_report(self, adapter, boris_path):
         import shutil
+
         shutil.rmtree(boris_path / "docs" / "health")
         ctx = adapter.get_sprint_prep_context()
         assert ctx["health_report_latest"] is None
@@ -170,8 +169,14 @@ class TestGetSprintPrepContext:
     def test_context_keys_complete(self, adapter):
         ctx = adapter.get_sprint_prep_context()
         expected_keys = {
-            "health_status", "health_report_latest", "developer_profile",
-            "claude_md", "overdracht", "decisions", "inbox",
-            "sprint_docs", "adr_files",
+            "health_status",
+            "health_report_latest",
+            "developer_profile",
+            "claude_md",
+            "overdracht",
+            "decisions",
+            "inbox",
+            "sprint_docs",
+            "adr_files",
         }
         assert set(ctx.keys()) == expected_keys

@@ -20,7 +20,12 @@ class TestSeverity:
 
     def test_severity_ordering(self):
         """P1 is erger dan P4 — we gebruiken de enum name voor vergelijking."""
-        severities = [Severity.P4_INFO, Severity.P1_CRITICAL, Severity.P3_ATTENTION, Severity.P2_DEGRADED]
+        severities = [
+            Severity.P4_INFO,
+            Severity.P1_CRITICAL,
+            Severity.P3_ATTENTION,
+            Severity.P2_DEGRADED,
+        ]
         sorted_by_value = sorted(severities, key=lambda s: s.value)
         assert sorted_by_value[0] == Severity.P1_CRITICAL
         assert sorted_by_value[-1] == Severity.P4_INFO
@@ -145,8 +150,12 @@ class TestFullHealthReport:
         f2 = HealthFinding(component="b", severity=Severity.P2_DEGRADED, message="deg")
         f3 = HealthFinding(component="c", severity=Severity.P1_CRITICAL, message="crit2")
         checks = (
-            HealthCheckResult(dimension="x", status=HealthStatus.CRITICAL, summary="bad", findings=(f1, f2)),
-            HealthCheckResult(dimension="y", status=HealthStatus.CRITICAL, summary="bad", findings=(f3,)),
+            HealthCheckResult(
+                dimension="x", status=HealthStatus.CRITICAL, summary="bad", findings=(f1, f2)
+            ),
+            HealthCheckResult(
+                dimension="y", status=HealthStatus.CRITICAL, summary="bad", findings=(f3,)
+            ),
         )
         r = FullHealthReport(node_id="t", timestamp="now", checks=checks)
         assert len(r.p1_findings) == 2

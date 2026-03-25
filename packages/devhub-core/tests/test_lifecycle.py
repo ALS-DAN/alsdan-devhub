@@ -1,6 +1,5 @@
 """End-to-end lifecycle test: DevOrchestrator → DocsAgent → QA Agent."""
 
-
 from devhub_core.agents.docs_agent import DocsAgent
 from devhub_core.agents.orchestrator import DevOrchestrator
 from devhub_core.agents.qa_agent import QAAgent
@@ -29,9 +28,7 @@ class FakeNode(NodeInterface):
                 test_pass_rate=1.0,
                 coverage_pct=80.0,
             ),
-            doc_status=NodeDocStatus(
-                total_pages=5, stale_pages=0, diataxis_coverage={}
-            ),
+            doc_status=NodeDocStatus(total_pages=5, stale_pages=0, diataxis_coverage={}),
         )
 
     def get_health(self) -> NodeHealth:
@@ -50,12 +47,14 @@ class TestFullLifecycle:
     def test_create_task_generate_docs_qa_review(self, tmp_path):
         # --- Setup ---
         registry = NodeRegistry()
-        registry.register(NodeConfig(
-            node_id="test-node",
-            name="Test",
-            path=str(tmp_path),
-            adapter="tests.test_lifecycle.FakeNode",
-        ))
+        registry.register(
+            NodeConfig(
+                node_id="test-node",
+                name="Test",
+                path=str(tmp_path),
+                adapter="tests.test_lifecycle.FakeNode",
+            )
+        )
 
         scratchpad = tmp_path / "scratchpad"
         docs_root = tmp_path / "docs"
@@ -129,12 +128,14 @@ class TestFullLifecycle:
     def test_lifecycle_with_failing_qa(self, tmp_path):
         """Lifecycle waar QA BLOCK geeft door hardcoded secret."""
         registry = NodeRegistry()
-        registry.register(NodeConfig(
-            node_id="test-node",
-            name="Test",
-            path=str(tmp_path),
-            adapter="tests.test_lifecycle.FakeNode",
-        ))
+        registry.register(
+            NodeConfig(
+                node_id="test-node",
+                name="Test",
+                path=str(tmp_path),
+                adapter="tests.test_lifecycle.FakeNode",
+            )
+        )
 
         scratchpad = tmp_path / "scratchpad"
         reports_dir = tmp_path / "qa_reports"
@@ -145,9 +146,7 @@ class TestFullLifecycle:
         # Maak een bestand met een secret
         code_dir = tmp_path / "src"
         code_dir.mkdir()
-        (code_dir / "bad.py").write_text(
-            'SECRET_KEY = "sk-abcdefghijklmnopqrstuvwxyz"\n'
-        )
+        (code_dir / "bad.py").write_text('SECRET_KEY = "sk-abcdefghijklmnopqrstuvwxyz"\n')
 
         task = orchestrator.create_task(
             description="Bad feature",

@@ -143,9 +143,7 @@ class BorisAdapter(NodeInterface):
         sprint_dir = self.boris_path / "docs" / "planning" / "sprints"
         if not sprint_dir.exists():
             return []
-        return [
-            f.name for f in sprint_dir.glob("SPRINT_*.md")
-        ]
+        return [f.name for f in sprint_dir.glob("SPRINT_*.md")]
 
     def read_sprint_doc(self, name: str) -> str | None:
         """Lees een specifiek sprint-document."""
@@ -158,11 +156,13 @@ class BorisAdapter(NodeInterface):
             return []
         items = []
         for f in sorted(inbox_dir.glob("*.md")):
-            items.append({
-                "name": f.name,
-                "type": "intake" if "SPRINT_INTAKE" in f.name else "idea",
-                "path": str(f.relative_to(self.boris_path)),
-            })
+            items.append(
+                {
+                    "name": f.name,
+                    "type": "intake" if "SPRINT_INTAKE" in f.name else "idea",
+                    "path": str(f.relative_to(self.boris_path)),
+                }
+            )
         return items
 
     def read_goals(self) -> str | None:
@@ -302,16 +302,23 @@ class BorisAdapter(NodeInterface):
 
         patterns: list[tuple[str, str, str]] = [
             # (regex, severity, description)
-            (r"ChromaDB|chromadb\.Client\(", "ERROR",
-             "Direct ChromaDB aanroep buiten ZonedVectorStore"),
-            (r'zone\s*[=!]=\s*["\']RED["\']', "CRITICAL",
-             "RED-zone logica buiten safety/policy.py"),
-            (r"EphemeralClient\((?!.*uuid)", "WARNING",
-             "EphemeralClient zonder UUID-suffix"),
-            (r'(?i)(password|secret|api_key|token)\s*=\s*["\'][^"\']{8,}["\']', "CRITICAL",
-             "Hardcoded secret/credential"),
-            (r"^print\(", "WARNING",
-             "print() in productie-code — gebruik logging"),
+            (
+                r"ChromaDB|chromadb\.Client\(",
+                "ERROR",
+                "Direct ChromaDB aanroep buiten ZonedVectorStore",
+            ),
+            (
+                r'zone\s*[=!]=\s*["\']RED["\']',
+                "CRITICAL",
+                "RED-zone logica buiten safety/policy.py",
+            ),
+            (r"EphemeralClient\((?!.*uuid)", "WARNING", "EphemeralClient zonder UUID-suffix"),
+            (
+                r'(?i)(password|secret|api_key|token)\s*=\s*["\'][^"\']{8,}["\']',
+                "CRITICAL",
+                "Hardcoded secret/credential",
+            ),
+            (r"^print\(", "WARNING", "print() in productie-code — gebruik logging"),
         ]
 
         findings: list[dict] = []
@@ -336,13 +343,15 @@ class BorisAdapter(NodeInterface):
                         if "safety/policy" in file_rel and "RED-zone" in desc:
                             continue
                         if re.search(pattern, line):
-                            findings.append({
-                                "file": file_rel,
-                                "line": i,
-                                "severity": severity,
-                                "description": desc,
-                                "match": line.strip()[:100],
-                            })
+                            findings.append(
+                                {
+                                    "file": file_rel,
+                                    "line": i,
+                                    "severity": severity,
+                                    "description": desc,
+                                    "match": line.strip()[:100],
+                                }
+                            )
             except OSError:
                 continue
 
@@ -390,9 +399,7 @@ class BorisAdapter(NodeInterface):
         for adr_dir_name in ["docs/adr", "docs/architecture"]:
             adr_dir = self.boris_path / adr_dir_name
             if adr_dir.is_dir():
-                return sorted([
-                    f.name for f in adr_dir.glob("ADR-*.md")
-                ])
+                return sorted([f.name for f in adr_dir.glob("ADR-*.md")])
         return []
 
     def read_adr(self, name: str) -> str | None:
@@ -492,6 +499,7 @@ class BorisAdapter(NodeInterface):
 
             # Fase-detectie (conservatief: bij gelijkspel wint ORIËNTEREN)
             from collections import Counter
+
             fase_counts = Counter(r[1] for r in rows)
             priority = [DeveloperPhase.ORIENTEREN, DeveloperPhase.BOUWEN, DeveloperPhase.BEHEERSEN]
             max_count = max(fase_counts.values())
@@ -667,7 +675,7 @@ class BorisAdapter(NodeInterface):
         # OVERDRACHT.md: versie in de tekst
         overdracht = self.read_overdracht()
         if overdracht:
-            m = re.search(r'[Vv]ersie[:\s]+(\d+\.\d+(?:\.\d+)?)', overdracht)
+            m = re.search(r"[Vv]ersie[:\s]+(\d+\.\d+(?:\.\d+)?)", overdracht)
             if m:
                 versions["overdracht"] = m.group(1)
 
@@ -684,11 +692,19 @@ class BorisAdapter(NodeInterface):
         - ci_present: of .github/workflows/ci.yml bestaat
         """
         expected_modules = [
-            "agents", "rag", "safety", "mcp_server", "middleware",
-            "ingest", "sharepoint", "weaviate_store",
+            "agents",
+            "rag",
+            "safety",
+            "mcp_server",
+            "middleware",
+            "ingest",
+            "sharepoint",
+            "weaviate_store",
         ]
         expected_configs = [
-            ".mcp.json", "pyproject.toml", "docker-compose.yml",
+            ".mcp.json",
+            "pyproject.toml",
+            "docker-compose.yml",
             "mkdocs.yml",
         ]
 
@@ -704,18 +720,22 @@ class BorisAdapter(NodeInterface):
         agents_dir = self.boris_path / "agents"
         agent_count = 0
         if agents_dir.is_dir():
-            agent_count = len([
-                f for f in agents_dir.iterdir()
-                if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
-            ])
+            agent_count = len(
+                [
+                    f
+                    for f in agents_dir.iterdir()
+                    if f.is_file() and f.suffix == ".py" and f.name != "__init__.py"
+                ]
+            )
 
         # Count MCP tools (functions decorated with @tool or registered)
         mcp_tool_count = 0
         server_py = self.boris_path / "mcp_server" / "server.py"
         if server_py.is_file():
             import re
+
             content = server_py.read_text()
-            mcp_tool_count = len(re.findall(r'@(?:mcp\.)?tool', content))
+            mcp_tool_count = len(re.findall(r"@(?:mcp\.)?tool", content))
 
         # CI pipeline
         ci_present = (self.boris_path / ".github" / "workflows" / "ci.yml").is_file()
@@ -738,8 +758,15 @@ class BorisAdapter(NodeInterface):
         """
         try:
             result = subprocess.run(
-                ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}",
-                 "http://localhost:5678/api/v1/workflows"],
+                [
+                    "curl",
+                    "-s",
+                    "-o",
+                    "/dev/null",
+                    "-w",
+                    "%{http_code}",
+                    "http://localhost:5678/api/v1/workflows",
+                ],
                 capture_output=True,
                 text=True,
                 timeout=5,
@@ -844,36 +871,43 @@ class BorisAdapter(NodeInterface):
         # Tests
         test_result = self.run_tests()
         if not test_result.success:
-            findings.append(HealthFinding(
-                component="tests",
-                severity=Severity.P1_CRITICAL,
-                message=f"{test_result.failed} tests failed, {test_result.errors} errors",
-                recommended_action="Fix failing tests before any other work",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="tests",
+                    severity=Severity.P1_CRITICAL,
+                    message=f"{test_result.failed} tests failed, {test_result.errors} errors",
+                    recommended_action="Fix failing tests before any other work",
+                )
+            )
             status = HealthStatus.CRITICAL
         elif test_result.total == 0:
-            findings.append(HealthFinding(
-                component="tests",
-                severity=Severity.P2_DEGRADED,
-                message="No tests found or test runner failed",
-                recommended_action="Check pytest configuration and venv",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="tests",
+                    severity=Severity.P2_DEGRADED,
+                    message="No tests found or test runner failed",
+                    recommended_action="Check pytest configuration and venv",
+                )
+            )
             status = HealthStatus.ATTENTION
 
         # Lint
         lint_clean, lint_output = self.run_lint()
         if not lint_clean:
-            findings.append(HealthFinding(
-                component="lint",
-                severity=Severity.P2_DEGRADED,
-                message="Lint errors detected",
-                detail=lint_output[:500] if lint_output else "",
-                recommended_action="Run ruff check --fix",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="lint",
+                    severity=Severity.P2_DEGRADED,
+                    message="Lint errors detected",
+                    detail=lint_output[:500] if lint_output else "",
+                    recommended_action="Run ruff check --fix",
+                )
+            )
             if status == HealthStatus.HEALTHY:
                 status = HealthStatus.ATTENTION
 
-        summary = f"{test_result.passed}/{test_result.total} tests passed, lint {'clean' if lint_clean else 'errors'}"
+        lint_status = "clean" if lint_clean else "errors"
+        summary = f"{test_result.passed}/{test_result.total} tests passed, lint {lint_status}"
         return HealthCheckResult(
             dimension="code_quality",
             status=status,
@@ -891,26 +925,31 @@ class BorisAdapter(NodeInterface):
                 dimension="dependencies",
                 status=HealthStatus.ATTENTION,
                 summary="pip-audit niet beschikbaar — kan dependencies niet scannen",
-                findings=(HealthFinding(
-                    component="dependencies",
-                    severity=Severity.P3_ATTENTION,
-                    message="pip-audit niet geïnstalleerd",
-                    recommended_action="pip install pip-audit",
-                ),),
+                findings=(
+                    HealthFinding(
+                        component="dependencies",
+                        severity=Severity.P3_ATTENTION,
+                        message="pip-audit niet geïnstalleerd",
+                        recommended_action="pip install pip-audit",
+                    ),
+                ),
             )
 
         if not clean:
             # Parse output for CVE count
             import re
-            cve_matches = re.findall(r'(PYSEC|CVE)-\d+', output)
+
+            cve_matches = re.findall(r"(PYSEC|CVE)-\d+", output)
             cve_count = len(set(cve_matches))
-            findings.append(HealthFinding(
-                component="dependencies",
-                severity=Severity.P2_DEGRADED if cve_count > 0 else Severity.P3_ATTENTION,
-                message=f"{cve_count} bekende kwetsbaarheden gevonden",
-                detail=output[:500],
-                recommended_action="Review CVEs en update dependencies",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="dependencies",
+                    severity=Severity.P2_DEGRADED if cve_count > 0 else Severity.P3_ATTENTION,
+                    message=f"{cve_count} bekende kwetsbaarheden gevonden",
+                    detail=output[:500],
+                    recommended_action="Review CVEs en update dependencies",
+                )
+            )
 
         status = HealthStatus.HEALTHY if clean else HealthStatus.ATTENTION
         return HealthCheckResult(
@@ -931,18 +970,23 @@ class BorisAdapter(NodeInterface):
             return HealthCheckResult(
                 dimension="version_consistency",
                 status=HealthStatus.HEALTHY,
-                summary=f"Version info found in {len(found)} location(s) — insufficient for comparison",
+                summary=(
+                    f"Version info found in {len(found)} location(s)"
+                    " — insufficient for comparison"
+                ),
             )
 
         unique_versions = set(found.values())
         if len(unique_versions) > 1:
             detail = ", ".join(f"{k}={v}" for k, v in found.items())
-            findings.append(HealthFinding(
-                component="version",
-                severity=Severity.P3_ATTENTION,
-                message=f"Version mismatch: {detail}",
-                recommended_action="Sync version numbers across all locations",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="version",
+                    severity=Severity.P3_ATTENTION,
+                    message=f"Version mismatch: {detail}",
+                    recommended_action="Sync version numbers across all locations",
+                )
+            )
             return HealthCheckResult(
                 dimension="version_consistency",
                 status=HealthStatus.ATTENTION,
@@ -964,30 +1008,36 @@ class BorisAdapter(NodeInterface):
         # Missing modules
         missing_modules = [m for m, exists in scan["modules"].items() if not exists]
         if missing_modules:
-            findings.append(HealthFinding(
-                component="architecture",
-                severity=Severity.P3_ATTENTION,
-                message=f"Missing modules: {', '.join(missing_modules)}",
-                recommended_action="Verify module structure matches architecture docs",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="architecture",
+                    severity=Severity.P3_ATTENTION,
+                    message=f"Missing modules: {', '.join(missing_modules)}",
+                    recommended_action="Verify module structure matches architecture docs",
+                )
+            )
 
         # Missing configs
         missing_configs = [c for c, exists in scan["config_files"].items() if not exists]
         if missing_configs:
-            findings.append(HealthFinding(
-                component="config",
-                severity=Severity.P3_ATTENTION,
-                message=f"Missing config files: {', '.join(missing_configs)}",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="config",
+                    severity=Severity.P3_ATTENTION,
+                    message=f"Missing config files: {', '.join(missing_configs)}",
+                )
+            )
 
         # CI check
         if not scan["ci_present"]:
-            findings.append(HealthFinding(
-                component="ci",
-                severity=Severity.P2_DEGRADED,
-                message="CI pipeline (.github/workflows/ci.yml) not found",
-                recommended_action="Set up GitHub Actions CI pipeline",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="ci",
+                    severity=Severity.P2_DEGRADED,
+                    message="CI pipeline (.github/workflows/ci.yml) not found",
+                    recommended_action="Set up GitHub Actions CI pipeline",
+                )
+            )
 
         present_count = sum(1 for v in scan["modules"].values() if v)
         total_count = len(scan["modules"])
@@ -1019,11 +1069,16 @@ class BorisAdapter(NodeInterface):
             zones = self.check_vectorstore_dirs()
             missing = [z for z, info in zones.items() if not info["exists"]]
             if missing:
-                findings.append(HealthFinding(
-                    component="vectorstore",
-                    severity=Severity.P4_INFO,
-                    message=f"Data dirs not found: {', '.join(missing)} (normaal bij eerste start)",
-                ))
+                findings.append(
+                    HealthFinding(
+                        component="vectorstore",
+                        severity=Severity.P4_INFO,
+                        message=(
+                            f"Data dirs not found: {', '.join(missing)}"
+                            " (normaal bij eerste start)"
+                        ),
+                    )
+                )
             return HealthCheckResult(
                 dimension="vectorstore",
                 status=HealthStatus.HEALTHY,
@@ -1032,13 +1087,15 @@ class BorisAdapter(NodeInterface):
             )
 
         if not curator_clean:
-            findings.append(HealthFinding(
-                component="vectorstore",
-                severity=Severity.P2_DEGRADED,
-                message="Curator audit failed",
-                detail=curator_output[:500],
-                recommended_action="Run curator_audit.py --fix",
-            ))
+            findings.append(
+                HealthFinding(
+                    component="vectorstore",
+                    severity=Severity.P2_DEGRADED,
+                    message="Curator audit failed",
+                    detail=curator_output[:500],
+                    recommended_action="Run curator_audit.py --fix",
+                )
+            )
 
         return HealthCheckResult(
             dimension="vectorstore",
@@ -1056,13 +1113,15 @@ class BorisAdapter(NodeInterface):
                 dimension="n8n_workflows",
                 status=HealthStatus.HEALTHY,  # Offline is niet kritiek
                 summary=f"n8n: OFFLINE — {n8n.get('error', 'niet bereikbaar')}",
-                findings=(HealthFinding(
-                    component="n8n",
-                    severity=Severity.P4_INFO,
-                    message="n8n niet bereikbaar",
-                    detail=n8n.get("error", ""),
-                    recommended_action="Start n8n via docker-compose als workflows nodig zijn",
-                ),),
+                findings=(
+                    HealthFinding(
+                        component="n8n",
+                        severity=Severity.P4_INFO,
+                        message="n8n niet bereikbaar",
+                        detail=n8n.get("error", ""),
+                        recommended_action="Start n8n via docker-compose als workflows nodig zijn",
+                    ),
+                ),
             )
 
         return HealthCheckResult(

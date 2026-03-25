@@ -1,4 +1,7 @@
-"""Tests voor F5 mentor contracts: DeveloperPhase, CoachingSignal, DeveloperProfile, CoachingResponse."""
+"""Tests voor F5 mentor contracts.
+
+DeveloperPhase, CoachingSignal, DeveloperProfile, CoachingResponse.
+"""
 
 import pytest
 

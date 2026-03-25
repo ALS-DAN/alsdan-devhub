@@ -14,9 +14,7 @@ from typing import Literal
 
 
 # Valid OWASP ASI 2026 identifiers
-ASI_IDS = frozenset(
-    f"ASI{i:02d}" for i in range(1, 11)
-)
+ASI_IDS = frozenset(f"ASI{i:02d}" for i in range(1, 11))
 
 # Severity levels aligned with existing health/QA conventions
 Severity = Literal[
@@ -51,19 +49,13 @@ class SecurityFinding:
 
     def __post_init__(self) -> None:
         if self.asi_id not in ASI_IDS:
-            raise ValueError(
-                f"asi_id must be one of {sorted(ASI_IDS)}, got '{self.asi_id}'"
-            )
+            raise ValueError(f"asi_id must be one of {sorted(ASI_IDS)}, got '{self.asi_id}'")
         if not self.description:
             raise ValueError("description is required")
         if not self.component:
             raise ValueError("component is required")
-        if self.kill_chain_stage is not None and not (
-            1 <= self.kill_chain_stage <= 7
-        ):
-            raise ValueError(
-                f"kill_chain_stage must be 1-7, got {self.kill_chain_stage}"
-            )
+        if self.kill_chain_stage is not None and not (1 <= self.kill_chain_stage <= 7):
+            raise ValueError(f"kill_chain_stage must be 1-7, got {self.kill_chain_stage}")
 
 
 @dataclass(frozen=True)
@@ -84,9 +76,7 @@ class SecurityAuditReport:
             raise ValueError("timestamp is required")
         # Auto-escalate risk based on findings
         if self.findings:
-            max_severity = max(
-                f.severity for f in self.findings
-            )
+            max_severity = max(f.severity for f in self.findings)
             risk_map: dict[str, RiskLevel] = {
                 "P1_CRITICAL": "CRITICAL",
                 "P2_DEGRADED": "HIGH",
@@ -101,9 +91,7 @@ class SecurityAuditReport:
         # Validate asi_coverage keys
         for key in self.asi_coverage:
             if key not in ASI_IDS:
-                raise ValueError(
-                    f"asi_coverage key must be a valid ASI ID, got '{key}'"
-                )
+                raise ValueError(f"asi_coverage key must be a valid ASI ID, got '{key}'")
 
     @property
     def critical_findings(self) -> list[SecurityFinding]:
@@ -115,6 +103,4 @@ class SecurityAuditReport:
 
     @property
     def has_vulnerabilities(self) -> bool:
-        return any(
-            v == "VULNERABLE" for v in self.asi_coverage.values()
-        )
+        return any(v == "VULNERABLE" for v in self.asi_coverage.values())

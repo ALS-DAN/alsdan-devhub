@@ -80,28 +80,34 @@ class QAAgent:
         root = project_root or Path(".")
 
         if not task_result.files_changed:
-            findings.append(QAFinding(
-                severity="INFO",
-                category="code",
-                description="Geen bestanden gewijzigd — niets te reviewen",
-            ))
+            findings.append(
+                QAFinding(
+                    severity="INFO",
+                    category="code",
+                    description="Geen bestanden gewijzigd — niets te reviewen",
+                )
+            )
             return findings
 
         # CR-01: Test coverage
         if task_result.tests_added == 0:
-            findings.append(QAFinding(
-                severity="WARNING",
-                category="code",
-                description="CR-01: Geen nieuwe tests toegevoegd bij code-wijzigingen",
-            ))
+            findings.append(
+                QAFinding(
+                    severity="WARNING",
+                    category="code",
+                    description="CR-01: Geen nieuwe tests toegevoegd bij code-wijzigingen",
+                )
+            )
 
         # CR-02: Lint clean
         if not task_result.lint_clean:
-            findings.append(QAFinding(
-                severity="ERROR",
-                category="code",
-                description="CR-02: Lint errors aanwezig",
-            ))
+            findings.append(
+                QAFinding(
+                    severity="ERROR",
+                    category="code",
+                    description="CR-02: Lint errors aanwezig",
+                )
+            )
 
         # Per-file checks
         for file_path in task_result.files_changed:
@@ -132,12 +138,14 @@ class QAAgent:
             for target in request.target_files:
                 target_path = root / target if not Path(target).is_absolute() else Path(target)
                 if not target_path.exists():
-                    findings.append(QAFinding(
-                        severity="ERROR",
-                        category="docs",
-                        description=f"DR-04: Verwacht document ontbreekt: {target}",
-                        file=str(target),
-                    ))
+                    findings.append(
+                        QAFinding(
+                            severity="ERROR",
+                            category="docs",
+                            description=f"DR-04: Verwacht document ontbreekt: {target}",
+                            file=str(target),
+                        )
+                    )
                     continue
 
                 try:
@@ -201,11 +209,7 @@ class QAAgent:
         Dit is de hoofdmethode die de DevOrchestrator aanroept.
         """
         code_findings = self.review_code(task_result, project_root)
-        doc_findings = (
-            self.review_docs(doc_requests, docs_root)
-            if doc_requests
-            else []
-        )
+        doc_findings = self.review_docs(doc_requests, docs_root) if doc_requests else []
 
         return self.produce_report(task_id, code_findings, doc_findings)
 
@@ -230,9 +234,7 @@ class QAAgent:
 
     def list_reports(self) -> list[str]:
         """Lijst alle opgeslagen QAReport task_ids."""
-        return [
-            f.stem for f in self._reports_path.glob("*.json")
-        ]
+        return [f.stem for f in self._reports_path.glob("*.json")]
 
     # --- Privé helpers ---
 
@@ -249,26 +251,30 @@ class QAAgent:
         for i, line in enumerate(lines, 1):
             for pattern in secret_patterns:
                 if re.search(pattern, line):
-                    findings.append(QAFinding(
-                        severity="CRITICAL",
-                        category="code",
-                        description="CR-03: Mogelijke hardcoded secret gedetecteerd",
-                        file=file_path,
-                        line=i,
-                    ))
+                    findings.append(
+                        QAFinding(
+                            severity="CRITICAL",
+                            category="code",
+                            description="CR-03: Mogelijke hardcoded secret gedetecteerd",
+                            file=file_path,
+                            line=i,
+                        )
+                    )
 
         # CR-09: Print statements in productie-code
         if "tests/" not in file_path and "test_" not in file_path:
             for i, line in enumerate(lines, 1):
                 stripped = line.strip()
                 if stripped.startswith("print(") and not stripped.startswith("#"):
-                    findings.append(QAFinding(
-                        severity="WARNING",
-                        category="code",
-                        description="CR-09: print() in productie-code — gebruik logging",
-                        file=file_path,
-                        line=i,
-                    ))
+                    findings.append(
+                        QAFinding(
+                            severity="WARNING",
+                            category="code",
+                            description="CR-09: print() in productie-code — gebruik logging",
+                            file=file_path,
+                            line=i,
+                        )
+                    )
 
         # CR-12: Functie-lengte
         func_start: int | None = None
@@ -276,16 +282,18 @@ class QAAgent:
         for i, line in enumerate(lines, 1):
             if line.strip().startswith("def "):
                 if func_start and (i - func_start) > 50:
-                    findings.append(QAFinding(
-                        severity="WARNING",
-                        category="code",
-                        description=(
-                            f"CR-12: Functie '{func_name}' is "
-                            f"{i - func_start} regels (max 50)"
-                        ),
-                        file=file_path,
-                        line=func_start,
-                    ))
+                    findings.append(
+                        QAFinding(
+                            severity="WARNING",
+                            category="code",
+                            description=(
+                                f"CR-12: Functie '{func_name}' is "
+                                f"{i - func_start} regels (max 50)"
+                            ),
+                            file=file_path,
+                            line=func_start,
+                        )
+                    )
                 func_start = i
                 match = re.match(r"\s*def\s+(\w+)", line)
                 func_name = match.group(1) if match else "unknown"
@@ -303,44 +311,52 @@ class QAAgent:
 
         # DR-01: Diátaxis categorie
         if "> **Type:**" not in content:
-            findings.append(QAFinding(
-                severity="WARNING",
-                category="docs",
-                description="DR-01: Geen Diátaxis type header gevonden",
-                file=file_path,
-            ))
+            findings.append(
+                QAFinding(
+                    severity="WARNING",
+                    category="docs",
+                    description="DR-01: Geen Diátaxis type header gevonden",
+                    file=file_path,
+                )
+            )
 
         # DR-02: Audience
         if "> **Doelgroep:**" not in content and request.audience not in content:
-            findings.append(QAFinding(
-                severity="INFO",
-                category="docs",
-                description="DR-02: Doelgroep niet gespecificeerd in document",
-                file=file_path,
-            ))
+            findings.append(
+                QAFinding(
+                    severity="INFO",
+                    category="docs",
+                    description="DR-02: Doelgroep niet gespecificeerd in document",
+                    file=file_path,
+                )
+            )
 
         # DR-05: Completeness — check voor lege secties
         if "<!-- " in content:
             placeholder_count = content.count("<!-- ")
             if placeholder_count > 2:
-                findings.append(QAFinding(
-                    severity="WARNING",
-                    category="docs",
-                    description=(
-                        f"DR-05: {placeholder_count} placeholder-comments "
-                        "gevonden — document is incompleet"
-                    ),
-                    file=file_path,
-                ))
+                findings.append(
+                    QAFinding(
+                        severity="WARNING",
+                        category="docs",
+                        description=(
+                            f"DR-05: {placeholder_count} placeholder-comments "
+                            "gevonden — document is incompleet"
+                        ),
+                        file=file_path,
+                    )
+                )
 
         # DR-05: TODO's
         if "TODO" in content or "FIXME" in content:
-            findings.append(QAFinding(
-                severity="WARNING",
-                category="docs",
-                description="DR-05: TODO/FIXME gevonden in document",
-                file=file_path,
-            ))
+            findings.append(
+                QAFinding(
+                    severity="WARNING",
+                    category="docs",
+                    description="DR-05: TODO/FIXME gevonden in document",
+                    file=file_path,
+                )
+            )
 
         return findings
 

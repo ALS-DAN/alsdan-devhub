@@ -31,7 +31,16 @@ def boris_path(tmp_path):
     (claude_dir / "OVERDRACHT.md").write_text("# Overdracht\nVersie: 2.4.0\n")
 
     # Module directories
-    for mod in ["agents", "rag", "safety", "mcp_server", "middleware", "ingest", "sharepoint", "weaviate_store"]:
+    for mod in [
+        "agents",
+        "rag",
+        "safety",
+        "mcp_server",
+        "middleware",
+        "ingest",
+        "sharepoint",
+        "weaviate_store",
+    ]:
         (tmp_path / mod).mkdir()
 
     # Agent files
@@ -154,6 +163,7 @@ class TestN8nStatus:
     @patch("devhub_core.adapters.boris_adapter.subprocess.run")
     def test_n8n_online(self, mock_run):
         """n8n bereikbaar → workflow count."""
+
         def side_effect(cmd, **kwargs):
             mock = MagicMock()
             if "-w" in cmd:
@@ -175,7 +185,9 @@ class TestN8nStatus:
 class TestPipAudit:
     @patch("devhub_core.adapters.boris_adapter.subprocess.run")
     def test_pip_audit_clean(self, mock_run, adapter):
-        mock_run.return_value = MagicMock(returncode=0, stdout="No known vulnerabilities found\n", stderr="")
+        mock_run.return_value = MagicMock(
+            returncode=0, stdout="No known vulnerabilities found\n", stderr=""
+        )
         clean, output = adapter.run_pip_audit()
         assert clean is True
 
@@ -208,7 +220,10 @@ class TestFullHealthCheck:
     @patch.object(BorisAdapter, "check_n8n_status")
     def test_all_healthy(self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter):
         from devhub_core.contracts.node_interface import TestResult
-        mock_tests.return_value = TestResult(total=100, passed=100, failed=0, errors=0, duration_seconds=5.0)
+
+        mock_tests.return_value = TestResult(
+            total=100, passed=100, failed=0, errors=0, duration_seconds=5.0
+        )
         mock_lint.return_value = (True, "")
         mock_pip.return_value = (True, "No vulnerabilities")
         mock_curator.return_value = (True, "OK")
@@ -225,9 +240,14 @@ class TestFullHealthCheck:
     @patch.object(BorisAdapter, "run_pip_audit")
     @patch.object(BorisAdapter, "run_curator_audit")
     @patch.object(BorisAdapter, "check_n8n_status")
-    def test_failing_tests_critical(self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter):
+    def test_failing_tests_critical(
+        self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter
+    ):
         from devhub_core.contracts.node_interface import TestResult
-        mock_tests.return_value = TestResult(total=100, passed=95, failed=5, errors=0, duration_seconds=5.0)
+
+        mock_tests.return_value = TestResult(
+            total=100, passed=95, failed=5, errors=0, duration_seconds=5.0
+        )
         mock_lint.return_value = (True, "")
         mock_pip.return_value = (True, "Clean")
         mock_curator.return_value = (True, "OK")
@@ -243,9 +263,14 @@ class TestFullHealthCheck:
     @patch.object(BorisAdapter, "run_pip_audit")
     @patch.object(BorisAdapter, "run_curator_audit")
     @patch.object(BorisAdapter, "check_n8n_status")
-    def test_lint_errors_attention(self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter):
+    def test_lint_errors_attention(
+        self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter
+    ):
         from devhub_core.contracts.node_interface import TestResult
-        mock_tests.return_value = TestResult(total=100, passed=100, failed=0, errors=0, duration_seconds=5.0)
+
+        mock_tests.return_value = TestResult(
+            total=100, passed=100, failed=0, errors=0, duration_seconds=5.0
+        )
         mock_lint.return_value = (False, "E501: line too long")
         mock_pip.return_value = (True, "Clean")
         mock_curator.return_value = (True, "OK")
@@ -260,9 +285,14 @@ class TestFullHealthCheck:
     @patch.object(BorisAdapter, "run_pip_audit")
     @patch.object(BorisAdapter, "run_curator_audit")
     @patch.object(BorisAdapter, "check_n8n_status")
-    def test_report_has_timestamp(self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter):
+    def test_report_has_timestamp(
+        self, mock_n8n, mock_curator, mock_pip, mock_lint, mock_tests, adapter
+    ):
         from devhub_core.contracts.node_interface import TestResult
-        mock_tests.return_value = TestResult(total=10, passed=10, failed=0, errors=0, duration_seconds=1.0)
+
+        mock_tests.return_value = TestResult(
+            total=10, passed=10, failed=0, errors=0, duration_seconds=1.0
+        )
         mock_lint.return_value = (True, "")
         mock_pip.return_value = (True, "Clean")
         mock_curator.return_value = (True, "OK")

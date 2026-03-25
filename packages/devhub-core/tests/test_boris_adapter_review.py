@@ -1,6 +1,5 @@
 """Tests voor F7 BorisAdapter review methods: git diff, changed files, anti-pattern scan."""
 
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -68,7 +67,7 @@ class TestGetChangedFiles:
 class TestScanAntiPatterns:
     def test_detects_chromadb_direct(self, adapter, boris_path):
         py = boris_path / "bad.py"
-        py.write_text('from chromadb import Client\nclient = chromadb.Client()\n')
+        py.write_text("from chromadb import Client\nclient = chromadb.Client()\n")
         findings = adapter.scan_anti_patterns(["bad.py"])
         assert len(findings) >= 1
         assert any("ChromaDB" in f["description"] for f in findings)
@@ -77,11 +76,14 @@ class TestScanAntiPatterns:
         py = boris_path / "config.py"
         py.write_text('api_key = "sk-1234567890abcdefghij"\n')
         findings = adapter.scan_anti_patterns(["config.py"])
-        assert any("secret" in f["description"].lower() or "Hardcoded" in f["description"] for f in findings)
+        assert any(
+            "secret" in f["description"].lower() or "Hardcoded" in f["description"]
+            for f in findings
+        )
 
     def test_skips_non_python(self, adapter, boris_path):
         md = boris_path / "readme.md"
-        md.write_text('ChromaDB is great\n')
+        md.write_text("ChromaDB is great\n")
         findings = adapter.scan_anti_patterns(["readme.md"])
         assert findings == []
 
@@ -143,5 +145,12 @@ class TestGetReviewContext:
         mock_scan.return_value = []
 
         ctx = adapter.get_review_context()
-        expected = {"diff_unstaged", "diff_staged", "files_unstaged", "files_staged", "files_all", "anti_patterns"}
+        expected = {
+            "diff_unstaged",
+            "diff_staged",
+            "files_unstaged",
+            "files_staged",
+            "files_all",
+            "anti_patterns",
+        }
         assert set(ctx.keys()) == expected

@@ -2,8 +2,9 @@
 
 | Veld | Waarde |
 |------|--------|
-| Status | ACTIVE |
+| Status | AFGEROND |
 | Startdatum | 2026-03-24 |
+| Einddatum | 2026-03-25 |
 | Baseline | 339 tests |
 | Eindstand | 370 tests (+31) |
 | Fase | 2 → 3 transitie |
@@ -59,3 +60,19 @@ Zie ADR-001 voor volledige onderbouwing.
 | Art. 6 (Project-soevereiniteit) | G-11 detecteert project-governance wijzigingen |
 | Art. 7 (Impact-zonering) | GREEN/YELLOW/RED mapping in alle workflows |
 | Art. 8 (Dataminimalisatie) | G-14 secrets, G-15 PII, G-16 .env detectie |
+
+## Retrospective
+
+### Wat ging goed
+- Hybride n8n + GitHub Actions architectuur voorkomt over-engineering
+- 31 tests in één sprint toegevoegd (339 → 370)
+- ADR-001 vastgelegd vóór implementatie (architecture-first)
+- Governance check script dekt 7 constitutionele regels
+
+### Wat kan beter
+- n8n Docker configuratie heeft 5 operationele issues (port conflict, deprecated auth, missing .env) — zie SPRINT_INTAKE_N8N_DOCKER_FIX
+- Health check workflow niet end-to-end getest in draaiende n8n container
+
+### Actiepunten
+- Docker fix als aparte patch plannen (P1)
+- Pre-commit hooks toevoegen aan devhub root (ontbreekt, alleen BORIS heeft ze)

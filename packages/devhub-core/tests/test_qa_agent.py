@@ -1,6 +1,5 @@
 """Tests voor QA Agent — adversarial review."""
 
-
 from devhub_core.agents.qa_agent import QAAgent, CODE_REVIEW_CHECKS, DOC_REVIEW_CHECKS
 from devhub_core.contracts.dev_contracts import DevTaskResult, DocGenRequest, QAFinding
 
@@ -217,9 +216,12 @@ class TestQAAgentReport:
     def test_get_saved_report(self, tmp_path):
         reports_dir = tmp_path / "reports"
         agent = QAAgent(reports_path=reports_dir)
-        agent.produce_report("T1", code_findings=[
-            QAFinding(severity="WARNING", category="code", description="Test finding")
-        ])
+        agent.produce_report(
+            "T1",
+            code_findings=[
+                QAFinding(severity="WARNING", category="code", description="Test finding")
+            ],
+        )
 
         loaded = agent.get_report("T1")
         assert loaded is not None
@@ -268,12 +270,14 @@ class TestQAAgentFullReview:
             tests_added=2,
             lint_clean=True,
         )
-        doc_requests = [DocGenRequest(
-            task_id="T1",
-            target_files=["ref.md"],
-            diataxis_category="reference",
-            audience="dev",
-        )]
+        doc_requests = [
+            DocGenRequest(
+                task_id="T1",
+                target_files=["ref.md"],
+                diataxis_category="reference",
+                audience="dev",
+            )
+        ]
 
         report = agent.full_review(
             "T1", task_result, doc_requests=doc_requests, docs_root=docs_root

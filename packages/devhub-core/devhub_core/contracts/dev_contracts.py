@@ -99,8 +99,7 @@ class QAReport:
             raise ValueError("task_id is required")
         # Auto-validate: BLOCK als er CRITICAL findings zijn
         has_critical = any(
-            f.severity == "CRITICAL"
-            for f in list(self.code_findings) + list(self.doc_findings)
+            f.severity == "CRITICAL" for f in list(self.code_findings) + list(self.doc_findings)
         )
         if has_critical and self.verdict != "BLOCK":
             object.__setattr__(self, "verdict", "BLOCK")

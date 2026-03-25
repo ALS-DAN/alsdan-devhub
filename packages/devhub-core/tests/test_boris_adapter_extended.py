@@ -1,6 +1,5 @@
 """Tests voor BorisAdapter uitbreidingen — sprint, governance, file reads."""
 
-
 from devhub_core.adapters.boris_adapter import BorisAdapter
 
 

@@ -24,8 +24,8 @@ REQUIRED_SKILLS = [
 
 # Secties die elke skill moet bevatten (minimaal één per groep)
 REQUIRED_SECTION_GROUPS = [
-    ["Doel", "doel"],           # Doelomschrijving
-    ["Workflow", "workflow"],     # Werkwijze
+    ["Doel", "doel"],  # Doelomschrijving
+    ["Workflow", "workflow"],  # Werkwijze
     ["Stap", "stap", "### 0", "### 1"],  # Stappen (genummerd of met prefix)
 ]
 

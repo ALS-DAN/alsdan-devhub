@@ -52,15 +52,31 @@ def _create_db(boris_path: Path) -> Path:
     return db_path
 
 
-def _insert_entry(db_path: Path, datum: str, fase: str, blocker: str = "geen",
-                   tests_total: int = 100, tests_delta: int = 5):
+def _insert_entry(
+    db_path: Path,
+    datum: str,
+    fase: str,
+    blocker: str = "geen",
+    tests_total: int = 100,
+    tests_delta: int = 5,
+):
     """Insert een developer entry."""
     conn = sqlite3.connect(str(db_path))
     conn.execute(
-        "INSERT INTO developer_entries (datum, fase, gedaan, geleerd, blocker, morgen, tests_total, tests_delta, created_at) "
+        "INSERT INTO developer_entries "
+        "(datum, fase, gedaan, geleerd, blocker, morgen, tests_total, tests_delta, created_at) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        (datum, fase, "test gedaan", "test geleerd", blocker, "test morgen", tests_total, tests_delta,
-         datetime.now(UTC).isoformat()),
+        (
+            datum,
+            fase,
+            "test gedaan",
+            "test geleerd",
+            blocker,
+            "test morgen",
+            tests_total,
+            tests_delta,
+            datetime.now(UTC).isoformat(),
+        ),
     )
     conn.commit()
     conn.close()
@@ -169,35 +185,55 @@ class TestGetRecentProgressEntries:
 class TestComputeCoachingSignal:
     def test_green(self):
         signal = BorisAdapter._compute_coaching_signal(
-            days_since_last=0, blockers_open=0, tests_delta=10,
-            current_phase=DeveloperPhase.BOUWEN, entry_count=5, days_window=7,
+            days_since_last=0,
+            blockers_open=0,
+            tests_delta=10,
+            current_phase=DeveloperPhase.BOUWEN,
+            entry_count=5,
+            days_window=7,
         )
         assert signal == CoachingSignal.GREEN
 
     def test_stagnation_no_entries(self):
         signal = BorisAdapter._compute_coaching_signal(
-            days_since_last=6, blockers_open=0, tests_delta=0,
-            current_phase=DeveloperPhase.BOUWEN, entry_count=0, days_window=7,
+            days_since_last=6,
+            blockers_open=0,
+            tests_delta=0,
+            current_phase=DeveloperPhase.BOUWEN,
+            entry_count=0,
+            days_window=7,
         )
         assert signal == CoachingSignal.STAGNATION
 
     def test_attention_blocker(self):
         signal = BorisAdapter._compute_coaching_signal(
-            days_since_last=0, blockers_open=2, tests_delta=5,
-            current_phase=DeveloperPhase.BOUWEN, entry_count=5, days_window=7,
+            days_since_last=0,
+            blockers_open=2,
+            tests_delta=5,
+            current_phase=DeveloperPhase.BOUWEN,
+            entry_count=5,
+            days_window=7,
         )
         assert signal == CoachingSignal.ATTENTION
 
     def test_attention_tests_declining(self):
         signal = BorisAdapter._compute_coaching_signal(
-            days_since_last=0, blockers_open=0, tests_delta=-3,
-            current_phase=DeveloperPhase.BOUWEN, entry_count=5, days_window=7,
+            days_since_last=0,
+            blockers_open=0,
+            tests_delta=-3,
+            current_phase=DeveloperPhase.BOUWEN,
+            entry_count=5,
+            days_window=7,
         )
         assert signal == CoachingSignal.ATTENTION
 
     def test_stagnation_long_orienteren(self):
         signal = BorisAdapter._compute_coaching_signal(
-            days_since_last=1, blockers_open=0, tests_delta=0,
-            current_phase=DeveloperPhase.ORIENTEREN, entry_count=14, days_window=14,
+            days_since_last=1,
+            blockers_open=0,
+            tests_delta=0,
+            current_phase=DeveloperPhase.ORIENTEREN,
+            entry_count=14,
+            days_window=14,
         )
         assert signal == CoachingSignal.STAGNATION

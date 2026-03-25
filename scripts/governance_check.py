@@ -20,6 +20,7 @@ Checks die NIET geautomatiseerd zijn (vereisen LLM of sprint-context):
 Usage:
     python scripts/governance_check.py [--output-format=json|text]
 """
+
 from __future__ import annotations
 
 import json
@@ -112,6 +113,7 @@ ENV_FILE_PATTERN = re.compile(r"(^|/)\.env(\..+)?$")
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
+
 def run_cmd(cmd: list[str]) -> tuple[int, str]:
     """Run a command and return (exit_code, stdout)."""
     try:
@@ -142,16 +144,19 @@ def get_changed_files() -> list[str]:
 
 # ── Checks ───────────────────────────────────────────────────────────────────
 
+
 def check_g01_destructive_patterns(diff: str) -> list[Finding]:
     """G-01 (Art. 1): Scan diff voor destructieve patronen."""
     findings = []
     for pattern, desc in DESTRUCTIVE_PATTERNS:
         if re.search(pattern, diff, re.IGNORECASE):
-            findings.append(Finding(
-                check="G-01",
-                severity="WARNING",
-                detail=f"Destructive pattern in diff: {desc}",
-            ))
+            findings.append(
+                Finding(
+                    check="G-01",
+                    severity="WARNING",
+                    detail=f"Destructive pattern in diff: {desc}",
+                )
+            )
     return findings
 
 
@@ -160,11 +165,13 @@ def check_g05_destructive_git(diff: str) -> list[Finding]:
     findings = []
     for pattern, desc in DESTRUCTIVE_GIT_PATTERNS:
         if re.search(pattern, diff, re.IGNORECASE):
-            findings.append(Finding(
-                check="G-05",
-                severity="WARNING",
-                detail=f"Destructive git operation: {desc}",
-            ))
+            findings.append(
+                Finding(
+                    check="G-05",
+                    severity="WARNING",
+                    detail=f"Destructive git operation: {desc}",
+                )
+            )
     return findings
 
 
@@ -172,20 +179,24 @@ def check_g07_commit_message(message: str) -> list[Finding]:
     """G-07 (Art. 4): Commit message kwaliteit."""
     findings = []
     if len(message) < 10:
-        findings.append(Finding(
-            check="G-07",
-            severity="WARNING",
-            detail=f"Commit message too short ({len(message)} chars, min 10)",
-        ))
+        findings.append(
+            Finding(
+                check="G-07",
+                severity="WARNING",
+                detail=f"Commit message too short ({len(message)} chars, min 10)",
+            )
+        )
 
     low_quality = ["fix", "update", "wip", "temp", "test", "stuff", "changes"]
     first_line = message.split("\n")[0].strip().lower()
     if first_line in low_quality:
-        findings.append(Finding(
-            check="G-07",
-            severity="WARNING",
-            detail=f"Low-quality commit message: '{first_line}'",
-        ))
+        findings.append(
+            Finding(
+                check="G-07",
+                severity="WARNING",
+                detail=f"Low-quality commit message: '{first_line}'",
+            )
+        )
 
     return findings
 
@@ -196,12 +207,14 @@ def check_g11_project_governance(changed_files: list[str]) -> list[Finding]:
     for f in changed_files:
         for pattern in PROJECT_GOVERNANCE_FILES:
             if pattern.match(f):
-                findings.append(Finding(
-                    check="G-11",
-                    severity="WARNING",
-                    detail=f"Project governance file modified: {f}",
-                    file=f,
-                ))
+                findings.append(
+                    Finding(
+                        check="G-11",
+                        severity="WARNING",
+                        detail=f"Project governance file modified: {f}",
+                        file=f,
+                    )
+                )
     return findings
 
 
@@ -212,9 +225,7 @@ def check_g14_secrets(changed_files: list[str]) -> list[Finding]:
         return findings
 
     # Draai detect-secrets scan op gewijzigde bestanden
-    exit_code, output = run_cmd(
-        ["detect-secrets", "scan", "--list-all-secrets"] + changed_files
-    )
+    exit_code, output = run_cmd(["detect-secrets", "scan", "--list-all-secrets"] + changed_files)
 
     if exit_code == 0 and output:
         try:
@@ -222,12 +233,17 @@ def check_g14_secrets(changed_files: list[str]) -> list[Finding]:
             results = scan_result.get("results", {})
             for filepath, secrets in results.items():
                 for secret in secrets:
-                    findings.append(Finding(
-                        check="G-14",
-                        severity="CRITICAL",
-                        detail=f"Secret detected: {secret.get('type', 'unknown')} at line {secret.get('line_number', '?')}",
-                        file=filepath,
-                    ))
+                    findings.append(
+                        Finding(
+                            check="G-14",
+                            severity="CRITICAL",
+                            detail=(
+                                f"Secret detected: {secret.get('type', 'unknown')}"
+                                f" at line {secret.get('line_number', '?')}"
+                            ),
+                            file=filepath,
+                        )
+                    )
         except json.JSONDecodeError:
             pass
 
@@ -239,8 +255,7 @@ def check_g15_pii(diff: str) -> list[Finding]:
     findings = []
     # Alleen op toegevoegde regels (beginnen met +, niet +++)
     added_lines = [
-        line[1:] for line in diff.split("\n")
-        if line.startswith("+") and not line.startswith("+++")
+        line[1:] for line in diff.split("\n") if line.startswith("+") and not line.startswith("+++")
     ]
     added_text = "\n".join(added_lines)
 
@@ -249,18 +264,21 @@ def check_g15_pii(diff: str) -> list[Finding]:
         if matches:
             # Filter bekende false positives
             real_matches = [
-                m for m in matches
+                m
+                for m in matches
                 if not m.endswith("@example.com")
                 and not m.endswith("@anthropic.com")
                 and not m.endswith("@gmail.com")  # In .env.example templates
                 and "noreply" not in m
             ]
             if real_matches:
-                findings.append(Finding(
-                    check="G-15",
-                    severity="WARNING",
-                    detail=f"Possible PII ({desc}): {len(real_matches)} occurrence(s)",
-                ))
+                findings.append(
+                    Finding(
+                        check="G-15",
+                        severity="WARNING",
+                        detail=f"Possible PII ({desc}): {len(real_matches)} occurrence(s)",
+                    )
+                )
 
     return findings
 
@@ -273,16 +291,19 @@ def check_g16_env_files(changed_files: list[str]) -> list[Finding]:
             # .env.example is OK — bevat templates, geen echte secrets
             if f.endswith(".example"):
                 continue
-            findings.append(Finding(
-                check="G-16",
-                severity="CRITICAL",
-                detail=f".env file committed: {f}",
-                file=f,
-            ))
+            findings.append(
+                Finding(
+                    check="G-16",
+                    severity="CRITICAL",
+                    detail=f".env file committed: {f}",
+                    file=f,
+                )
+            )
     return findings
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
+
 
 def run_governance_check() -> GovernanceReport:
     """Execute all governance checks and return report."""

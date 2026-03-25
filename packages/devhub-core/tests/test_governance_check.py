@@ -2,6 +2,7 @@
 
 Test elke G-check functie met known-good en known-bad input.
 """
+
 import sys
 from pathlib import Path
 
@@ -22,6 +23,7 @@ from governance_check import (
 
 # ── G-01: Destructieve patronen ──────────────────────────────────────────────
 
+
 class TestG01DestructivePatterns:
     def test_clean_diff_no_findings(self):
         diff = "+def hello():\n+    return 'world'"
@@ -31,7 +33,10 @@ class TestG01DestructivePatterns:
         diff = "+subprocess.run(['rm', '-rf', '/tmp/data'])"
         findings = check_g01_destructive_patterns(diff)
         assert len(findings) >= 1
-        assert any("rm -rf" in f.detail.lower() or "recursive force delete" in f.detail.lower() for f in findings)
+        assert any(
+            "rm -rf" in f.detail.lower() or "recursive force delete" in f.detail.lower()
+            for f in findings
+        )
 
     def test_force_flag_detected(self):
         diff = "+git push --force origin main"
@@ -52,6 +57,7 @@ class TestG01DestructivePatterns:
 
 
 # ── G-05: Destructieve git operaties ────────────────────────────────────────
+
 
 class TestG05DestructiveGit:
     def test_clean_diff_no_findings(self):
@@ -78,6 +84,7 @@ class TestG05DestructiveGit:
 
 # ── G-07: Commit message kwaliteit ──────────────────────────────────────────
 
+
 class TestG07CommitMessage:
     def test_good_message_no_findings(self):
         msg = "feat(cicd): add governance check workflow for DEV_CONSTITUTION compliance"
@@ -87,7 +94,9 @@ class TestG07CommitMessage:
         msg = "fix"
         findings = check_g07_commit_message(msg)
         assert len(findings) >= 1
-        assert any("short" in f.detail.lower() or "low-quality" in f.detail.lower() for f in findings)
+        assert any(
+            "short" in f.detail.lower() or "low-quality" in f.detail.lower() for f in findings
+        )
 
     def test_low_quality_message(self):
         msg = "update"
@@ -106,6 +115,7 @@ class TestG07CommitMessage:
 
 
 # ── G-11: Project-governance wijzigingen ─────────────────────────────────────
+
 
 class TestG11ProjectGovernance:
     def test_normal_files_no_findings(self):
@@ -130,6 +140,7 @@ class TestG11ProjectGovernance:
 
 
 # ── G-15: PII-patronen ──────────────────────────────────────────────────────
+
 
 class TestG15PII:
     def test_clean_diff_no_findings(self):
@@ -161,6 +172,7 @@ class TestG15PII:
 
 # ── G-16: .env bestanden ────────────────────────────────────────────────────
 
+
 class TestG16EnvFiles:
     def test_normal_files_no_findings(self):
         files = ["devhub/registry.py", "docker-compose.yml"]
@@ -189,6 +201,7 @@ class TestG16EnvFiles:
 
 
 # ── Report & Verdict ─────────────────────────────────────────────────────────
+
 
 class TestReport:
     def test_empty_report_is_pass(self):

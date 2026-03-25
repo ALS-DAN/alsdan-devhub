@@ -8,4 +8,6 @@ dist/
 build/
 .ruff_cache/
 .env
+docker/.env
+docker/n8n-local-files/dev_os.db
 .secrets.baseline
