@@ -12,7 +12,7 @@ Fase 0 ✅  Fundament
 Fase 1 ✅  Kernagents + Infra
 Fase 2 ✅  Skills + Governance (incl. 2b red-team)
 Fase 3 🔄  Knowledge + Memory + Infrastructure
-           ↑ WE ZIJN HIER — 394 tests, 6 agents, 8 skills, Track A ✅
+           ↑ WE ZIJN HIER — 395 tests, 6 agents, 8 skills, Track A ✅, Track B+C READY
 Fase 4 🔲  BORIS-migratie (GATE: Niels-goedkeuring)
 Fase 5 🔲  Uitbreiding
 ```
@@ -23,6 +23,7 @@ Fase 5 🔲  Uitbreiding
 |--------|-----|--------|
 | **n8n CI/CD Foundation** | Health Check + Governance Check + PR Quality Gate | ✅ 339 → 370 tests |
 | **Code Check Architectuur** | 5-layer code check, verdiept reviewer agent | ✅ 370 → 394 tests |
+| **Operationele Validatie** | Alle 3 lagen bewezen end-to-end (n8n, Python, Skills) | ✅ 394 → 395 tests |
 
 ## Fase 3: Knowledge + Memory + Infrastructure
 
@@ -97,7 +98,8 @@ Geschat: 2-3 sprints. Track A ✅ — kan starten. Parallel met Track B.
 DONE:   n8n CI/CD Foundation ✅
 DONE:   Code Check Architectuur ✅
 DONE:   Track A — uv Workspace ✅ (394 tests)
-NU:     Track B + C parallel (storage + vectorstore)
+DONE:   Operationele Validatie ✅ (395 tests)
+NU:     Track B + C parallel (storage + vectorstore) — READY
 DAN:    KWP DEV + Mentor Supervisor + EVIDENCE
 GATE:   Fase 4 — BORIS-migratie (Niels-goedkeuring)
 LATER:  Fase 5 — Uitbreiding

@@ -4,7 +4,7 @@
 laatst_bijgewerkt: 2026-03-25
 getriaged_door: "Claude Code — alsdan-devhub"
 huidige_fase: 3 (Track A afgerond, Track B+C beschikbaar)
-actieve_sprint: geen (operationele validatie afgerond)
+actieve_sprint: Planning Opschoning (CHORE, XS)
 test_baseline: 395
 ---
 
@@ -18,19 +18,17 @@ Track A (uv workspace) is afgerond. Track B (storage) en Track C (vectorstore) z
 
 ## Backlog (geshaped, klaar voor sprint)
 
-| # | Item | Bestand | Fase | Prio | Type | Notitie |
-|---|------|---------|------|------|------|---------|
-| 1 | Code Check Architectuur | `backlog/SPRINT_INTAKE_CODE_CHECK_ARCHITECTUUR_2026-03-23.md` | 2→3 | P3 | FEAT | 5-laags code check. Kan parallel met Track B/C. |
-| 2 | Planning Governance restwerk | `backlog/SPRINT_INTAKE_PLANNING_GOVERNANCE_2026-03-24.md` | 2 | P2 | CHORE | 5/10 deliverables klaar. sprint-prep + planner updates nog open. |
+_Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
 
 ## Inbox (geshaped, wacht op promotie)
 
 | # | Item | Bestand | Fase | Prio | Notitie |
 |---|------|---------|------|------|---------|
-| 3 | Storage Interface | `inbox/SPRINT_INTAKE_STORAGE_INTERFACE_2026-03-24.md` | 3 (Track B) | P2 | Geshaped. 3-4 sprints. Track A ✅, kan starten. |
-| 4 | Vectorstore | `inbox/SPRINT_INTAKE_VECTORSTORE_2026-03-24.md` | 3 (Track C) | P2 | Geshaped. 2-3 sprints. Parallel met Track B. |
-| 5 | Mentor Supervisor Systeem | `inbox/SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23.md` | 3 | P3 | Vereist KWP DEV operationeel. |
-| 6 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is. |
+| 1 | Storage Interface | `inbox/SPRINT_INTAKE_STORAGE_INTERFACE_2026-03-24.md` | 3 (Track B) | P2 | Geshaped. 3-4 sprints. READY, kan starten. |
+| 2 | Vectorstore | `inbox/SPRINT_INTAKE_VECTORSTORE_2026-03-24.md` | 3 (Track C) | P2 | Geshaped. 2-3 sprints. Parallel met Track B. READY. |
+| 3 | Mentor Supervisor Systeem | `inbox/SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23.md` | 3 | P2 | Vereist KWP DEV operationeel. |
+| 4 | Governance Automation | `inbox/SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25.md` | 3 | P3 | 7/16 governance + 4/10 security checks automatiseren. |
+| 5 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is. |
 
 ## Geparkeerd (buiten huidige fase)
 
@@ -68,7 +66,10 @@ Gearchiveerde intakes in `sprints/`:
 - SPRINT_INTAKE_N8N_GOVERNANCE_CHECK (geleverd in N8N CICD sprint)
 - SPRINT_INTAKE_N8N_PR_QUALITY_GATE (geleverd in N8N CICD sprint)
 - SPRINT_INTAKE_UV_WORKSPACE_TRANSITIE (Track A afgerond, 394 tests)
-- TRIAGE_UPDATE_FASE3_OVERGANG (dit transitiedocument)
+- SPRINT_INTAKE_CODE_CHECK_ARCHITECTUUR (5-laags code check afgerond)
+- SPRINT_INTAKE_PLANNING_GOVERNANCE (10/10 deliverables afgerond)
+- SPRINT_INTAKE_OPERATIONELE_VALIDATIE (alle 3 lagen bewezen, 395 tests)
+- TRIAGE_UPDATE_FASE3_OVERGANG (transitiedocument)
 
 ---
 
@@ -90,9 +91,9 @@ Track A: UV Workspace ✅ (afgerond, 394 tests)
 
 | Categorie | Aantal |
 |-----------|--------|
-| Backlog | 2 |
-| Inbox | 4 |
+| Backlog | 0 |
+| Inbox | 5 (+2 actief/afgerond) |
 | Geparkeerd | 14 |
-| Afgeronde sprints | 5 |
-| Gearchiveerde intakes | 8 |
+| Afgeronde sprints | 5 (+1 actief) |
+| Gearchiveerde intakes | 10 |
 | Test baseline | 395 |
