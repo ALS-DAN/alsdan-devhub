@@ -26,6 +26,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pytest ruff pip-audit pyyaml
+          pip install -e packages/devhub-core/
 
       # ── Checks (continue-on-error zodat alle checks draaien) ──────────────
 
