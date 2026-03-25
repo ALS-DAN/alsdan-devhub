@@ -7,6 +7,7 @@ __pycache__/
 dist/
 build/
 .ruff_cache/
+.DS_Store
 .env
 docker/.env
 docker/n8n-local-files/dev_os.db
