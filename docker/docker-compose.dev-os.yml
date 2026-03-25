@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  postgres-n8n:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: ${N8N_POSTGRES_PASSWORD}
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_n8n_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U n8n"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  dev-os-api:
+    build: ./n8n-local-files
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./n8n-local-files:/data
+      - ../:/repo:ro
+    environment:
+      - DEV_OS_DB_PATH=/data/dev_os.db
+      - DEVHUB_REPO_PATH=/repo
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/healthz')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  n8n:
+    image: n8nio/n8n:2.12.3
+    restart: unless-stopped
+    ports:
+      - "5679:5678"
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres-n8n
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=n8n
+      - DB_POSTGRESDB_PASSWORD=${N8N_POSTGRES_PASSWORD}
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+      - N8N_DEFAULT_LOCALE=nl
+      - WEBHOOK_URL=http://localhost:5679/
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n-local-files:/files
+      - ./n8n-local-files/workflows:/files/workflows:ro
+      - ../docs:/docs:ro
+      - ../.claude/agent-memory:/claude-memory:ro
+    depends_on:
+      postgres-n8n:
+        condition: service_healthy
+      dev-os-api:
+        condition: service_healthy
+
+volumes:
+  n8n_data:
+  postgres_n8n_data:
