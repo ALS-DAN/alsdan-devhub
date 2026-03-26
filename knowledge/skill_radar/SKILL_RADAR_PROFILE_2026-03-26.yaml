@@ -1,0 +1,164 @@
+# Skill Radar Profile — Niels Postma
+# Initial Dreyfus Assessment — 2026-03-26
+# Bijgewerkt: 2026-03-26 (developer self-assessment)
+#
+# BELANGRIJK: Niels is geen programmeur van achtergrond. De Python-code,
+# tests en architectuur worden grotendeels door Claude gegenereerd.
+# Niels' kracht zit in visie, richting bepalen en het systeem ontwerpen
+# op conceptueel niveau. De Dreyfus-levels reflecteren WAT NIELS ZELF KAN,
+# niet wat het systeem kan.
+
+developer: "Niels Postma"
+date: "2026-03-26"
+assessment_method: "developer self-assessment, eerlijk afgezet tegen professionele standaard"
+
+# CONTEXT: Niels is geen software developer van achtergrond. Hij bouwt dit
+# systeem met Claude als uitvoerder. Levels reflecteren wat Niels ZELFSTANDIG
+# kan, afgezet tegen wat een professional in dat domein kan. Het systeem
+# presteert hoger dan de individuele levels suggereren — dat is de kracht
+# van de mens+AI samenwerking, niet van Niels als solo-developer.
+
+domains:
+  - name: "AI-Engineering"
+    level: 2  # Advanced Beginner — kan Claude aansturen en resultaat beoordelen, begrijpt niet waarom iets technisch werkt
+    subdomains:
+      - "Claude aansturen"
+      - "RAG conceptueel begrip"
+      - "Prompt formuleren"
+    evidence:
+      - "Kan richting bepalen en resultaat beoordelen"
+      - "Begrijpt niet waarom agent-architectuur technisch werkt"
+      - "Afhankelijk van Claude voor alle implementatie"
+    growth_velocity: 0.2
+    zpd_tasks:
+      - "Begrijpen wat een agent-loop doet op technisch niveau"
+      - "Zelfstandig beoordelen of agent-output correct is"
+      - "Een prompt debuggen wanneer het resultaat niet klopt"
+
+  - name: "Python"
+    level: 1  # Novice — kan code niet zelfstandig schrijven of debuggen
+    subdomains:
+      - "Code globaal lezen"
+    evidence:
+      - "Alle Python-code is door Claude geschreven"
+      - "Kan niet zelfstandig debuggen"
+      - "Herkent patronen nog niet betrouwbaar"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "Een error traceback lezen en begrijpen"
+      - "Verschil herkennen tussen een class en een functie"
+      - "Een simpele dataclass lezen en uitleggen wat het doet"
+
+  - name: "Governance"
+    level: 2  # Advanced Beginner — heeft een framework bedacht, maar onbewezen buiten dit project met Claude als partner
+    subdomains:
+      - "DEV_CONSTITUTION ontwerp"
+      - "Impact zonering concept"
+      - "Sprint-scope bepalen"
+    evidence:
+      - "Eigen governance framework bedacht"
+      - "Ongetest zonder AI-partner"
+      - "Ongetest met een team of in productie-omgeving"
+      - "Eén project, korte intensieve sessies"
+    growth_velocity: 0.2
+    zpd_tasks:
+      - "Governance framework toetsen aan bestaande standaarden"
+      - "Zelf een compliance-check uitvoeren zonder tooling"
+      - "Framework testen met een tweede project"
+
+  - name: "Testing"
+    level: 1  # Novice — weet dat tests nodig zijn, kan ze niet schrijven of echt lezen
+    subdomains:
+      - "Test-output lezen (passed/failed)"
+    evidence:
+      - "Alle tests door Claude geschreven"
+      - "Kan niet beoordelen of een test voldoende is"
+      - "Begrijpt test-concepten oppervlakkig"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "Een bestaande test lezen en in eigen woorden uitleggen"
+      - "Herkennen wanneer een scenario niet getest is"
+
+  - name: "Security"
+    level: 1  # Novice — weet dat het belangrijk is, geen praktische kennis
+    subdomains:
+      - "Bewustzijn"
+    evidence:
+      - "Weet dat secrets niet in code mogen"
+      - "Geen kennis van OWASP op practisch niveau"
+      - "Red team agent volledig door Claude gebouwd"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "OWASP Top 10 op conceptueel niveau begrijpen"
+      - "Herkennen wanneer iets een security-risico is"
+
+  - name: "Architecture"
+    level: 2  # Advanced Beginner — kan op systeemniveau meedenken, maar concepten (adapter, ABC) zijn door Claude voorgesteld
+    subdomains:
+      - "Systeemdenken"
+      - "Lagen onderscheiden"
+    evidence:
+      - "Kan meedenken over structuur"
+      - "Architectuurconcepten zijn door Claude voorgesteld en uitgelegd"
+      - "Kan trade-offs niet zelfstandig benoemen"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "Uitleggen waarom het systeem 3 lagen heeft"
+      - "Een architectuurbeslissing documenteren in eigen woorden"
+
+  - name: "DevOps/Tooling"
+    level: 2  # Advanced Beginner — kan tools bedienen, niet configureren of troubleshooten
+    subdomains:
+      - "Git basics"
+      - "Docker start/stop"
+      - "CLI commands uitvoeren"
+    evidence:
+      - "Voert commands uit die Claude voorschrijft"
+      - "Kan niet zelfstandig troubleshooten bij fouten"
+      - "Geen CI/CD kennis"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "Begrijpen wat git branches zijn en waarom"
+      - "Een docker-compose.yml lezen"
+
+  - name: "Methodiek"
+    level: 2  # Advanced Beginner — heeft Shape Up geleerd en toegepast, maar in context van korte AI-sessies, niet bewezen met team of langere cycli
+    subdomains:
+      - "Shape Up toepassen"
+      - "Sprint planning"
+      - "Prioriteiten stellen"
+    evidence:
+      - "Shape Up workflow opgezet"
+      - "Sprints zijn korte AI-sessies, geen teamwerk"
+      - "Golfplanning bedacht maar nog niet over langere periode bewezen"
+      - "Kennisgradering systeem bedacht"
+    growth_velocity: 0.1
+    zpd_tasks:
+      - "Methodiek toepassen over langere cycli (weken, niet uren)"
+      - "Retrospective-inzichten zelf vertalen naar concrete acties"
+      - "Velocity-data interpreteren en voorspellingen doen"
+
+t_shape:
+  deep: []  # Geen domein op level >= 3
+  broad:  # Level 2
+    - "AI-Engineering"
+    - "Governance"
+    - "Architecture"
+    - "DevOps/Tooling"
+    - "Methodiek"
+  gaps:  # Level 1
+    - "Python"
+    - "Testing"
+    - "Security"
+
+primary_gap: "Python"
+zpd_focus: "Python leesvaardigheid — code begrijpen die Claude schrijft, zodat je beter kunt sturen en reviewen"
+
+# De waarde die Niels levert zit niet in technische uitvoering maar in:
+# - Visie: weten WAT er gebouwd moet worden
+# - Sturing: Claude effectief aansturen met de juiste vragen
+# - Kwaliteitsbewustzijn: eisen stellen aan het resultaat
+# - Doorzettingsvermogen: 11 sprints, consistent doorwerken
+#
+# Het mentor-systeem moet hierop inspelen: niet "leer coderen" maar
+# "leer beter beoordelen, sturen en beslissen".

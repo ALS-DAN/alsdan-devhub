@@ -38,9 +38,9 @@ Max 2-3 tegelijk aanbevolen. Track B+C afgerond, rest beschikbaar.
 |--------|-------|------|--------|------|---------|
 | Storage: Interface + LocalAdapter | B | S | ✅ DONE | ████████████ | `packages/devhub-storage/` |
 | Vectorstore: Interface + ChromaDB | C | S | ✅ DONE | ████████████ | `packages/devhub-vectorstore/` |
-| Planning & Tracking Systeem | — | S | 🔄 ACTIEF | ▓▓▓░░░░░░░░░ | `docs/planning/` + `skills/` + `agents/` |
-| Mentor: Skill Radar + Contracts | M | S | 📋 KLAAR | ░░░░░░░░░░░░ | `contracts/growth_contracts.py` + `skills/` |
-| Governance: QA Checks | G | S | 📋 KLAAR | ░░░░░░░░░░░░ | `agents/qa_agent.py` |
+| Planning & Tracking Systeem | — | S | ✅ DONE | ████████████ | `docs/planning/` + `skills/` + `agents/` |
+| Mentor: Skill Radar + Contracts | M | S | ✅ DONE | ████████████ | `contracts/growth_contracts.py` + `skills/` |
+| Governance: QA Checks | G | S | ✅ DONE | ████████████ | `agents/qa_agent.py` |
 
 ### Golf 2: Uitbouw
 
@@ -50,8 +50,8 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 |--------|-------|------|--------|------|------------------|
 | Storage: Google Drive adapter | B | S | 📋 KLAAR | ░░░░░░░░░░░░ | — |
 | Vectorstore: Weaviate + Multi-tenancy | C | S | 📋 KLAAR | ░░░░░░░░░░░░ | — |
-| Mentor: Challenge Engine + Scaffolding | M | S | ⏳ WACHT | ░░░░░░░░░░░░ | Mentor S1 |
-| Governance: SecurityScanner | G | S | ⏳ WACHT | ░░░░░░░░░░░░ | Governance S1 |
+| Mentor: Challenge Engine + Scaffolding | M | S | 📋 KLAAR | ░░░░░░░░░░░░ | Mentor S1 ✅ |
+| Governance: SecurityScanner | G | S | 📋 KLAAR | ░░░░░░░░░░░░ | Governance S1 ✅ |
 
 ### Golf 3: Verrijking
 
@@ -145,6 +145,9 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 8 | Planning Opschoning | XS (<1u) | XS (<1u) | +0 | 100% |
 | 9 | Storage Interface + LocalAdapter | S (1 sprint) | S (1 sprint) | +100 | 100% |
 | 10 | Vectorstore Interface + ChromaDB | S (1 sprint) | S (1 sprint) | +78 | 100% |
+| 11 | Planning & Tracking Systeem | S (1 sprint) | S (1 sprint) | +0 | 100% |
+| 12 | Mentor: Skill Radar + Contracts | S (1 sprint) | S (1 sprint) | +36 | 100% |
+| 13 | Governance: QA Checks | S (1 sprint) | S (1 sprint) | +51 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -152,10 +155,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 10 | Alle binnen geschatte tijd |
-| Test baseline | 575 | Na Sprint 10 (Vectorstore S1) |
+| Sprints afgerond | 13 | Alle binnen geschatte tijd |
+| Test baseline | 662 | Na Sprint 13 (Governance S1) |
 | Gemiddelde test-delta | +35.7 | Per sprint (excl. UV workspace + Planning Opschoning) |
-| Schattingsnauwkeurigheid | 100% | 10/10 sprints binnen appetite |
+| Schattingsnauwkeurigheid | 100% | 13/13 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 **Opmerking:** De schattingsnauwkeurigheid is opvallend hoog. Dit kan betekenen dat (a) de schattingen conservatief zijn, of (b) de scope goed afgebakend is. Na Fase 3 sprints herijken.
@@ -178,6 +181,9 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Planning Opschoning | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
 | Storage Interface | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
 | Vectorstore Interface | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
+| Planning & Tracking | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| Mentor S1 | 2026-03-23 | 2026-03-26 | 2026-03-26 | 3 dagen |
+| Governance S1 | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
 
 ### Afgeleide SLA's
 
@@ -200,8 +206,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Week | Beschikbaar | Allocatie | Status |
 |------|-------------|-----------|--------|
 | Week 1 (26 mrt) | Normaal | Golf 0 + Track B S1 + Track C S1 | ✅ Afgerond |
-| Week 2 | Normaal | Planning Tracking (S) + Governance S1 of Mentor S1 | 🔄 Actief |
-| Week 3 | Normaal | Resterende Golf 1 sprint | ⏳ |
+| Week 2 (26 mrt) | Normaal | Planning Tracking (S) ✅ + Mentor S1 + Governance S1 | 🔄 Actief |
+| Week 3 | Normaal | Golf 1 afronden / Golf 2 voorbereiding | ⏳ |
 
 **Advies:** Niet meer dan 2 feature-sprints tegelijk. De derde plek gebruiken voor een CHORE of achtergrond-research.
 
@@ -214,7 +220,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | R1 | Track B+C patroon-inconsistentie | Hoog | GEMITIGEERD | Beide S1's afgerond met consistent ABC + frozen dataclasses + factory patroon |
 | R2 | sentence-transformers dependency (~500MB) | Middel | OPEN | Optional dependency, lazy loading (Track C S2+) |
 | R3 | Weaviate versie-incompatibiliteit | Middel | OPEN | Pin op 1.27.x (Track C S2) |
-| R4 | GA-06 raakt NodeInterface ABC | Middel | OPEN | Architectureel review vóór implementatie (Governance S1) |
+| R4 | GA-06 raakt NodeInterface ABC | Middel | GEMITIGEERD | Concrete default methode (niet abstract), backward compatible |
 | R5 | Capaciteitsoverschatting (avonduren) | Middel | OPEN | Conservatief plannen, max 2 parallel |
 
 ---

@@ -4,7 +4,7 @@
 laatst_bijgewerkt: 2026-03-26
 getriaged_door: "Claude Code — alsdan-devhub"
 huidige_fase: 3 (Track A+B S1+C S1 afgerond, Golf 1 actief)
-actieve_sprint: Planning & Tracking Systeem (FEAT, S)
+actieve_sprint: — (geen actieve sprint)
 test_baseline: 575
 ---
 
@@ -60,6 +60,9 @@ _Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
 | Planning Opschoning | 3 | 397 → 397 (+0) | 2026-03-26 |
 | Storage Interface + LocalAdapter | 3 (B) | 397 → 497 (+100) | 2026-03-26 |
 | Vectorstore Interface + ChromaDB | 3 (C) | 497 → 575 (+78) | 2026-03-26 |
+| Planning & Tracking Systeem | 3 | 575 → 575 (+0) | 2026-03-26 |
+| Mentor: Skill Radar + Contracts | 3 (M) | 575 → 611 (+36) | 2026-03-26 |
+| Governance: QA Checks | 3 (G) | 611 → 662 (+51) | 2026-03-26 |
 
 Gearchiveerde intakes in `sprints/`:
 - SPRINT_INTAKE_RED_TEAM_AGENT (operationeel: agent + skill + 40 tests)
@@ -82,7 +85,7 @@ Track A: UV Workspace ✅ (394 tests)
     ├── Operationele Validatie ✅ (395 tests)
     ├── Track B S1: Storage Interface ✅ (497 tests) ── Track B S2: Google Drive ──┐
     ├── Track C S1: Vectorstore ✅ (575 tests) ──────── Track C S2: Weaviate ──────┤── KWP DEV setup
-    ├── Planning & Tracking 🔄 (actief)                                            │
+    ├── Planning & Tracking ✅ (575 tests)                                          │
     └── Code Check Architectuur ✅                                                 ├── Mentor Supervisor
                                                                                    └── EVIDENCE-kopie
 ```
@@ -96,6 +99,6 @@ Track A: UV Workspace ✅ (394 tests)
 | Backlog | 0 |
 | Inbox | 3 |
 | Geparkeerd | 14 |
-| Afgeronde sprints | 9 (+1 actief) |
+| Afgeronde sprints | 13 |
 | Gearchiveerde intakes | 10 |
-| Test baseline | 575 |
+| Test baseline | 662 |

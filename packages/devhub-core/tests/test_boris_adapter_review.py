@@ -122,35 +122,34 @@ class TestScanAntiPatterns:
 
 
 class TestGetReviewContext:
+    @patch("subprocess.run")
     @patch.object(BorisAdapter, "get_changed_files")
     @patch.object(BorisAdapter, "get_git_diff")
-    @patch.object(BorisAdapter, "scan_anti_patterns")
-    def test_full_context(self, mock_scan, mock_diff, mock_files, adapter):
+    def test_full_context(self, mock_diff, mock_files, mock_run, adapter):
         mock_files.return_value = ["foo.py"]
         mock_diff.return_value = "diff output"
-        mock_scan.return_value = []
+        mock_run.return_value = MagicMock(stdout="fix: something\nfeat: new\n")
 
         ctx = adapter.get_review_context()
-        assert "diff_unstaged" in ctx
-        assert "diff_staged" in ctx
-        assert "files_all" in ctx
-        assert "anti_patterns" in ctx
+        from devhub_core.contracts.node_interface import ReviewContext
 
+        assert isinstance(ctx, ReviewContext)
+        assert ctx.diff_content == "diff output"
+        assert len(ctx.recent_commits) >= 1
+
+    @patch("subprocess.run")
     @patch.object(BorisAdapter, "get_changed_files")
     @patch.object(BorisAdapter, "get_git_diff")
-    @patch.object(BorisAdapter, "scan_anti_patterns")
-    def test_context_keys_complete(self, mock_scan, mock_diff, mock_files, adapter):
+    def test_context_has_review_context_fields(self, mock_diff, mock_files, mock_run, adapter):
         mock_files.return_value = []
         mock_diff.return_value = ""
-        mock_scan.return_value = []
+        mock_run.return_value = MagicMock(stdout="")
 
         ctx = adapter.get_review_context()
-        expected = {
-            "diff_unstaged",
-            "diff_staged",
-            "files_unstaged",
-            "files_staged",
-            "files_all",
-            "anti_patterns",
-        }
-        assert set(ctx.keys()) == expected
+        from devhub_core.contracts.node_interface import ReviewContext
+
+        assert isinstance(ctx, ReviewContext)
+        assert hasattr(ctx, "recent_commits")
+        assert hasattr(ctx, "staged_files")
+        assert hasattr(ctx, "diff_content")
+        assert hasattr(ctx, "governance_files")

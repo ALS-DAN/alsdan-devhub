@@ -27,6 +27,7 @@ from devhub_core.contracts.node_interface import (
     NodeHealth,
     NodeInterface,
     NodeReport,
+    ReviewContext,
     Severity,
     TestResult,
 )
@@ -358,23 +359,43 @@ class BorisAdapter(NodeInterface):
 
         return findings
 
-    def get_review_context(self) -> dict:
+    def get_review_context(self) -> ReviewContext:
         """Verzamel alle review-context in één call.
 
-        Returns dict met diff, changed files, anti-pattern scan.
+        Returns ReviewContext met commits, staged files, diff, governance files.
         """
-        unstaged = self.get_changed_files(staged=False)
         staged = self.get_changed_files(staged=True)
-        all_files = list(set(unstaged + staged))
+        unstaged = self.get_changed_files(staged=False)
+        all_files = list(set(staged + unstaged))
 
-        return {
-            "diff_unstaged": self.get_git_diff(staged=False),
-            "diff_staged": self.get_git_diff(staged=True),
-            "files_unstaged": unstaged,
-            "files_staged": staged,
-            "files_all": all_files,
-            "anti_patterns": self.scan_anti_patterns(all_files),
-        }
+        # Recent commits
+        commits: list[str] = []
+        try:
+            result = subprocess.run(
+                ["git", "log", "--oneline", "-10", "--format=%s"],
+                capture_output=True,
+                text=True,
+                cwd=str(self.boris_path),
+                timeout=10,
+            )
+            commits = [c.strip() for c in result.stdout.strip().split("\n") if c.strip()]
+        except Exception:
+            pass
+
+        # Governance files in changed set
+        governance_patterns = ["CLAUDE.md", "DEV_CONSTITUTION", "settings.json", ".claude/"]
+        gov_files = [f for f in all_files if any(p in f for p in governance_patterns)]
+
+        diff = self.get_git_diff(staged=True)
+        if not diff:
+            diff = self.get_git_diff(staged=False)
+
+        return ReviewContext(
+            recent_commits=tuple(commits),
+            staged_files=tuple(staged),
+            diff_content=diff,
+            governance_files=tuple(gov_files),
+        )
 
     # --- Sprint Prep (F6) ---
 

@@ -248,6 +248,23 @@ class CoachingResponse:
             raise ValueError("check_question is required")
 
 
+@dataclass(frozen=True)
+class ReviewContext:
+    """Context voor governance review checks.
+
+    Bevat alle data die de QA Agent nodig heeft om governance checks uit te voeren.
+    """
+
+    recent_commits: tuple[str, ...] = ()  # Recente commit messages
+    staged_files: tuple[str, ...] = ()  # Staged bestanden
+    diff_content: str = ""  # Git diff output
+    governance_files: tuple[str, ...] = ()  # Governance-gerelateerde bestanden
+
+    def __post_init__(self) -> None:
+        # No required fields — empty ReviewContext is valid (default implementation)
+        pass
+
+
 class NodeInterface(ABC):
     """Abstract contract dat elke managed node moet implementeren.
 
@@ -275,3 +292,11 @@ class NodeInterface(ABC):
     def run_tests(self) -> TestResult:
         """Voer tests uit en retourneer resultaat."""
         ...
+
+    def get_review_context(self) -> ReviewContext:
+        """Haal review-context op voor governance checks.
+
+        Concrete default: retourneert lege ReviewContext.
+        Adapters kunnen dit overschrijven met project-specifieke data.
+        """
+        return ReviewContext()

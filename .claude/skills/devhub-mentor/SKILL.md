@@ -1,6 +1,6 @@
 # devhub-mentor — Node-Agnostische Developer Coaching Skill
 
-**Versie:** 1.0.0
+**Versie:** 1.5.0
 **Basis:** BORIS MENTOR.DEV v2.1 → gemigreerd naar DevHub
 
 ## Trigger
@@ -40,6 +40,27 @@ entries = adapter.get_recent_progress_entries(days=7)
 claude_md = adapter.read_claude_md()
 overdracht = adapter.read_overdracht()
 ```
+
+### Stap 0b: Skill Radar context laden
+
+```python
+# Laad het meest recente Skill Radar profiel
+import yaml
+from pathlib import Path
+
+radar_dir = Path("knowledge/skill_radar")
+profiles = sorted(radar_dir.glob("SKILL_RADAR_PROFILE_*.yaml"), reverse=True)
+if profiles:
+    radar = yaml.safe_load(profiles[0].read_text())
+else:
+    radar = None
+```
+
+**Gebruik in coaching:**
+- Bij ORIËNTEREN: verwijs naar domeinen met niveau 1-2 (ZPD focus)
+- Bij BOUWEN: koppel de huidige taak aan het relevante skill-domein
+- Bij BEHEERSEN: highlight groei-velocity en scaffolding-reductie mogelijkheden
+- Altijd: noem de primary_gap als de developer ruimte heeft voor verbreding
 
 ### Stap 1: Fase detecteren
 
@@ -198,3 +219,8 @@ Bij sprint-afsluiting:
 | `CoachingSignal` | Enum: GREEN / ATTENTION / STAGNATION |
 | `DeveloperProfile` | Frozen profiel met fase, streak, blockers, signaal |
 | `CoachingResponse` | Gestructureerd coaching-antwoord |
+| `SkillDomain` | Frozen: één skill-domein met Dreyfus level 1-5 |
+| `SkillRadarProfile` | Frozen: complete skill radar snapshot |
+| `DevelopmentChallenge` | Frozen: deliberate practice uitdaging |
+| `LearningRecommendation` | Frozen: leeraanbeveling met ZPD-alignment |
+| `GrowthReport` | Frozen: periodiek groeirapport |

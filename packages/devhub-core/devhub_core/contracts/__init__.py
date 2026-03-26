@@ -13,6 +13,7 @@ from devhub_core.contracts.node_interface import (
     NodeHealth,
     NodeInterface,
     NodeReport,
+    ReviewContext,
     Severity,
     TestResult,
 )
@@ -21,6 +22,13 @@ from devhub_core.contracts.dev_contracts import (
     DevTaskResult,
     DocGenRequest,
     QAReport,
+)
+from devhub_core.contracts.growth_contracts import (
+    DevelopmentChallenge,
+    GrowthReport,
+    LearningRecommendation,
+    SkillDomain,
+    SkillRadarProfile,
 )
 
 __all__ = [
@@ -36,10 +44,16 @@ __all__ = [
     "NodeDocStatus",
     "NodeReport",
     "NodeInterface",
+    "ReviewContext",
     "Severity",
     "TestResult",
     "DevTaskRequest",
     "DevTaskResult",
     "DocGenRequest",
     "QAReport",
+    "DevelopmentChallenge",
+    "GrowthReport",
+    "LearningRecommendation",
+    "SkillDomain",
+    "SkillRadarProfile",
 ]

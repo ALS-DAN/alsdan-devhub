@@ -37,8 +37,9 @@ Bepaal wat geaudit wordt:
 | **Volledige repo** | Periodieke audit | Alle bestanden |
 
 ```python
-ctx = adapter.get_review_context()
-# ctx bevat: diff_staged, diff_unstaged, files_staged, files_unstaged, anti_patterns
+review_ctx = adapter.get_review_context()
+# review_ctx is een ReviewContext frozen dataclass met:
+# .recent_commits, .staged_files, .diff_content, .governance_files
 ```
 
 ### Stap 2: Artikel-voor-artikel audit
@@ -106,14 +107,32 @@ from devhub_core.contracts.dev_contracts import DevTaskResult
 
 task_result = DevTaskResult(
     task_id="governance-audit",
-    files_changed=ctx["files_all"],
+    files_changed=list(review_ctx.staged_files),
     tests_added=0,
     lint_clean=lint_clean,
 )
 
 # Code checks (CR-03 = secrets, CR-09 = print in prod, etc.)
 code_findings = qa.review_code(task_result, project_root=Path(adapter.boris_path))
+
+# Governance checks (GA-01..GA-05) — geautomatiseerd sinds Governance S1
+gov_findings = qa.governance_review(
+    commit_messages=list(review_ctx.recent_commits),
+    staged_files=list(review_ctx.staged_files),
+    diff_content=review_ctx.diff_content,
+    changed_files=list(review_ctx.staged_files),
+)
 ```
+
+**Geautomatiseerde governance checks (GA-01 t/m GA-05):**
+
+| Check | Artikel | Wat het doet | Severity |
+|-------|---------|-------------|----------|
+| GA-01 | Art. 4 | Co-Authored-By header in commits | WARNING |
+| GA-02 | Art. 8 | PII detectie (BSN, telefoon, email) | CRITICAL/WARNING |
+| GA-03 | Art. 8 | .env bestanden in staged changes | CRITICAL |
+| GA-04 | Art. 1+3 | Destructieve operaties (--force, rm -rf, DROP TABLE) | ERROR |
+| GA-05 | Art. 6 | Governance bestanden gewijzigd | WARNING |
 
 ### Stap 4: Verdict bepalen
 
@@ -174,8 +193,10 @@ code_findings = qa.review_code(task_result, project_root=Path(adapter.boris_path
 
 | Component | Doel |
 |-----------|------|
-| `adapter.get_review_context()` | Diff + files + anti-patronen |
+| `adapter.get_review_context()` | ReviewContext: commits, staged files, diff, governance files |
 | `adapter.run_lint()` | Lint + basis secrets check |
 | `QAAgent.review_code()` | CR-01..12 code compliance |
+| `QAAgent.governance_review()` | GA-01..05 governance compliance (nieuw) |
 | `QAAgent.produce_report()` | QAReport met verdict |
+| `ReviewContext` | Frozen dataclass: recent_commits, staged_files, diff_content, governance_files |
 | `docs/compliance/DEV_CONSTITUTION.md` | Bron van waarheid (8 artikelen) |

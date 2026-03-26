@@ -55,6 +55,14 @@ DOC_REVIEW_CHECKS: list[dict[str, str]] = [
     {"id": "DR-06", "name": "readable_language", "desc": "Begrijpelijk voor doelgroep"},
 ]
 
+GOVERNANCE_REVIEW_CHECKS: list[dict[str, str]] = [
+    {"id": "GA-01", "name": "coauthor_compliance", "desc": "Co-Authored-By header in commits"},
+    {"id": "GA-02", "name": "pii_detection", "desc": "PII detectie in staged bestanden"},
+    {"id": "GA-03", "name": "env_file_detection", "desc": ".env bestanden in staged changes"},
+    {"id": "GA-04", "name": "destructive_ops", "desc": "Destructieve operaties in diff"},
+    {"id": "GA-05", "name": "governance_changes", "desc": "Governance bestanden gewijzigd"},
+]
+
 
 class QAAgent:
     """Adversarial QA Agent — reviewt code en documentatie.
@@ -203,13 +211,30 @@ class QAAgent:
         doc_requests: list[DocGenRequest] | None = None,
         project_root: Path | None = None,
         docs_root: Path | None = None,
+        include_governance: bool = False,
+        commit_messages: list[str] | None = None,
+        staged_files: list[str] | None = None,
+        file_contents: dict[str, str] | None = None,
+        diff_content: str | None = None,
+        changed_files: list[str] | None = None,
     ) -> QAReport:
-        """Voer een volledige review uit: code + docs → QAReport.
+        """Voer een volledige review uit: code + docs (+ governance) → QAReport.
 
         Dit is de hoofdmethode die de DevOrchestrator aanroept.
+        Wanneer include_governance=True worden ook GA-01 t/m GA-05 meegenomen.
         """
         code_findings = self.review_code(task_result, project_root)
         doc_findings = self.review_docs(doc_requests, docs_root) if doc_requests else []
+
+        if include_governance:
+            gov_findings = self.governance_review(
+                commit_messages=commit_messages,
+                staged_files=staged_files,
+                file_contents=file_contents,
+                diff_content=diff_content,
+                changed_files=changed_files,
+            )
+            code_findings.extend(gov_findings)
 
         return self.produce_report(task_id, code_findings, doc_findings)
 
@@ -235,6 +260,174 @@ class QAAgent:
     def list_reports(self) -> list[str]:
         """Lijst alle opgeslagen QAReport task_ids."""
         return [f.stem for f in self._reports_path.glob("*.json")]
+
+    # --- Governance review methods ---
+
+    def review_coauthor_compliance(self, commit_messages: list[str]) -> list[QAFinding]:
+        """GA-01: Check dat elke commit een Co-Authored-By header bevat."""
+        findings: list[QAFinding] = []
+        for msg in commit_messages:
+            if "Co-Authored-By:" not in msg:
+                short = msg.split("\n")[0][:80]
+                findings.append(
+                    QAFinding(
+                        severity="WARNING",
+                        category="code",
+                        description=(f"GA-01: Commit mist Co-Authored-By header: " f"'{short}'"),
+                    )
+                )
+        return findings
+
+    def review_pii(self, file_contents: dict[str, str]) -> list[QAFinding]:
+        """GA-02: Detecteer PII patronen in bestandsinhoud."""
+        findings: list[QAFinding] = []
+
+        pii_patterns: list[tuple[str, str, str]] = [
+            # (name, pattern, severity)
+            ("BSN", r"\b\d{9}\b", "CRITICAL"),
+            ("NL telefoon", r"\b(?:0|\+31|0031)\d{9}\b", "WARNING"),
+            ("NL mobiel", r"\b06[\s-]?\d{8}\b", "WARNING"),
+            (
+                "email",
+                r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b",
+                "WARNING",
+            ),
+        ]
+
+        for filepath, content in file_contents.items():
+            # Skip test files
+            if "test_" in filepath or "tests/" in filepath:
+                continue
+
+            for pii_name, pattern, severity in pii_patterns:
+                matches = re.findall(pattern, content)
+                if matches:
+                    findings.append(
+                        QAFinding(
+                            severity=severity,
+                            category="code",
+                            description=(
+                                f"GA-02: Mogelijke {pii_name} gedetecteerd "
+                                f"in {filepath} ({len(matches)} match(es))"
+                            ),
+                            file=filepath,
+                        )
+                    )
+
+        return findings
+
+    def review_env_files(self, staged_files: list[str]) -> list[QAFinding]:
+        """GA-03: Detecteer .env bestanden in staged changes."""
+        findings: list[QAFinding] = []
+        env_pattern = re.compile(r"\.env(\..+)?$")
+
+        for filepath in staged_files:
+            filename = Path(filepath).name
+            if env_pattern.search(filename):
+                findings.append(
+                    QAFinding(
+                        severity="CRITICAL",
+                        category="code",
+                        description=(f"GA-03: .env bestand in staged changes: {filepath}"),
+                        file=filepath,
+                    )
+                )
+
+        return findings
+
+    def review_destructive_ops(self, diff_content: str) -> list[QAFinding]:
+        """GA-04: Detecteer destructieve operaties in diff (alleen toegevoegde regels)."""
+        findings: list[QAFinding] = []
+
+        destructive_patterns: list[tuple[str, str]] = [
+            (r"git\s+push\s+(-f|--force)", "git push --force"),
+            (r"git\s+reset\s+--hard", "git reset --hard"),
+            (r"--no-verify", "--no-verify"),
+            (r"rm\s+-rf\b", "rm -rf"),
+            (r"rm\s+-r\b", "rm -r"),
+            (r"DROP\s+TABLE", "DROP TABLE"),
+            (r"DROP\s+DATABASE", "DROP DATABASE"),
+            (r"TRUNCATE\b", "TRUNCATE"),
+        ]
+
+        for line in diff_content.splitlines():
+            if not line.startswith("+") or line.startswith("+++"):
+                continue
+
+            for pattern, name in destructive_patterns:
+                if re.search(pattern, line, re.IGNORECASE):
+                    findings.append(
+                        QAFinding(
+                            severity="ERROR",
+                            category="code",
+                            description=(
+                                f"GA-04: Destructieve operatie gedetecteerd: "
+                                f"{name} — {line.strip()[:100]}"
+                            ),
+                        )
+                    )
+
+        return findings
+
+    def review_governance_changes(self, changed_files: list[str]) -> list[QAFinding]:
+        """GA-05: Detecteer wijzigingen aan governance bestanden."""
+        findings: list[QAFinding] = []
+
+        governance_patterns = [
+            "CLAUDE.md",
+            "DEV_CONSTITUTION.md",
+            "settings.json",
+            ".claude/",
+        ]
+
+        for filepath in changed_files:
+            for gov_pattern in governance_patterns:
+                if gov_pattern in filepath:
+                    findings.append(
+                        QAFinding(
+                            severity="WARNING",
+                            category="code",
+                            description=(
+                                f"GA-05: Governance bestand gewijzigd: "
+                                f"{filepath} — menselijke review vereist"
+                            ),
+                            file=filepath,
+                        )
+                    )
+                    break  # One finding per file
+
+        return findings
+
+    def governance_review(
+        self,
+        commit_messages: list[str] | None = None,
+        staged_files: list[str] | None = None,
+        file_contents: dict[str, str] | None = None,
+        diff_content: str | None = None,
+        changed_files: list[str] | None = None,
+    ) -> list[QAFinding]:
+        """Voer alle governance checks uit met beschikbare data.
+
+        Orchestreert GA-01 t/m GA-05 en retourneert gecombineerde bevindingen.
+        """
+        findings: list[QAFinding] = []
+
+        if commit_messages is not None:
+            findings.extend(self.review_coauthor_compliance(commit_messages))
+
+        if file_contents is not None:
+            findings.extend(self.review_pii(file_contents))
+
+        if staged_files is not None:
+            findings.extend(self.review_env_files(staged_files))
+
+        if diff_content is not None:
+            findings.extend(self.review_destructive_ops(diff_content))
+
+        if changed_files is not None:
+            findings.extend(self.review_governance_changes(changed_files))
+
+        return findings
 
     # --- Privé helpers ---
 
