@@ -1,4 +1,4 @@
-"""DevHub Vectorstore — interface and adapters for vector databases."""
+"""VectorStore contracts — publieke types voor het vectorstore package."""
 
 from devhub_vectorstore.contracts.vectorstore_contracts import (
     DataZone,
@@ -11,9 +11,6 @@ from devhub_vectorstore.contracts.vectorstore_contracts import (
     VectorStoreHealth,
     VectorStoreInterface,
 )
-from devhub_vectorstore.factory import VectorStoreFactory
-
-__version__ = "0.2.0"
 
 __all__ = [
     "DataZone",
@@ -23,7 +20,6 @@ __all__ = [
     "RetrievalResponse",
     "SearchResult",
     "TenantStrategy",
-    "VectorStoreFactory",
     "VectorStoreHealth",
     "VectorStoreInterface",
 ]

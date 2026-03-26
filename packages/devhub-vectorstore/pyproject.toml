@@ -1,11 +1,15 @@
 [project]
 name = "devhub-vectorstore"
-version = "0.1.0"
+version = "0.2.0"
 description = "Vector store interface and adapters for DevHub (Weaviate, ChromaDB)"
 requires-python = ">=3.11"
 dependencies = [
     "devhub-core",
 ]
+
+[project.optional-dependencies]
+chromadb = ["chromadb>=0.5"]
+dev = ["chromadb>=0.5"]
 
 [build-system]
 requires = ["hatchling"]

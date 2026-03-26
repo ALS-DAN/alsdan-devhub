@@ -18,7 +18,7 @@ DevHub heeft een eigen KWP DEV nodig voor dev-kennis, governance, research en AD
 
 Bij delivery krijgt elk product dit package als versioned dependency met een eigen Weaviate-instantie. DevHub beheert de databases van producten niet. Na delivery is de enige verbinding de Claude Code plugin.
 
-**Waarom nu (fase-context):** Track C start na Track A (uv workspace). DevHub's KWP DEV (Fase 3 kerndeliverable) vereist een vectorstore. Parallel met Track B (storage), niet afhankelijk ervan.
+**Waarom nu (fase-context):** Track A (uv workspace) is afgerond. Het `devhub-vectorstore` package bestaat al als stub (v0.1.0) in `packages/devhub-vectorstore/`. DevHub's KWP DEV (Fase 3 kerndeliverable) vereist een vectorstore. Parallel met Track B (storage), niet afhankelijk ervan.
 
 ## BORIS Weaviate-referentie (geverifieerd)
 
@@ -39,15 +39,15 @@ DevHub's package volgt dezelfde patronen maar met eigen collecties en configurat
 
 ## Deliverables
 
-### Stap 1: Interface + contracts (GROEN)
-- [ ] `packages/devhub-vectorstore/` aanmaken in uv workspace
+### Stap 1: Interface + contracts (GROEN) — 🎯 SPRINT 1
+- [ ] `packages/devhub-vectorstore/` uitbouwen van bestaande stub (v0.1.0)
 - [ ] `VectorStoreInterface` ABC met kernoperaties: add_chunk, add_chunks, query, count, count_by_zone, reset, ensure_tenant, list_tenants, health
 - [ ] Frozen dataclasses: `DocumentChunk`, `RetrievalRequest`, `RetrievalResponse`, `SearchResult`, `VectorStoreHealth`
 - [ ] `DataZone` enum (configureerbaar per product — niet hardcoded als Red/Yellow/Green)
 - [ ] `TenantStrategy` enum (per_zone, per_kwp)
 - [ ] Unit tests voor contract-validatie (frozen, immutable)
 
-### Stap 2: ChromaDB adapter (GROEN)
+### Stap 2: ChromaDB adapter (GROEN) — 🎯 SPRINT 1
 - [ ] `ChromaDBZonedStore(VectorStoreInterface)` — dev/test fallback
 - [ ] Zone-collecties aanmaken op basis van configuratie
 - [ ] CRUD operaties + query
@@ -97,9 +97,31 @@ DevHub's package volgt dezelfde patronen maar met eigen collecties en configurat
 
 Stap 1-2: 1 sprint (FEAT). Stap 3-4: 1 sprint (FEAT). Stap 5: 0.5 sprint. Stap 6: 0.5 sprint. Totaal: 2-3 sprints verspreid over Fase 3. Stap 7 is Fase 4 (apart traject).
 
+## Sprint 1 scope (direct uitvoerbaar)
+
+**Alleen Stap 1 + 2** — volledig GROEN, geen externe afhankelijkheden.
+
+Deliverables Sprint 1:
+- VectorStoreInterface ABC (9 kernoperaties)
+- 5 frozen dataclasses (DocumentChunk, RetrievalRequest, RetrievalResponse, SearchResult, VectorStoreHealth)
+- DataZone enum (configureerbaar, niet hardcoded)
+- TenantStrategy enum (per_zone, per_kwp)
+- ChromaDBZonedStore adapter implementatie
+- Unit tests (snel, geen externe services nodig)
+- Package correct geregistreerd in uv workspace
+
+**Acceptatiecriteria:**
+- Alle bestaande tests (394+) blijven groen
+- ChromaDB adapter CRUD + query operaties werken
+- DataZone is configureerbaar per product (geen BuurtsRed/Yellow/Green hardcoding)
+- Package importeerbaar vanuit andere workspace packages
+- EmbeddingProvider ABC voorbereid (Stap 5) maar niet verplicht voor Sprint 1
+
+**Na Sprint 1:** Stap 3 (Weaviate adapter, GEEL) en 4 (Multi-tenancy, GEEL) worden apart gepland.
+
 ## Afhankelijkheden
 
-- **Geblokkeerd door:** Track A (uv workspace transitie) — package-structuur moet staan
+- **Geblokkeerd door:** ~~Track A (uv workspace transitie)~~ → **Niets meer** (Track A afgerond, stub bestaat)
 - **Niet afhankelijk van:** Track B (storage) — volledig parallel
 - **BORIS impact:** Indirect. Stap 7 (BORIS-migratie) is Fase 4 en vereist Niels-goedkeuring. Stap 1-6 raken BORIS niet.
 
@@ -113,6 +135,8 @@ Stap 1-2: 1 sprint (FEAT). Stap 3-4: 1 sprint (FEAT). Stap 5: 0.5 sprint. Stap 6
 - Factory pattern met YAML-config (conform `config/nodes.yml` patroon)
 - Collectienamen configureerbaar, niet hardcoded
 - Docker-compose per instantie
+
+**Gedeeld patroon met Track B (devhub-storage):** Beide packages volgen identiek architectuurpatroon (ABC + frozen dataclasses + factory + YAML-config). Sprint 1 van beide tracks loopt parallel — zorg dat het patroon consistent is. Overweeg een gedeelde base class of utility in devhub-core als dat de consistentie borgt.
 
 ## Risico's
 
