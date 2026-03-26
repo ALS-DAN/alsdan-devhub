@@ -1,7 +1,7 @@
 # devhub-mentor — Node-Agnostische Developer Coaching Skill
 
-**Versie:** 1.5.0
-**Basis:** BORIS MENTOR.DEV v2.1 → gemigreerd naar DevHub
+**Versie:** 2.0.0
+**Basis:** BORIS MENTOR.DEV v2.1 → gemigreerd naar DevHub → Golf 2: Challenge Engine + Scaffolding
 
 ## Trigger
 Activeer bij: "coaching", "voortgang", "hoe doe ik het", "wat moet ik doen", "dagelijkse update", "blocker", "fase", "mentor", "ochtend coaching".
@@ -61,6 +61,53 @@ else:
 - Bij BOUWEN: koppel de huidige taak aan het relevante skill-domein
 - Bij BEHEERSEN: highlight groei-velocity en scaffolding-reductie mogelijkheden
 - Altijd: noem de primary_gap als de developer ruimte heeft voor verbreding
+
+### Stap 0c: Challenges laden (v2.0)
+
+```python
+from devhub_core.agents.challenge_engine import ChallengeEngine
+from devhub_core.agents.scaffolding_manager import ScaffoldingManager
+from devhub_core.contracts.growth_contracts import SkillRadarProfile, SkillDomain
+from pathlib import Path
+
+# Laad Skill Radar als SkillRadarProfile
+if radar:
+    domains = tuple(
+        SkillDomain(
+            name=d["name"],
+            level=d["level"],
+            subdomains=tuple(d.get("subdomains", ())),
+            evidence=tuple(d.get("evidence", ())),
+            growth_velocity=d.get("growth_velocity", 0.0),
+            zpd_tasks=tuple(d.get("zpd_tasks", ())),
+        )
+        for d in radar.get("domains", [])
+    )
+    skill_profile = SkillRadarProfile(
+        developer=radar["developer"],
+        date=radar["date"],
+        domains=domains,
+        primary_gap=radar.get("primary_gap", ""),
+        zpd_focus=radar.get("zpd_focus", ""),
+    )
+
+    # Genereer 1-2 challenges
+    engine = ChallengeEngine(templates_path=Path("config/challenge_templates.yml"))
+    challenges = engine.generate_challenges(skill_profile, count=2)
+
+    # Scaffolding manager voor niveau-aanpassing
+    scaffolding = ScaffoldingManager()
+else:
+    challenges = []
+    scaffolding = None
+```
+
+**Gebruik in coaching:**
+- Bij **sprint-start**: presenteer 1-2 challenges als deliberate practice opdrachten
+- Bij **ORIËNTEREN**: kies challenges met HIGH scaffolding (explain_it, teach_back)
+- Bij **BOUWEN**: kies challenges met MEDIUM scaffolding (stretch, reverse_engineer)
+- Bij **BEHEERSEN**: kies challenges met LOW/NONE scaffolding (cross_domain, adversarial)
+- **Anti-ZoND**: als developer stagneer op een level, reduceer scaffolding om groei te forceren
 
 ### Stap 1: Fase detecteren
 
@@ -164,6 +211,9 @@ response = CoachingResponse(
 [Eén vraag om begrip of voortgang te toetsen]
 
 **Risico-alert:** [optioneel — alleen bij AANDACHT of STAGNATIE]
+
+**Challenges (v2.0):**
+[1-2 DevelopmentChallenge voorstellen met type, beschrijving en scaffolding-niveau]
 ```
 
 ---
@@ -224,3 +274,5 @@ Bij sprint-afsluiting:
 | `DevelopmentChallenge` | Frozen: deliberate practice uitdaging |
 | `LearningRecommendation` | Frozen: leeraanbeveling met ZPD-alignment |
 | `GrowthReport` | Frozen: periodiek groeirapport |
+| `ChallengeEngine` | Genereert challenges op basis van SkillRadarProfile |
+| `ScaffoldingManager` | Dreyfus-gekoppelde scaffolding + anti-ZoND |

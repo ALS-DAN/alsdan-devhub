@@ -1,0 +1,52 @@
+# Challenge Templates — Mentor S2
+# 6 typen gekoppeld aan Dreyfus-levels via ChallengeEngine
+# Zie: growth_contracts.py ChallengeType Literal
+
+templates:
+  - challenge_type: "explain_it"
+    description_template: "Leg uit in eigen woorden: {zpd_task}"
+    success_criteria:
+      - "Uitleg is correct en volledig"
+      - "Geen onnodig jargon gebruikt"
+      - "Kernconcepten benoemd"
+    estimated_minutes: 30
+
+  - challenge_type: "teach_back"
+    description_template: "Leg aan een collega uit hoe {zpd_task} werkt"
+    success_criteria:
+      - "Collega begrijpt het na uitleg"
+      - "Kernconcepten correct benoemd"
+      - "Vragen kunnen worden beantwoord"
+    estimated_minutes: 30
+
+  - challenge_type: "stretch"
+    description_template: "Pas toe in een nieuw scenario: {zpd_task}"
+    success_criteria:
+      - "Scenario correct opgezet"
+      - "Resultaat werkt en is geverifieerd"
+      - "Geleerde lessen gedocumenteerd"
+    estimated_minutes: 60
+
+  - challenge_type: "reverse_engineer"
+    description_template: "Analyseer bestaande code en beschrijf: {zpd_task}"
+    success_criteria:
+      - "Stappen correct geïdentificeerd"
+      - "Ontwerpkeuzes benoemd"
+      - "Alternatieve aanpakken overwogen"
+    estimated_minutes: 45
+
+  - challenge_type: "cross_domain"
+    description_template: "Verbind kennis uit een ander domein met: {zpd_task}"
+    success_criteria:
+      - "Verbinding is relevant en correct"
+      - "Inzicht toegevoegd aan het domein"
+      - "Praktisch toepasbaar"
+    estimated_minutes: 60
+
+  - challenge_type: "adversarial"
+    description_template: "Zoek zwakke plekken en edge cases in: {zpd_task}"
+    success_criteria:
+      - "Minimaal 2 zwakke plekken gevonden"
+      - "Verbetervoorstel geformuleerd"
+      - "Impact per zwakte ingeschat"
+    estimated_minutes: 60

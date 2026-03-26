@@ -53,9 +53,38 @@ Lees daarnaast direct:
 - `devhub/contracts/*.py` — contract-definities
 - `devhub/adapters/*.py` — adapter-implementaties (shell commands)
 
-### Stap 2: OWASP ASI Audit (10 checks)
+### Stap 2: Geautomatiseerde pre-scan (v1.1)
 
-Loop elk ASI-risico af. Per risico:
+Voer eerst de geautomatiseerde SecurityScanner uit voor objectieve checks:
+
+```python
+from devhub_core.agents.security_scanner import SecurityScanner
+from pathlib import Path
+
+scanner = SecurityScanner()
+auto_report = scanner.full_scan(
+    project_root=Path("."),
+    agents_dir=Path("agents"),
+    skills_dir=Path(".claude/skills"),
+)
+
+# Bewaar resultaat
+scanner.save_report(auto_report)
+
+# Gebruik auto_report.findings als basis voor de handmatige audit
+# ASI02 (disallowedTools), ASI04 (supply chain), ASI10 (prompt tracking)
+# zijn nu geautomatiseerd — focus handmatige audit op ASI01,03,05-09
+```
+
+**Geautomatiseerde checks (SA-01..SA-04):**
+- SA-01: disallowedTools completeness (ASI02)
+- SA-02: pip-audit supply chain (ASI04)
+- SA-03: git submodule integrity (ASI04)
+- SA-04: agent prompt tracking (ASI10)
+
+### Stap 3: Handmatige OWASP ASI Audit (10 checks)
+
+Loop elk ASI-risico af. Gebruik auto_report.findings als startpunt voor ASI02/04/10. Per risico:
 1. **Identificeer DevHub-vectoren** — welke componenten zijn geraakt?
 2. **Analyseer huidige mitigatie** — welke DEV_CONSTITUTION artikelen / technische maatregelen bestaan?
 3. **Beoordeel effectiviteit** — is de mitigatie volledig, gedeeltelijk of afwezig?
@@ -101,7 +130,7 @@ Loop elk ASI-risico af. Per risico:
 - Scan: Agent prompts in version control
 - Check: Commit-traceerbaarheid, cross-agent detectie
 
-### Stap 3: Kill Chain Mapping (optioneel)
+### Stap 4: Kill Chain Mapping (optioneel)
 
 Als modus = kill_chain, analyseer per stap:
 
@@ -117,7 +146,7 @@ Als modus = kill_chain, analyseer per stap:
 
 Koppel elke finding aan het relevante kill_chain_stage (1-7).
 
-### Stap 4: Rapport genereren
+### Stap 5: Rapport genereren
 
 ```python
 from datetime import datetime, timezone
@@ -134,7 +163,7 @@ report = SecurityAuditReport(
 )
 ```
 
-### Stap 5: Presentatie aan developer
+### Stap 6: Presentatie aan developer
 
 Toon gestructureerd rapport:
 

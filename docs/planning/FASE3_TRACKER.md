@@ -15,7 +15,7 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄
 
 **Start:** 2026-03-25 (na Ops Validatie SPIKE)
 **Baseline:** 395 tests | 6 agents | 8 skills | 3 packages (core active, storage+vectorstore stubs)
-**Huidig:** 775 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0)
+**Huidig:** 852 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0)
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
 **Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
 
@@ -42,7 +42,7 @@ Max 2-3 tegelijk aanbevolen. Alle 5 sprints afgerond.
 | Mentor: Skill Radar + Contracts | M | S | ✅ DONE | ████████████ | `contracts/growth_contracts.py` + `skills/` |
 | Governance: QA Checks | G | S | ✅ DONE | ████████████ | `agents/qa_agent.py` |
 
-### Golf 2: Uitbouw (actief)
+### Golf 2: Uitbouw ✅
 
 Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bijbehorende Sprint 1.
 
@@ -50,8 +50,8 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 |--------|-------|------|--------|------|------------------|
 | Storage: Google Drive adapter | B | S | ✅ DONE | ████████████ | — |
 | Vectorstore: Weaviate + Multi-tenancy | C | S | ✅ DONE | ████████████ | — |
-| Mentor: Challenge Engine + Scaffolding | M | S | 📋 KLAAR | ░░░░░░░░░░░░ | Mentor S1 ✅ |
-| Governance: SecurityScanner | G | S | 📋 KLAAR | ░░░░░░░░░░░░ | Governance S1 ✅ |
+| Mentor: Challenge Engine + Scaffolding | M | S | ✅ DONE | ████████████ | Mentor S1 ✅ |
+| Governance: SecurityScanner | G | S | ✅ DONE | ████████████ | Governance S1 ✅ |
 
 ### Golf 3: Verrijking
 
@@ -59,7 +59,7 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 |--------|-------|------|--------|------|------------------|
 | Storage: SharePoint adapter | B | S | 📋 KLAAR | ░░░░░░░░░░░░ | Track B S2 ✅ |
 | Vectorstore: Embeddings + DevHub Weaviate | C | S | 📋 KLAAR | ░░░░░░░░░░░░ | Track C S2 ✅ |
-| Mentor: Research Advisor + Dashboard | M | S | ⏳ WACHT | ░░░░░░░░░░░░ | Mentor S2 |
+| Mentor: Research Advisor + Dashboard | M | S | 📋 KLAAR | ░░░░░░░░░░░░ | Mentor S2 ✅ |
 
 ### Golf 4: Afsluiting & Integratie
 
@@ -150,6 +150,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 13 | Governance: QA Checks | S (1 sprint) | S (1 sprint) | +51 | 100% |
 | 14 | Storage: Google Drive adapter | S (1 sprint) | S (1 sprint) | +56 | 100% |
 | 15 | Vectorstore: Weaviate + Multi-tenancy | S (1 sprint) | S (1 sprint) | +59 | 100% |
+| 16 | Mentor: Challenge Engine + Scaffolding | S (1 sprint) | S (1 sprint) | +43 | 100% |
+| 17 | Governance: SecurityScanner | S (1 sprint) | S (1 sprint) | +34 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -157,10 +159,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 15 | Alle binnen geschatte tijd |
-| Test baseline | 775 | Na Sprint 15 (Vectorstore S2) |
-| Gemiddelde test-delta | +37.5 | Per sprint (excl. UV workspace + Planning Opschoning) |
-| Schattingsnauwkeurigheid | 100% | 15/15 sprints binnen appetite |
+| Sprints afgerond | 17 | Alle binnen geschatte tijd |
+| Test baseline | 852 | Na Sprint 17 (Governance S2) |
+| Gemiddelde test-delta | +37.7 | Per sprint (excl. UV workspace + Planning Opschoning) |
+| Schattingsnauwkeurigheid | 100% | 17/17 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 **Opmerking:** De schattingsnauwkeurigheid is opvallend hoog. Dit kan betekenen dat (a) de schattingen conservatief zijn, of (b) de scope goed afgebakend is. Na Fase 3 sprints herijken.
@@ -188,6 +190,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Governance S1 | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
 | Storage: Google Drive | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
 | Vectorstore: Weaviate | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
+| Mentor: Challenge Engine | 2026-03-23 | 2026-03-26 | 2026-03-26 | 3 dagen |
+| Governance: SecurityScanner | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
 
 ### Afgeleide SLA's
 
