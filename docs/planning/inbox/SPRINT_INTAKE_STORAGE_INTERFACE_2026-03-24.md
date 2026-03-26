@@ -4,7 +4,7 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: INBOX
 fase: 3 (Track B)
-prioriteit: P3
+prioriteit: P2 (verhoogd — Fase 3 kritiek pad, gelijkwaardig aan Track C)
 sprint_type: FEAT (stap 1-2), SPIKE→FEAT (stap 3-5)
 ---
 
@@ -16,19 +16,19 @@ DevHub krijgt een vendor-neutraal storage-package (`devhub-storage`) voor bestan
 
 DevHub heeft geen eigen opslaglaag. Research-documenten, kennisbibliotheek, governance-archieven en dev-docs staan nu als losse bestanden in de git-repo of lokaal op schijf. Er is geen gestructureerde manier om bestanden naar cloud storage te synchroniseren, te doorzoeken of drift te detecteren. Wanneer DevHub producten als BORIS aflevert, moeten die producten dezelfde storage-abstractie kunnen gebruiken voor hun eigen MS365/Drive-koppelingen.
 
-**Waarom nu (fase-context):** Track B start na Track A (uv workspace). De package-structuur moet staan voordat devhub-storage als package kan bestaan. Niet blokkerend voor Track C (vectorstore).
+**Waarom nu (fase-context):** Track A (uv workspace) is afgerond. Het `devhub-storage` package bestaat al als stub (v0.1.0) in `packages/devhub-storage/`. Sprint 1 bouwt deze stub uit tot een werkend package. Niet blokkerend voor Track C (vectorstore).
 
 ## Deliverables
 
-### Stap 1: Interface + LocalAdapter (GROEN)
-- [ ] `packages/devhub-storage/` aanmaken in uv workspace
+### Stap 1: Interface + LocalAdapter (GROEN) — 🎯 SPRINT 1
+- [ ] `packages/devhub-storage/` uitbouwen van bestaande stub (v0.1.0)
 - [ ] `StorageInterface` ABC met 9 kernoperaties: list, get, search, tree, put, mkdir, move, delete, health
 - [ ] Frozen dataclasses: `StorageItem`, `StorageTree`, `StorageHealth`, `WriteResult`
 - [ ] `LocalAdapter(StorageInterface)` — filesystem-backend
 - [ ] Unit tests voor LocalAdapter (CRUD + edge cases: path traversal, symlinks)
 - [ ] Property-based tests voor beveiligingsrandgevallen
 
-### Stap 2: Extensie-mixins (GROEN)
+### Stap 2: Extensie-mixins (GROEN) — 🎯 SPRINT 1
 - [ ] `Organizable` mixin: tag, relate, version
 - [ ] `Watchable` mixin: watch (change events)
 - [ ] `Reconcilable` mixin: reconcile, drift_report
@@ -67,9 +67,29 @@ DevHub heeft geen eigen opslaglaag. Research-documenten, kennisbibliotheek, gove
 
 Stap 1-2: 1 sprint (FEAT). Stap 3-4: elk 1 sprint (FEAT). Stap 5: 1 sprint (SPIKE→FEAT). Totaal: 3-4 sprints verspreid over Fase 3.
 
+## Sprint 1 scope (direct uitvoerbaar)
+
+**Alleen Stap 1 + 2** — volledig GROEN, geen externe afhankelijkheden.
+
+Deliverables Sprint 1:
+- StorageInterface ABC (9 kernoperaties)
+- 4 frozen dataclasses (StorageItem, StorageTree, StorageHealth, WriteResult)
+- LocalAdapter implementatie
+- 3 extensie-mixins (Organizable, Watchable, Reconcilable)
+- Unit tests + property-based tests
+- Package correct geregistreerd in uv workspace
+
+**Acceptatiecriteria:**
+- Alle bestaande tests (394+) blijven groen
+- LocalAdapter CRUD operaties werken inclusief edge cases
+- Mixins zijn optioneel composable (niet verplicht voor elke adapter)
+- Package importeerbaar vanuit andere workspace packages
+
+**Na Sprint 1:** Stap 3 (Google Drive) en 4 (SharePoint) zijn GEEL en worden apart gepland.
+
 ## Afhankelijkheden
 
-- **Geblokkeerd door:** Track A (uv workspace transitie) — package-structuur moet staan
+- **Geblokkeerd door:** ~~Track A (uv workspace transitie)~~ → **Niets meer** (Track A afgerond, stub bestaat)
 - **BORIS impact:** Indirect. BORIS kan op termijn devhub-storage consumeren voor MS365-koppeling. Niet blokkerend — BORIS heeft eigen connectors/.
 
 ## Technische richting
@@ -80,6 +100,8 @@ Stap 1-2: 1 sprint (FEAT). Stap 3-4: elk 1 sprint (FEAT). Stap 5: 1 sprint (SPIK
 - Per backend native SDK: Google Drive API v3, Microsoft Graph SDK
 - Factory pattern met YAML-config (conform `config/nodes.yml` patroon)
 - Auth-abstractie: environment-based secrets, nooit hardcoded (Art. 8)
+
+**Gedeeld patroon met Track C (devhub-vectorstore):** Beide packages volgen identiek architectuurpatroon (ABC + frozen dataclasses + factory + YAML-config). Sprint 1 van beide tracks loopt parallel — zorg dat het patroon consistent is. Overweeg een gedeelde base class of utility in devhub-core als dat de consistentie borgt.
 
 ## Risico's
 

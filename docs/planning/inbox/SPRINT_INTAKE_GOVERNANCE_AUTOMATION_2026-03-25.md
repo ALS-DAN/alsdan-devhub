@@ -4,7 +4,7 @@
 gegenereerd_door: "Sprint Operationele Validatie"
 status: INBOX
 fase: 3
-prioriteit: P3
+prioriteit: P2 (verhoogd — 1/16 governance + 0/10 security automatisering is structureel onhoudbaar)
 sprint_type: FEAT
 cynefin: complicated (bekende patronen, vereist engineering)
 impact_zone: YELLOW (wijzigt QA Agent en voegt SecurityScanner toe)
@@ -21,15 +21,19 @@ De operationele validatie sprint bewees dat alle Python-methodes werken, maar oo
 
 ## Deliverables
 
-### Governance automation (QA Agent uitbreiden)
+### Sprint 1: Governance automation (QA Agent uitbreiden) — 🎯 DIRECT UITVOERBAAR
+
 - [ ] **GA-01** — G-08: Co-Authored-By check in git log (triviale regex)
 - [ ] **GA-02** — G-15: PII detectie — regex voor BSN, NL telefoon, email in staged files
 - [ ] **GA-03** — G-16: .env detectie — check of .env files in staged changes zitten
 - [ ] **GA-04** — G-01/G-05: Destructieve operatie scan — regex voor `--force`, `--hard`, `DROP TABLE`, `rm -rf` in diffs
 - [ ] **GA-05** — G-11: Project governance wijziging detectie — check of CLAUDE.md, DEV_CONSTITUTION.md in diff
-- [ ] **GA-06** — `get_review_context()` naar NodeInterface ABC (node-agnostiek)
+- [ ] **GA-06** — `get_review_context()` naar NodeInterface ABC (node-agnostiek) — ⚠️ architectureel significant, raakt alle adapters
 
-### Security automation (SecurityScanner klasse)
+**Modus:** Review-only (Laag C). Geen pre-commit hooks in Sprint 1 — pas toevoegen als checks bewezen stabiel zijn en geen false positives genereren.
+
+### Sprint 2: Security automation (SecurityScanner klasse)
+
 - [ ] **SA-01** — SecurityScanner klasse bouwen (equivalent van QAAgent)
 - [ ] **SA-02** — ASI02: disallowedTools completeness check — verifieer dat agents juiste deny-lists hebben
 - [ ] **SA-03** — ASI04: Supply chain — pip-audit integratie + submodule integrity check
@@ -50,10 +54,24 @@ De operationele validatie sprint bewees dat alle Python-methodes werken, maar oo
 
 ## Appetite
 
-**Medium (M)** — 1-2 sprints. GA-items zijn klein (elk < 1 uur). SA-items vereisen nieuwe klasse.
+**Sprint 1 (GA): Small (S)** — GA-items zijn elk < 1 uur. GA-06 is de grootste (raakt NodeInterface ABC). Totaal: ~1 sprint.
+**Sprint 2 (SA): Small (S)** — SecurityScanner is een nieuwe klasse maar volgt QAAgent-patroon. Totaal: ~1 sprint.
+
+## Sprint 1 scope (direct uitvoerbaar)
+
+**Alleen GA-01 t/m GA-06** — governance checks in bestaande QA Agent.
+
+**Acceptatiecriteria:**
+- Governance automatiseringsgraad: 1/16 → 7/16
+- Alle bestaande tests (394+) blijven groen
+- Nieuwe checks draaien in review-modus (Laag C), niet als pre-commit hook
+- GA-06: `get_review_context()` correct geïmplementeerd in NodeInterface ABC + BorisAdapter
+- Geen false positives op bestaande codebase (valideer tegen huidige git history)
+
+**Na Sprint 1:** Sprint 2 (SecurityScanner) wordt apart gepland na evaluatie van Sprint 1.
 
 ## Open vragen
 
 1. Moet SecurityScanner een apart package worden of in devhub-core blijven?
-2. Moeten de nieuwe governance checks als pre-commit hook draaien (Laag B) of alleen in review (Laag C)?
-3. Is PII-detectie voor Nederlandse patronen voldoende of ook internationaal?
+2. Is PII-detectie voor Nederlandse patronen voldoende of ook internationaal?
+3. GA-06: moet `get_review_context()` een verplichte of optionele methode in NodeInterface zijn? (verplicht = elke adapter moet implementeren)

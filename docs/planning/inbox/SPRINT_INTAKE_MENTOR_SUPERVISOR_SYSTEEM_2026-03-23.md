@@ -3,12 +3,18 @@
 ---
 gegenereerd_door: Cowork — alsdan-devhub
 status: INBOX
-fase: 2-3
+fase: 3
+prioriteit: P2
+sprint_type: FEAT
+cynefin: complex
+impact_zone: GREEN (read-only growth tracking, geen code-impact)
 ---
 
 ## Doel
 
-Transformeer DevHub van een passief development-systeem naar een actieve supervisor/mentor/adviseur/genius die Niels' ontwikkeling als AI-systems architect systematisch stimuleert, meet, en versnelt — gebaseerd op Vygotsky's ZPD, Ericsson's Deliberate Practice, en T-shaped skill development.
+Transformeer DevHub van een passief development-systeem naar een actieve supervisor/mentor/adviseur die Niels' ontwikkeling als AI-systems architect systematisch stimuleert, meet, en versnelt — gebaseerd op Vygotsky's ZPD, Ericsson's Deliberate Practice, en T-shaped skill development.
+
+**Fasering (3 sprints):** Dit traject is opgedeeld in drie afgebakende sprints. Elke sprint levert een werkend geheel op. De Strategic Advisor (Laag 4: career trajectory, industry alignment) is bewust geparkeerd tot er voldoende historische data is (verwacht: na 3-5 sprints met het systeem actief).
 
 ## Probleemstelling
 
@@ -34,7 +40,7 @@ Het systeem moet vier rollen vervullen die samen meer zijn dan de som der delen:
 Niels bouwt een AI-development systeem dat state-of-the-art opereert. Dat vereist dat de architect zelf continu groeit — in AI-engineering, governance, security, multi-agent architectuur, en meer. Zonder systematische groei-stimulatie wordt het systeem nooit beter dan zijn architect.
 
 ### Fase-context
-Fase 2-3: skills + governance + knowledge. De mentor-uitbreiding is een skill-upgrade (Fase 2) met knowledge-componenten (Fase 3: KWP DEV, skill radar data).
+Fase 3 (Knowledge & Memory). De mentor-uitbreiding combineert skill-upgrade met knowledge-componenten (skill radar data, growth tracking). Past in Fase 3 naast Track B (Storage) en Track C (Vectorstore) — complementair, niet conflicterend.
 
 ## Deliverables
 
@@ -368,9 +374,11 @@ Loop 3 (Knowledge Decay) integreert met de leeslijst-curatie.
 
 ## Afhankelijkheden
 
-- **Geblokkeerd door:** geen directe blokkers. De bestaande devhub-mentor skill en DeveloperProfile/CoachingSignal contracts zijn het vertrekpunt.
-- **Verrijkt door (niet geblokkeerd):** Sprint Retrospective Loop (biedt meer data), Red Team Agent (biedt security growth data)
+- **Geblokkeerd door:** Niets (Sprint 1 kan direct starten). Sprint 2 en 3 bouwen sequentieel voort.
+- **Verrijkt door (niet geblokkeerd):** Track C Vectorstore (KWP DEV kan growth data opslaan), Sprint Retrospective Loop, Red Team Agent (security growth data)
+- **Data-opslag:** Sprint 1 gebruikt YAML in `knowledge/`. Na Track C Sprint 1 kan dit migreren naar vectorstore.
 - **BORIS impact:** NEE — dit systeem is DevHub-intern en gaat over Niels' ontwikkeling, niet over projectcode
+- **Parallel met Track B/C:** Sprint 1 kan tegelijk lopen. Geen overlap in code of bestanden.
 
 ## Open Vragen voor Claude Code
 
@@ -390,9 +398,79 @@ Loop 3 (Knowledge Decay) integreert met de leeslijst-curatie.
 | Art. 5 (Kennisintegriteit) | Ja | Leeslijsten krijgen EVIDENCE-grading |
 | Art. 7 (Impact-zonering) | Nee | Growth system is read-only, geen code-impact |
 
+## Appetite & Fasering
+
+**Totaal: 3 sprints verspreid over Fase 3.**
+
+### Sprint 1: Skill Radar + Contracts (MVP) — 🎯 DIRECT UITVOERBAAR
+
+**Scope:** Het fundament — meet waar je staat, definieer het datamodel.
+
+Deliverables Sprint 1:
+- [ ] Python contracts: `SkillRadarProfile`, `SkillDomain`, `DevelopmentChallenge`, `GrowthReport`, `LearningRecommendation` (in `packages/devhub-core/devhub_core/contracts/growth_contracts.py`)
+- [ ] Initiële Dreyfus-assessment: hybride aanpak
+  - Handmatige basis-inschatting per domein (Niels + Cowork)
+  - Git history analyse als validatie (Claude Code: commit patterns, ADR complexity, test coverage delta)
+  - Resultaat: eerste `SkillRadarProfile` als YAML in `knowledge/`
+- [ ] devhub-mentor v1.5: voeg skill-tracking toe aan bestaand O-B-B model
+  - SkillRadarProfile wordt geladen bij mentor-sessie
+  - Coaching-response bevat skill-context ("je groeit op X, gap bij Y")
+- [ ] GrowthReport template (handmatig gevuld, nog geen automatische pipeline)
+- [ ] Unit tests voor alle contracts (frozen, immutable)
+
+**Acceptatiecriteria:**
+- Alle bestaande tests (394+) blijven groen
+- SkillRadarProfile correct opgeslagen en leesbaar
+- devhub-mentor skill kan profiel laden en gebruiken in coaching
+- Dreyfus-niveaus per domein zijn geverifieerd door Niels
+
+**Geblokkeerd door:** Niets. Kan parallel met Track B/C Sprint 1 lopen.
+
+### Sprint 2: Challenge Engine + Scaffolding
+
+**Scope:** De motor — genereer uitdagingen, bouw scaffolding af.
+
+Deliverables Sprint 2:
+- [ ] Challenge engine: genereert DevelopmentChallenge op basis van skill gaps + ZPD
+- [ ] 6 challenge-typen: Stretch, Explain It, Reverse Engineer, Teach Back, Cross-Domain, Adversarial
+- [ ] Scaffolding-niveaus gekoppeld aan Dreyfus (HIGH → NONE, zie Laag 2 tabel)
+- [ ] Anti-Zone-of-No-Development mechanisme: scaffolding wordt automatisch verlaagd bij level-up
+- [ ] Sprint-integratie: 1-2 challenges per sprint-start
+- [ ] devhub-mentor v2.0: proactieve challenges in coaching-response
+
+**Acceptatiecriteria:**
+- Challenge engine genereert relevante challenges per domein
+- Scaffolding-niveau is consistent met Dreyfus-level
+- Challenges zijn accepteer/skip-baar (Art. 1: Niels beslist)
+
+**Geblokkeerd door:** Sprint 1 (contracts + SkillRadarProfile moeten bestaan)
+
+### Sprint 3: Research Advisor + Dashboard
+
+**Scope:** De verrijking — leeslijsten, automatische Growth Reports.
+
+Deliverables Sprint 3:
+- [ ] Researcher agent "developer growth" modus
+- [ ] Leeslijst-curatie met ZPD-filtering (niet te basis, niet te geavanceerd)
+- [ ] LearningRecommendation met EVIDENCE-grading per bron
+- [ ] Concept-introductie protocol (bij sprint-intake die onbekend concept vereist)
+- [ ] Growth Report automatisch gevuld vanuit sprint-data + challenges + leeslijst
+- [ ] devhub-growth skill (nieuw): periodiek growth report genereren
+
+**Acceptatiecriteria:**
+- Researcher kan switchen tussen "project research" en "growth" modus
+- Leeslijsten zijn gefilterd op ZPD-alignment
+- Growth Report combineert skill radar + challenges + leeslijst + strategische observatie
+
+**Geblokkeerd door:** Sprint 2 (challenge data nodig voor Growth Report)
+
+### Bewust geparkeerd: Strategic Advisor (Laag 4)
+
+Career trajectory, industry alignment, cross-domain insight, opportunity spotting. Pas relevant na 3-5 sprints met het systeem actief — er is dan genoeg historische data voor trendanalyse. Dit wordt een apart idee/intake wanneer de tijd rijp is.
+
 ## Prioriteit
 
-- **Prioriteit:** Hoog
+- **Prioriteit:** P2 (Hoog)
 - **Motivatie:** Het systeem wordt nooit beter dan zijn architect. DevHub kan state-of-the-art tooling hebben, maar als Niels' groei niet systematisch gestimuleerd wordt, bereikt het systeem een plafond. De wetenschappelijke basis is stevig (Vygotsky GOLD, Ericsson GOLD), de bestaande mentor skill biedt een solide vertrekpunt, en de integratie met het zelfverbeterend systeem versterkt beide.
 
 ## Bronnen
