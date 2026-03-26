@@ -8,7 +8,18 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+google = [
+    "google-api-python-client>=2.0",
+    "google-auth>=2.0",
+    "google-auth-oauthlib>=1.0",
+]
 test = ["hypothesis>=6.0"]
+dev = [
+    "google-api-python-client>=2.0",
+    "google-auth>=2.0",
+    "google-auth-oauthlib>=1.0",
+    "hypothesis>=6.0",
+]
 
 [build-system]
 requires = ["hatchling"]

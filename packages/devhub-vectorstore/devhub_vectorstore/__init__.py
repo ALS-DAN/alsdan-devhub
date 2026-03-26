@@ -13,7 +13,7 @@ from devhub_vectorstore.contracts.vectorstore_contracts import (
 )
 from devhub_vectorstore.factory import VectorStoreFactory
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 __all__ = [
     "DataZone",

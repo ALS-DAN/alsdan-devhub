@@ -30,6 +30,7 @@ class TestVectorStoreFactory:
     def test_available_backends(self):
         backends = VectorStoreFactory.available_backends()
         assert "chromadb" in backends
+        assert "weaviate" in backends
 
     def test_default_backend(self):
         store = VectorStoreFactory.create()
@@ -54,3 +55,8 @@ class TestPackageImports:
         from devhub_vectorstore.adapters.chromadb_adapter import ChromaDBZonedStore
 
         assert issubclass(ChromaDBZonedStore, VectorStoreInterface)
+
+    def test_import_weaviate_adapter(self):
+        from devhub_vectorstore.adapters.weaviate_adapter import WeaviateZonedStore
+
+        assert issubclass(WeaviateZonedStore, VectorStoreInterface)

@@ -24,6 +24,7 @@ class VectorStoreFactory:
 
     _registry: dict[str, str] = {
         "chromadb": "devhub_vectorstore.adapters.chromadb_adapter.ChromaDBZonedStore",
+        "weaviate": "devhub_vectorstore.adapters.weaviate_adapter.WeaviateZonedStore",
     }
 
     @classmethod
