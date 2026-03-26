@@ -1,0 +1,20 @@
+[project]
+name = "devhub-documents"
+version = "0.1.0"
+description = "Document generation interface and adapters for DevHub (ODF, Markdown)"
+requires-python = ">=3.11"
+dependencies = [
+    "devhub-core",
+]
+
+[project.optional-dependencies]
+odf = ["odfpy>=1.4"]
+test = ["hypothesis>=6.0"]
+dev = ["odfpy>=1.4", "hypothesis>=6.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+devhub-core = { workspace = true }

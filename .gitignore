@@ -12,3 +12,9 @@ build/
 docker/.env
 docker/n8n-local-files/dev_os.db
 .secrets.baseline
+
+# Ephemeral / lokaal
+.hypothesis/
+.mcp.json
+.claude/plans/
+.claude/scratchpad/

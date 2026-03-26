@@ -30,6 +30,13 @@ from devhub_core.contracts.growth_contracts import (
     SkillDomain,
     SkillRadarProfile,
 )
+from devhub_core.contracts.research_contracts import (
+    ResearchDepth,
+    ResearchQueue,
+    ResearchRequest,
+    ResearchResponse,
+    ResearchStatus,
+)
 
 __all__ = [
     "CoachingResponse",
@@ -56,4 +63,9 @@ __all__ = [
     "LearningRecommendation",
     "SkillDomain",
     "SkillRadarProfile",
+    "ResearchDepth",
+    "ResearchQueue",
+    "ResearchRequest",
+    "ResearchResponse",
+    "ResearchStatus",
 ]
