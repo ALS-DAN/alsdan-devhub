@@ -1,7 +1,8 @@
 # devhub-sprint-prep — Node-Agnostische Sprint Voorbereiding Skill
 
-**Versie:** 1.0.0
+**Versie:** 1.1.0
 **Basis:** BORIS boris-sprint-prep v1.0 → gemigreerd naar DevHub
+**Changelog:** v1.1.0 — FASE3_TRACKER integratie + § Fase-voortgang sectie in SPRINT_INPUT
 
 ## Trigger
 Activeer bij:
@@ -54,20 +55,22 @@ Dit levert een dict met:
 Naast project-specifieke context, scan de DevHub planning directories:
 
 ```
-docs/planning/inbox/      — Nieuwe items (SPRINT_INTAKE_*, IDEA_*, RESEARCH_*)
-docs/planning/backlog/    — Shaped items klaar voor sprint
-docs/planning/sprints/    — Afgeronde en actieve sprints
-docs/planning/parked/     — Buiten huidige fase, niet vergeten
-docs/planning/TRIAGE_INDEX.md    — Overzicht van alle items + tellingen
-docs/planning/ROADMAP.md         — Strategische roadmap + fase-positie
+docs/planning/inbox/              — Nieuwe items (SPRINT_INTAKE_*, IDEA_*, RESEARCH_*)
+docs/planning/backlog/            — Shaped items klaar voor sprint
+docs/planning/sprints/            — Afgeronde en actieve sprints
+docs/planning/parked/             — Buiten huidige fase, niet vergeten
+docs/planning/TRIAGE_INDEX.md     — Overzicht van alle items + tellingen
+docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
+docs/planning/FASE3_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
 ```
 
 **Acties:**
 1. Lees `docs/planning/TRIAGE_INDEX.md` voor actuele tellingen en fase-positie
-2. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
-3. Scan `docs/planning/inbox/` voor nieuwe items die nog getriaged moeten worden
-4. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden
-5. Vermeld het aantal items per directory in de SPRINT_INPUT output
+2. Lees `docs/planning/FASE3_TRACKER.md` voor golfplanning-status, velocity en capaciteit
+3. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
+4. Scan `docs/planning/inbox/` voor nieuwe items die nog getriaged moeten worden
+5. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden
+6. Vermeld het aantal items per directory in de SPRINT_INPUT output
 
 ### Stap 2: Systeem-status analyseren
 
@@ -154,6 +157,17 @@ _Gegenereerd door: devhub-sprint-prep | Node: [node_id]_
 [Genummerd, alleen echte blockers]
 
 Of: _Geen open beslissingen die deze sprint blokkeren._
+
+---
+
+## § Fase-voortgang (uit FASE3_TRACKER)
+**Huidige golf:** [Golf N — naam]
+**Test baseline:** [N tests]
+**Afgeronde sprints deze golf:** [N/M]
+**Actieve sprints:** [lijst]
+**Volgende kandidaten:** [lijst met status 📋 KLAAR]
+**Capaciteit:** [N actieve feature-sprints / max 2-3]
+**Velocity (gem.):** [+N tests/sprint]
 
 ---
 

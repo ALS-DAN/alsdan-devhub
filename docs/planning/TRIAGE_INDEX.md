@@ -1,18 +1,18 @@
 # Triage Index — DevHub Planning Items
 
 ---
-laatst_bijgewerkt: 2026-03-25
+laatst_bijgewerkt: 2026-03-26
 getriaged_door: "Claude Code — alsdan-devhub"
-huidige_fase: 3 (Track A afgerond, Track B+C beschikbaar)
-actieve_sprint: Planning Opschoning (CHORE, XS)
-test_baseline: 395
+huidige_fase: 3 (Track A+B S1+C S1 afgerond, Golf 1 actief)
+actieve_sprint: Planning & Tracking Systeem (FEAT, S)
+test_baseline: 575
 ---
 
 ## Fase-positie
 
 `Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → **Fase 3** 🔄`
 
-Track A (uv workspace) is afgerond. Track B (storage) en Track C (vectorstore) zijn beschikbaar.
+Track A (uv workspace), Track B S1 (storage) en Track C S1 (vectorstore) zijn afgerond. Golf 1 actief.
 
 ---
 
@@ -24,11 +24,9 @@ _Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
 
 | # | Item | Bestand | Fase | Prio | Notitie |
 |---|------|---------|------|------|---------|
-| 1 | Storage Interface | `inbox/SPRINT_INTAKE_STORAGE_INTERFACE_2026-03-24.md` | 3 (Track B) | P2 | Geshaped. 3-4 sprints. READY, kan starten. |
-| 2 | Vectorstore | `inbox/SPRINT_INTAKE_VECTORSTORE_2026-03-24.md` | 3 (Track C) | P2 | Geshaped. 2-3 sprints. Parallel met Track B. READY. |
-| 3 | Mentor Supervisor Systeem | `inbox/SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23.md` | 3 | P2 | Vereist KWP DEV operationeel. |
-| 4 | Governance Automation | `inbox/SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25.md` | 3 | P3 | 7/16 governance + 4/10 security checks automatiseren. |
-| 5 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is. |
+| 1 | Mentor Supervisor Systeem | `inbox/SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23.md` | 3 | P2 | Geshaped. Skill Radar + Growth Contracts. READY. |
+| 2 | Governance Automation | `inbox/SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25.md` | 3 | P2 | 7/16 governance + 4/10 security checks automatiseren. READY. |
+| 3 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is. |
 
 ## Geparkeerd (buiten huidige fase)
 
@@ -58,6 +56,10 @@ _Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
 | SPRINT_N8N_CICD_FOUNDATION | 2→3 | 339 → 370 (+31) | 2026-03-24/25 |
 | SPRINT_CODE_CHECK_ARCHITECTUUR | 2→3 | 370 → 394 (+24) | 2026-03-25 |
 | SPRINT_OPERATIONELE_VALIDATIE | 3 | 394 → 395 (+1) | 2026-03-25 |
+| Quick Fixes Ops Validatie | 3 | 395 → 397 (+2) | 2026-03-26 |
+| Planning Opschoning | 3 | 397 → 397 (+0) | 2026-03-26 |
+| Storage Interface + LocalAdapter | 3 (B) | 397 → 497 (+100) | 2026-03-26 |
+| Vectorstore Interface + ChromaDB | 3 (C) | 497 → 575 (+78) | 2026-03-26 |
 
 Gearchiveerde intakes in `sprints/`:
 - SPRINT_INTAKE_RED_TEAM_AGENT (operationeel: agent + skill + 40 tests)
@@ -76,13 +78,13 @@ Gearchiveerde intakes in `sprints/`:
 ## Kritiek pad Fase 3
 
 ```
-Track A: UV Workspace ✅ (afgerond, 394 tests)
-    ├── Operationele Validatie ✅ (alle 3 lagen bewezen, 395 tests)
-    ├── Track B: Storage Interface (3-4 sprints, P2) ──┐
-    ├── Track C: Vectorstore (2-3 sprints, P2) ────────┤── KWP DEV setup
-    └── Code Check Architectuur (1 sprint, P3)          │
-                                                        ├── Mentor Supervisor (2-3 sprints)
-                                                        └── EVIDENCE-kopie
+Track A: UV Workspace ✅ (394 tests)
+    ├── Operationele Validatie ✅ (395 tests)
+    ├── Track B S1: Storage Interface ✅ (497 tests) ── Track B S2: Google Drive ──┐
+    ├── Track C S1: Vectorstore ✅ (575 tests) ──────── Track C S2: Weaviate ──────┤── KWP DEV setup
+    ├── Planning & Tracking 🔄 (actief)                                            │
+    └── Code Check Architectuur ✅                                                 ├── Mentor Supervisor
+                                                                                   └── EVIDENCE-kopie
 ```
 
 ---
@@ -92,8 +94,8 @@ Track A: UV Workspace ✅ (afgerond, 394 tests)
 | Categorie | Aantal |
 |-----------|--------|
 | Backlog | 0 |
-| Inbox | 5 (+2 actief/afgerond) |
+| Inbox | 3 |
 | Geparkeerd | 14 |
-| Afgeronde sprints | 5 (+1 actief) |
+| Afgeronde sprints | 9 (+1 actief) |
 | Gearchiveerde intakes | 10 |
-| Test baseline | 395 |
+| Test baseline | 575 |

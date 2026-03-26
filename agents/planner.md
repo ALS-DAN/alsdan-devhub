@@ -127,12 +127,13 @@ Produceer een sprint-plan als gestructureerd rapport:
 DevHub gebruikt een gelaagde planning-structuur:
 
 ```
-docs/planning/inbox/      — Nieuwe ideeën en intakes (ongefilterd)
-docs/planning/backlog/    — Shaped items klaar voor sprint (getriaged, geprioriteerd)
-docs/planning/sprints/    — Actieve en afgeronde sprints
-docs/planning/parked/     — Buiten huidige fase, bewaard voor later
-docs/planning/TRIAGE_INDEX.md  — Centraal overzicht + tellingen
-docs/planning/ROADMAP.md       — Strategische roadmap + fase-positie
+docs/planning/inbox/              — Nieuwe ideeën en intakes (ongefilterd)
+docs/planning/backlog/            — Shaped items klaar voor sprint (getriaged, geprioriteerd)
+docs/planning/sprints/            — Actieve en afgeronde sprints
+docs/planning/parked/             — Buiten huidige fase, bewaard voor later
+docs/planning/TRIAGE_INDEX.md     — Centraal overzicht + tellingen
+docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
+docs/planning/FASE3_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
 ```
 
 ### Backlog-promotie
@@ -151,17 +152,40 @@ Criteria voor promotie:
 - Impact-zone past bij huidige sprint-capaciteit (GREEN/YELLOW)
 - Item staat op het kritiek pad OF lost een P1/P2 blocker op
 
+### Golfplanning-bewustzijn
+
+Bij sprint-advies altijd `docs/planning/FASE3_TRACKER.md` raadplegen voor:
+
+1. **Golf-positie** — In welke golf zitten we? Welke sprints zijn ✅ DONE, 🔄 ACTIEF, 📋 KLAAR?
+2. **Capaciteitscheck** — Max 2-3 actieve feature-sprints tegelijk (solo-dev, avonduren/weekenden)
+3. **Kritiek pad** — Track C (Vectorstore) is het langste pad naar KWP DEV. Prioriteer items op het kritiek pad.
+4. **Blokkade-detectie** — Als een sprint >7 dagen geen Hill Chart-beweging toont, signaleer als potentiële blokkade.
+5. **Volgende sprint adviseren** — Kies uit items met status 📋 KLAAR, voorrang aan:
+   - Items op het kritiek pad
+   - Items die Golf 2 deblokkeren
+   - Items met lagere impact-zone (GREEN > YELLOW)
+
+### Sprint-closure tracker-update
+
+Bij sprint-afsluiting (via `/devhub-sprint`) moet de planner adviseren om FASE3_TRACKER.md bij te werken:
+- Sprint status → ✅ DONE
+- Hill Chart → ████████████
+- Velocity log: werkelijke grootte + test-delta invullen
+- Cycle time: sprint-klaar datum + berekende cycle time
+- Deblokkeer afhankelijke sprints in Golf 2+ (⏳ WACHT → 📋 KLAAR)
+
 ## Werkwijze
 
 1. **Ontvang planningsverzoek** van dev-lead
 2. **Verzamel context** via Python-systeem (NodeRegistry, adapter)
-3. **Scan planningssysteem** (inbox, backlog, TRIAGE_INDEX, ROADMAP)
-4. **Analyseer scope** met Shape Up framework
-5. **Classificeer** via Cynefin
-6. **Doorloop DoR-checklist** — identificeer blokkeerders
-7. **Evalueer backlog-promotie** — welke items zijn sprint-ready?
-8. **Produceer sprint-plan** als gestructureerd rapport
-9. **Rapporteer aan dev-lead** met GO/NO-GO advies
+3. **Scan planningssysteem** (inbox, backlog, TRIAGE_INDEX, ROADMAP, FASE3_TRACKER)
+4. **Check golfplanning** — golf-positie, capaciteit, kritiek pad
+5. **Analyseer scope** met Shape Up framework
+6. **Classificeer** via Cynefin
+7. **Doorloop DoR-checklist** — identificeer blokkeerders
+8. **Evalueer backlog-promotie** — welke items zijn sprint-ready?
+9. **Produceer sprint-plan** als gestructureerd rapport
+10. **Rapporteer aan dev-lead** met GO/NO-GO advies
 
 ## Beperkingen
 
