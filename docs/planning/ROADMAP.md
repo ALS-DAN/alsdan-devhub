@@ -1,7 +1,7 @@
 # DevHub Roadmap — Geconsolideerd
 
 ---
-laatst_bijgewerkt: 2026-03-25
+laatst_bijgewerkt: 2026-03-26
 gegenereerd_door: "Cowork Architect — alsdan-devhub"
 ---
 
@@ -12,7 +12,7 @@ Fase 0 ✅  Fundament
 Fase 1 ✅  Kernagents + Infra
 Fase 2 ✅  Skills + Governance (incl. 2b red-team)
 Fase 3 🔄  Knowledge + Memory + Infrastructure
-           ↑ WE ZIJN HIER — 395 tests, 6 agents, 8 skills, Track A ✅, Track B+C READY
+           ↑ WE ZIJN HIER — 575 tests, 6 agents, 8 skills, Track A+B1+C1 ✅, Golf 2 READY
 Fase 4 🔲  BORIS-migratie (GATE: Niels-goedkeuring)
 Fase 5 🔲  Uitbreiding
 ```
@@ -42,28 +42,28 @@ Afgerond: 394 tests. Stap A3-A4 zijn niet-blokkerend en doorgeschoven naar later
 
 ### Track B: devhub-storage (bestandsopslag)
 
-| Stap | Wat | Zonering |
-|------|-----|----------|
-| B1 | StorageInterface ABC + LocalAdapter | GROEN |
-| B2 | Google Drive adapter + auth | GEEL |
-| B3 | Organizable/Watchable mixins | GEEL |
-| B4 | Reconciliation (drift-rapportage) | GEEL |
-| B5 | Reconciliation (correctieve acties) | ROOD |
+| Stap | Wat | Zonering | Status |
+|------|-----|----------|--------|
+| B1 | StorageInterface ABC + LocalAdapter | GROEN | ✅ v0.2.0 (575 tests) |
+| B2 | Google Drive adapter + auth | GEEL | 📋 KLAAR |
+| B3 | Organizable/Watchable mixins | GEEL | ⏳ na B2 |
+| B4 | Reconciliation (drift-rapportage) | GEEL | ⏳ na B3 |
+| B5 | Reconciliation (correctieve acties) | ROOD | ⏳ na B4 |
 
-Geschat: 2-3 sprints. Track A ✅ — kan starten.
+Sprint 1 (B1) afgerond: +100 tests, frozen dataclasses, factory patroon.
 
 ### Track C: devhub-vectorstore (Weaviate)
 
-| Stap | Wat | Zonering |
-|------|-----|----------|
-| C1 | VectorStoreInterface ABC + contracts | GROEN |
-| C2 | ChromaDB adapter (dev/test) | GROEN |
-| C3 | Weaviate adapter (zones, CRUD) | GEEL |
-| C4 | Multi-tenancy (per_zone + per_kwp) | GEEL |
-| C5 | Embedding providers (MiniLM, later bge-m3) | GROEN |
-| C6 | DevHub eigen Weaviate-instantie (KWP DEV) | GEEL |
+| Stap | Wat | Zonering | Status |
+|------|-----|----------|--------|
+| C1 | VectorStoreInterface ABC + contracts | GROEN | ✅ v0.2.0 (575 tests) |
+| C2 | ChromaDB adapter (dev/test) | GROEN | ✅ v0.2.0 |
+| C3 | Weaviate adapter (zones, CRUD) | GEEL | 📋 KLAAR |
+| C4 | Multi-tenancy (per_zone + per_kwp) | GEEL | ⏳ na C3 |
+| C5 | Embedding providers (MiniLM, later bge-m3) | GROEN | ⏳ na C3 |
+| C6 | DevHub eigen Weaviate-instantie (KWP DEV) | GEEL | ⏳ na C4+C5 |
 
-Geschat: 2-3 sprints. Track A ✅ — kan starten. Parallel met Track B.
+Sprint 1 (C1+C2) afgerond: +78 tests, frozen dataclasses, factory patroon. Parallel met Track B.
 
 ### Fase 3 overig
 
@@ -99,8 +99,10 @@ DONE:   n8n CI/CD Foundation ✅
 DONE:   Code Check Architectuur ✅
 DONE:   Track A — uv Workspace ✅ (394 tests)
 DONE:   Operationele Validatie ✅ (395 tests)
-NU:     Track B + C parallel (storage + vectorstore) — READY
-DAN:    KWP DEV + Mentor Supervisor + EVIDENCE
+DONE:   Track B S1 — Storage Interface + LocalAdapter ✅ (497 tests)
+DONE:   Track C S1 — Vectorstore Interface + ChromaDB ✅ (575 tests)
+NU:     Golf 1 restant (Mentor S1, Governance S1) + Planning & Tracking 🔄
+DAN:    Golf 2 (Track B S2 + Track C S2) → KWP DEV + Mentor Supervisor
 GATE:   Fase 4 — BORIS-migratie (Niels-goedkeuring)
 LATER:  Fase 5 — Uitbreiding
 ```

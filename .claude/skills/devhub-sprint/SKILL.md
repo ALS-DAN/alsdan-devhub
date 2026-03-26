@@ -55,6 +55,13 @@ adapter = registry.get_adapter("boris-buurts")
 - Toon telling per state: INBOX / TRIAGED / SHAPING / READY / IN_SPRINT
 - Benoem aging items (>30 dagen in TRIAGED)
 
+**0F — FASE3_TRACKER positie (DevHub-sprints):**
+- Lees `docs/planning/FASE3_TRACKER.md`
+- Vind de sprint in de golfplanning tabel
+- Update status: 📋 KLAAR → 🔄 ACTIEF
+- Update Hill Chart: ░░░░░░░░░░░░ → ▓░░░░░░░░░░░
+- Rapporteer huidige golf, actieve sprints, en volgende kandidaten
+
 ### 1. Context laden
 
 Lees altijd (via adapter):
@@ -141,13 +148,20 @@ Akkoord voor afsluiting?
 success, output = adapter.run_herald_sync("Sprint NAAM afgerond")
 ```
 
-**E — Retrospective genereren (na akkoord):**
+**E — FASE3_TRACKER bijwerken (DevHub-sprints, na akkoord):**
+- Update sprint status in golfplanning: 🔄 ACTIEF → ✅ DONE, Hill → ████████████
+- Velocity tabel: voeg rij toe met sprint #, naam, gepland vs werkelijk, test-delta, nauwkeurigheid
+- Cycle time tabel: voeg rij toe met inbox datum, sprint start, sprint klaar, cycle time
+- Check of volgende sprint in golf nu unblocked is (⏳ WACHT → 📋 KLAAR als dependency opgelost)
+- Update afgeleide metrics (sprints afgerond, test baseline, gemiddelde test-delta)
+
+**F — Retrospective genereren (na akkoord):**
 - Genereer sprint-retrospective op basis van `docs/golden-paths/SPRINT_RETROSPECTIVE.md` template
 - Data ophalen: git log, test-delta, QA rapport, deliverable-status
 - Schrijf naar `knowledge/retrospectives/RETRO_<SPRINT_NAAM>.md`
 - Gradering: SILVER (gevalideerd door 1 sprint)
 
-**F — Cleanup:**
+**G — Cleanup:**
 - Orchestrator cleanup: `orch.clear_task()`, `orch.clear_doc_queue()`
 
 ---
