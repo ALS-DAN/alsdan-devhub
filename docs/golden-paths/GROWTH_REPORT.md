@@ -89,7 +89,7 @@ period: <sprint-X of week-YYYY-WW>
 | Bron | Hoe ophalen |
 |------|-------------|
 | Skill Radar | `knowledge/skill_radar/SKILL_RADAR_PROFILE_*.yaml` |
-| Sprint data | `docs/planning/FASE3_TRACKER.md` velocity tabel |
+| Sprint data | `docs/planning/SPRINT_TRACKER.md` velocity tabel |
 | Challenge log | (Sprint 2: challenge engine output) |
 | Git statistieken | `git log --shortstat` per domein |
 

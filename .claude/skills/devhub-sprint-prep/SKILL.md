@@ -2,7 +2,7 @@
 
 **Versie:** 1.1.0
 **Basis:** BORIS boris-sprint-prep v1.0 → gemigreerd naar DevHub
-**Changelog:** v1.1.0 — FASE3_TRACKER integratie + § Fase-voortgang sectie in SPRINT_INPUT
+**Changelog:** v1.1.0 — SPRINT_TRACKER integratie + § Fase-voortgang sectie in SPRINT_INPUT
 
 ## Trigger
 Activeer bij:
@@ -160,7 +160,7 @@ Of: _Geen open beslissingen die deze sprint blokkeren._
 
 ---
 
-## § Fase-voortgang (uit FASE3_TRACKER)
+## § Fase-voortgang (uit SPRINT_TRACKER)
 **Huidige golf:** [Golf N — naam]
 **Test baseline:** [N tests]
 **Afgeronde sprints deze golf:** [N/M]

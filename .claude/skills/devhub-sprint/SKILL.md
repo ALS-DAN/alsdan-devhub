@@ -66,7 +66,7 @@ Controleer het `node:` veld in de sprint-intake (of de werkmap):
 - Toon telling per state: INBOX / TRIAGED / SHAPING / READY / IN_SPRINT
 - Benoem aging items (>30 dagen in TRIAGED)
 
-**0F — FASE3_TRACKER positie (DevHub-sprints):**
+**0F — SPRINT_TRACKER positie (DevHub-sprints):**
 - Lees `docs/planning/SPRINT_TRACKER.md`
 - Vind de sprint in de golfplanning tabel
 - Update status: 📋 KLAAR → 🔄 ACTIEF
@@ -197,7 +197,7 @@ Akkoord voor afsluiting?
 success, output = adapter.run_herald_sync("Sprint NAAM afgerond")
 ```
 
-**E — FASE3_TRACKER bijwerken (DevHub-sprints, na akkoord):**
+**E — SPRINT_TRACKER bijwerken (DevHub-sprints, na akkoord):**
 - Update sprint status in golfplanning: 🔄 ACTIEF → ✅ DONE, Hill → ████████████
 - Velocity tabel: voeg rij toe met sprint #, naam, gepland vs werkelijk, test-delta, nauwkeurigheid
 - Cycle time tabel: voeg rij toe met inbox datum, sprint start, sprint klaar, cycle time

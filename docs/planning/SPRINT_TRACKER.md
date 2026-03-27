@@ -4,7 +4,7 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: 3
-laatste_sprint: 26
+laatste_sprint: 27
 test_baseline: 1156
 laatst_bijgewerkt: 2026-03-27
 ---
@@ -55,7 +55,7 @@ Skills + Governance (incl. 2b red-team).
 **Baseline:** 395 tests | 6 agents | 8 skills | 3 packages
 **Huidig:** 1165 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
-**Bijgewerkt:** 2026-03-27 — sprint 26 FEAT_LIFECYCLE_HYGIENE actief
+**Bijgewerkt:** 2026-03-27 — sprint 27 afgerond
 
 ---
 
@@ -115,6 +115,7 @@ _Nieuwe track — niet voorzien in originele planning. Uitgegroeid uit Track C v
 | KWP DEV setup | — | S | ✅ DONE | ████████████ | KP Golf 2B ✅ |
 | SPIKE: Sprint Lifecycle Hygiene | — | XS | ✅ DONE | ████████████ | — |
 | FEAT: Lifecycle Hygiene Implementatie | — | S | ✅ DONE | ████████████ | SPIKE ✅ |
+| FEAT: Lifecycle Hygiene Afronding | — | XS | ✅ DONE | ████████████ | FEAT Implementatie ✅ |
 
 ---
 
@@ -209,6 +210,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 24 | Storage: SharePoint adapter | S (1 sprint) | S (1 sprint) | +34 | 100% |
 | 25 | SPIKE: Sprint Lifecycle Hygiene | XS (<1u) | XS (<1u) | +0 | 100% |
 | 26 | FEAT: Lifecycle Hygiene Implementatie | S (1 sprint) | S (1 sprint) | +0 | 100% |
+| 27 | FEAT: Lifecycle Hygiene Afronding | XS (<1u) | XS (<1u) | +0 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -216,10 +218,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 26 | Alle binnen geschatte tijd |
-| Test baseline | 1156 | Geverifieerd na Sprint 26 (1156 passed, 2 skipped) |
+| Sprints afgerond | 27 | Alle binnen geschatte tijd |
+| Test baseline | 1156 | Geverifieerd na Sprint 27 (1156 passed, 2 skipped) |
 | Gemiddelde test-delta | +42.5 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
-| Schattingsnauwkeurigheid | 100% | 25/25 sprints binnen appetite |
+| Schattingsnauwkeurigheid | 100% | 27/27 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -255,6 +257,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Mentor S3: Research Advisor | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 | Storage: SharePoint adapter | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
 | SPIKE: Lifecycle Hygiene | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
+| FEAT: Lifecycle Hygiene Impl. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
+| FEAT: Lifecycle Hygiene Afr. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 
 ### Afgeleide SLA's
 
@@ -282,7 +286,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Week | Beschikbaar | Allocatie | Status |
 |------|-------------|-----------|--------|
-| Week 4 (27 mrt+) | Normaal | Golf 4: Lifecycle Hygiene FEAT | 🔄 Actief |
+| Week 4 (27 mrt+) | Normaal | Golf 4: Lifecycle Hygiene FEAT + Afronding | ✅ Afgerond |
 
 **Advies:** Niet meer dan 2 feature-sprints tegelijk.
 

@@ -178,7 +178,7 @@ Bij sprint-afsluiting (via `/devhub-sprint`) moet de planner adviseren om SPRINT
 
 1. **Ontvang planningsverzoek** van dev-lead
 2. **Verzamel context** via Python-systeem (NodeRegistry, adapter)
-3. **Scan planningssysteem** (inbox, backlog, TRIAGE_INDEX, ROADMAP, FASE3_TRACKER)
+3. **Scan planningssysteem** (inbox, backlog, TRIAGE_INDEX, ROADMAP, SPRINT_TRACKER)
 4. **Check golfplanning** — golf-positie, capaciteit, kritiek pad
 5. **Analyseer scope** met Shape Up framework
 6. **Classificeer** via Cynefin
