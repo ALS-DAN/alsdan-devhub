@@ -207,10 +207,32 @@ De DEV_CONSTITUTION is bindend voor alle DevHub-agents (dev-lead, coder, reviewe
 
 ---
 
+## Artikel 9 — Architecturele Continuïteit
+
+**Principe:** Agents respecteren bestaande architectuurbeslissingen. Voordat een agent een nieuw artifact aanmaakt in een domein waar al beslissingen zijn genomen, leest de agent de relevante ADRs en retrospectives.
+
+### Regels
+
+9.1. Voor het aanmaken of wijzigen van bestanden in `docs/planning/`: lees eerst SPRINT_TRACKER.md en relevante ADRs in `docs/adr/`.
+
+9.2. Voor het aanmaken van bestanden in een domein met bestaande ADR: lees eerst die ADR en handel conform de beslissing.
+
+9.3. Bij conflict tussen een voorstel en een bestaande ADR: rapporteer het conflict aan Niels. Handel niet zelfstandig — een ADR wijzigen is een YELLOW-zone actie (Art. 7).
+
+9.4. Retrospectives zijn leesverplicht wanneer beschikbaar voor het actieve domein. Ze bevatten gevalideerde lessen die zwaarder wegen dan aannames.
+
+### Handhaving
+- Governance-check skill valideert ADR-conformiteit
+- CLAUDE.md bevat directe verwijzing naar dit artikel
+- ADR-register in `docs/adr/` is de autoritatieve bron voor architectuurbeslissingen
+
+---
+
 ## Versiebeheer
 
 | Versie | Datum | Wijziging |
 |--------|-------|-----------|
+| 1.1 | 2026-03-28 | Art. 9 — Architecturele Continuïteit (n.a.v. FASE4_TRACKER incident) |
 | 1.0 | 2026-03-23 | Initiële versie — Art. 1-8 |
 
 ## Relatie tot projectconstituties

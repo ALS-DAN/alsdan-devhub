@@ -76,7 +76,7 @@ Node-configuratie: `config/nodes.yml`
 
 ## Governance
 
-- **DEV_CONSTITUTION.md**: `docs/compliance/DEV_CONSTITUTION.md` — 8 artikelen, altijd bindend
+- **DEV_CONSTITUTION.md**: `docs/compliance/DEV_CONSTITUTION.md` — 9 artikelen, altijd bindend
 - **Project-soevereiniteit** (Art. 6): Wanneer je in een project werkt, gelden de regels van DAT project. DevHub overschrijft nooit project-regels.
 
 ## Sprint Intake Conventies
@@ -104,6 +104,8 @@ fase: 3
 - Beide mogen naast elkaar bestaan
 - Bestaande tests (218+) moeten altijd groen blijven
 - Geen secrets, credentials of PII in commits (Art. 8)
+- Voordat je planning-artifacts aanmaakt of wijzigt: lees SPRINT_TRACKER.md en `docs/adr/` (Art. 9 DEV_CONSTITUTION)
+- SPRINT_TRACKER.md is het single source of truth voor alle fase-tracking (ADR-003). Geen losse fase-trackers aanmaken.
 
 ## Beschikbare skills
 
