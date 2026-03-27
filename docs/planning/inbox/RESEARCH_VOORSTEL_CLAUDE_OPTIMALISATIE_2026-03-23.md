@@ -2,7 +2,7 @@
 
 ---
 gegenereerd_door: Cowork — alsdan-devhub
-status: INBOX
+status: DONE
 fase: 1-2
 ---
 

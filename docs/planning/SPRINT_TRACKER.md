@@ -4,7 +4,7 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 30
+laatste_sprint: 31
 test_baseline: 673
 laatst_bijgewerkt: 2026-03-27
 ---
@@ -73,6 +73,16 @@ _Standalone sprint tussen Fase 3 en Fase 4. BorisAdapter verhuisd van devhub-cor
 | Provider Pattern | FEAT | S | ✅ DONE | ████████████ | BorisAdapter → BORIS, registry sys.path support, +4 tests |
 
 **Test-impact:** 1202 → 673 devhub tests (netto -529). Tests zijn verhuisd naar BORIS repo, niet verwijderd.
+
+---
+
+## Intermezzo — Claude Optimalisatie (Sprint 31)
+
+_Research-sprint: actualiseer Claude Code optimalisatie-bevindingen, beantwoord open vragen, schrijf actiepunten._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Claude Optimalisatie Research | RESEARCH | XS | ✅ DONE | ████████████ | Actualisatie + open vragen + conclusie |
 
 ---
 
@@ -231,6 +241,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 28 | Storage: Reconciliation Engine | S (1 sprint) | S (1 sprint) | +35 | 100% |
 | 29 | KWP DEV Operationeel | S (1 sprint) | S (1 sprint) | +11 | 100% |
 | 30 | Provider Pattern | S (1 sprint) | S (1 sprint) | +4* | 100% |
+| 31 | Claude Optimalisatie Research | XS (<1u) | XS (<1u) | +0 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -239,10 +250,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 30 | Alle binnen geschatte tijd |
+| Sprints afgerond | 31 | Alle binnen geschatte tijd |
 | Test baseline | 673 | Na Sprint 30 (verhuizing BorisAdapter tests naar BORIS repo) |
 | Gemiddelde test-delta | +39.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
-| Schattingsnauwkeurigheid | 100% | 30/30 sprints binnen appetite |
+| Schattingsnauwkeurigheid | 100% | 31/31 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -283,6 +294,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Storage: Reconciliation Engine | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
 | KWP DEV Operationeel | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | Provider Pattern | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
+| Claude Optimalisatie Research | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 
 ### Afgeleide SLA's
 
