@@ -79,6 +79,24 @@ Node-configuratie: `config/nodes.yml`
 - **DEV_CONSTITUTION.md**: `docs/compliance/DEV_CONSTITUTION.md` — 8 artikelen, altijd bindend
 - **Project-soevereiniteit** (Art. 6): Wanneer je in een project werkt, gelden de regels van DAT project. DevHub overschrijft nooit project-regels.
 
+## Sprint Intake Conventies
+
+Sprint-intake bestanden in `docs/planning/inbox/` gebruiken dit frontmatter-formaat:
+
+```yaml
+---
+gegenereerd_door: "Cowork — alsdan-devhub"
+status: INBOX          # INBOX | DONE
+node: devhub           # devhub (default) | boris-buurts
+sprint_type: FEAT      # FEAT | SPIKE | CHORE | BUG
+fase: 3
+---
+```
+
+- `node: devhub` (of weggelaten): DevHub-eigen sprint — sprint-skill laadt GEEN BORIS-context
+- `node: boris-buurts`: BORIS-sprint — sprint-skill laadt volledige node-context via adapter
+- `status: DONE`: intake is afgerond, sprint-prep biedt hem niet meer aan als kandidaat
+
 ## Constraints
 
 - `.claude/agents/` (project-level agents: dev_orchestrator, docs_agent, qa_agent) zijn INTERN — niet wijzigen vanuit plugin-context

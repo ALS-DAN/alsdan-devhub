@@ -1,28 +1,65 @@
-# Fase 3 Tracker — Knowledge & Memory
+# Sprint Tracker — DevHub
 
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
-fase: 3
-laatst_bijgewerkt: 2026-03-26
+actieve_fase: 3
+laatste_sprint: 26
+test_baseline: 1156
+laatst_bijgewerkt: 2026-03-27
 ---
 
-## Fase-positie
+## Fase-overzicht
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄 → Fase 4 🔲 → Fase 5 🔲
 ```
+
+**Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
+
+---
+
+## Fase 0 (Afgerond 2026-03-23)
+
+Fundament — tooling, infra, architectuurbeslissingen.
+
+| Sprints | Tests | Duur |
+|---------|-------|------|
+| 2 (Quick Fixes + Planning Opschoning) | 0 → 397 | <1 dag |
+
+---
+
+## Fase 1 (Afgerond 2026-03-23)
+
+Kernagents + Infra.
+
+| Sprints | Tests | Duur |
+|---------|-------|------|
+| 2 (FASE1_BOOTSTRAP + FASE2_SKILLS_GOVERNANCE) | 218 → 339 | 1 dag |
+
+---
+
+## Fase 2 (Afgerond 2026-03-25)
+
+Skills + Governance (incl. 2b red-team).
+
+| Sprints | Tests | Duur |
+|---------|-------|------|
+| 4 (N8N_CICD + CODE_CHECK + UV_WORKSPACE + OPS_VALIDATIE) | 339 → 395 | 2 dagen |
+
+---
+
+## Fase 3 — Knowledge & Memory (ACTIEF)
 
 **Start:** 2026-03-25 (na Ops Validatie SPIKE)
-**Baseline:** 395 tests | 6 agents | 8 skills | 3 packages (core active, storage+vectorstore stubs)
-**Huidig:** 1082 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline (research, analysis modules)
+**Baseline:** 395 tests | 6 agents | 8 skills | 3 packages
+**Huidig:** 1165 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
-**Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
-**Bijgewerkt:** 2026-03-27 — kennispipeline Golf 1-3 (+230 tests) toegevoegd, KWP DEV als DONE, Vectorstore Golf 3 als DONE, test baseline gecorrigeerd 852→1082
+**Bijgewerkt:** 2026-03-27 — sprint 26 FEAT_LIFECYCLE_HYGIENE actief
 
 ---
 
-## Golfplanning
+## Golfplanning (Fase 3)
 
 ### Golf 0: Opruiming ✅
 
@@ -32,8 +69,6 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄
 | Planning Opschoning | — | XS | ✅ DONE | ████████████ |
 
 ### Golf 1: Fundament ✅
-
-Max 2-3 tegelijk aanbevolen. Alle 5 sprints afgerond.
 
 | Sprint | Track | Size | Status | Hill | Codepad |
 |--------|-------|------|--------|------|---------|
@@ -45,8 +80,6 @@ Max 2-3 tegelijk aanbevolen. Alle 5 sprints afgerond.
 
 ### Golf 2: Uitbouw ✅
 
-Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bijbehorende Sprint 1.
-
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
 | Storage: Google Drive adapter | B | S | ✅ DONE | ████████████ | — |
@@ -54,7 +87,7 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 | Mentor: Challenge Engine + Scaffolding | M | S | ✅ DONE | ████████████ | Mentor S1 ✅ |
 | Governance: SecurityScanner | G | S | ✅ DONE | ████████████ | Governance S1 ✅ |
 
-### Golf 3: Verrijking
+### Golf 3: Verrijking ✅
 
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
@@ -186,10 +219,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Sprints afgerond | 26 | Alle binnen geschatte tijd |
 | Test baseline | 1156 | Geverifieerd na Sprint 26 (1156 passed, 2 skipped) |
 | Gemiddelde test-delta | +42.5 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
-| Schattingsnauwkeurigheid | 100% | 26/26 sprints binnen appetite |
+| Schattingsnauwkeurigheid | 100% | 25/25 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
-
-**Opmerking:** De schattingsnauwkeurigheid is opvallend hoog. Dit kan betekenen dat (a) de schattingen conservatief zijn, of (b) de scope goed afgebakend is. Na Fase 3 sprints herijken.
 
 ---
 
@@ -223,6 +254,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | KP Golf 3: Analyse Pipeline | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
 | Mentor S3: Research Advisor | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 | Storage: SharePoint adapter | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
+| SPIKE: Lifecycle Hygiene | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 
 ### Afgeleide SLA's
 
@@ -232,13 +264,11 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Sprint duur | <1 dag (intensief) | 1-3 dagen |
 | Inbox → Parked | 1-2 dagen | n.v.t. |
 
-**Opmerking:** De huidige cycle times zijn extreem kort omdat alle sprints tot nu toe in enkele sessies zijn afgerond. Bij Fase 3 (grotere sprints, avonduren/weekenden) zal dit veranderen.
-
 ---
 
 ## Capaciteitsplanning
 
-**Context:** Niels werkt solo, avonduren + weekenden (zie user_work_context memory).
+**Context:** Niels werkt solo, avonduren + weekenden.
 
 ### Golf 1-3 capaciteit (gerealiseerd)
 
@@ -252,9 +282,9 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Week | Beschikbaar | Allocatie | Status |
 |------|-------------|-----------|--------|
-| Week 4 (27 mrt+) | Normaal | Golf 3 openstaand: Storage SharePoint + Mentor S3 | 🔄 Actief |
+| Week 4 (27 mrt+) | Normaal | Golf 4: Lifecycle Hygiene FEAT | 🔄 Actief |
 
-**Advies:** Niet meer dan 2 feature-sprints tegelijk. De derde plek gebruiken voor een CHORE of achtergrond-research.
+**Advies:** Niet meer dan 2 feature-sprints tegelijk.
 
 ---
 

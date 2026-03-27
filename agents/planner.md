@@ -133,7 +133,7 @@ docs/planning/sprints/            — Actieve en afgeronde sprints
 docs/planning/parked/             — Buiten huidige fase, bewaard voor later
 docs/planning/TRIAGE_INDEX.md     — Centraal overzicht + tellingen
 docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
-docs/planning/FASE3_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
+docs/planning/SPRINT_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
 ```
 
 ### Backlog-promotie
@@ -154,7 +154,7 @@ Criteria voor promotie:
 
 ### Golfplanning-bewustzijn
 
-Bij sprint-advies altijd `docs/planning/FASE3_TRACKER.md` raadplegen voor:
+Bij sprint-advies altijd `docs/planning/SPRINT_TRACKER.md` raadplegen voor:
 
 1. **Golf-positie** — In welke golf zitten we? Welke sprints zijn ✅ DONE, 🔄 ACTIEF, 📋 KLAAR?
 2. **Capaciteitscheck** — Max 2-3 actieve feature-sprints tegelijk (solo-dev, avonduren/weekenden)
@@ -167,7 +167,7 @@ Bij sprint-advies altijd `docs/planning/FASE3_TRACKER.md` raadplegen voor:
 
 ### Sprint-closure tracker-update
 
-Bij sprint-afsluiting (via `/devhub-sprint`) moet de planner adviseren om FASE3_TRACKER.md bij te werken:
+Bij sprint-afsluiting (via `/devhub-sprint`) moet de planner adviseren om SPRINT_TRACKER.md bij te werken:
 - Sprint status → ✅ DONE
 - Hill Chart → ████████████
 - Velocity log: werkelijke grootte + test-delta invullen

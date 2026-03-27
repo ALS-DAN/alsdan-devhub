@@ -2,7 +2,7 @@
 
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
-status: INBOX
+status: DONE
 fase: 3
 prioriteit: P2 (sluitstuk van de kennispipeline)
 sprint_type: FEAT

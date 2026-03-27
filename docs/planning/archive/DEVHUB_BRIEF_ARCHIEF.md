@@ -1,5 +1,8 @@
-# DevHub Sessiebriefing
-_Levend document — bijwerken bij sprint-afsluiting of planning-wijziging._
+# DevHub Sessiebriefing [GEARCHIVEERD 2026-03-27]
+
+> Vervangen door `docs/planning/SPRINT_TRACKER.md`.
+> Verouderd (sprint 10), werd door geen agent/skill actief gelezen.
+
 _Bijgewerkt: 2026-03-26 | na sprint: Vectorstore Interface + ChromaDB_
 
 ---

@@ -61,12 +61,12 @@ docs/planning/sprints/            — Afgeronde en actieve sprints
 docs/planning/parked/             — Buiten huidige fase, niet vergeten
 docs/planning/TRIAGE_INDEX.md     — Overzicht van alle items + tellingen
 docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
-docs/planning/FASE3_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
+docs/planning/SPRINT_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
 ```
 
 **Acties:**
 1. Lees `docs/planning/TRIAGE_INDEX.md` voor actuele tellingen en fase-positie
-2. Lees `docs/planning/FASE3_TRACKER.md` voor golfplanning-status, velocity en capaciteit
+2. Lees `docs/planning/SPRINT_TRACKER.md` voor golfplanning-status, velocity en capaciteit
 3. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
 4. Scan `docs/planning/inbox/` voor nieuwe items die nog getriaged moeten worden
 5. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden

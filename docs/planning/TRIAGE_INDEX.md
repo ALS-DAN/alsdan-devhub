@@ -1,32 +1,26 @@
 # Triage Index — DevHub Planning Items
 
 ---
-laatst_bijgewerkt: 2026-03-26
+laatst_bijgewerkt: 2026-03-27
 getriaged_door: "Claude Code — alsdan-devhub"
-huidige_fase: 3 (Track A+B S1+C S1 afgerond, Golf 1 actief)
-actieve_sprint: — (geen actieve sprint)
-test_baseline: 575
 ---
 
-## Fase-positie
-
-`Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → **Fase 3** 🔄`
-
-Track A (uv workspace), Track B S1 (storage) en Track C S1 (vectorstore) zijn afgerond. Golf 1 actief.
+> **Opmerking:** Sprint-lijst, tellingen en kritiek-pad staan in `docs/planning/SPRINT_TRACKER.md`.
+> Dit bestand bevat alleen de inbox-items, geparkeerde items en gearchiveerde intakes.
 
 ---
 
-## Backlog (geshaped, klaar voor sprint)
+## Inbox (wacht op sprint of triage)
 
-_Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
-
-## Inbox (geshaped, wacht op promotie)
+Filter: `status: INBOX` in frontmatter.
 
 | # | Item | Bestand | Fase | Prio | Notitie |
 |---|------|---------|------|------|---------|
-| 1 | Mentor Supervisor Systeem | `inbox/SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23.md` | 3 | P2 | Geshaped. Skill Radar + Growth Contracts. READY. |
-| 2 | Governance Automation | `inbox/SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25.md` | 3 | P2 | 7/16 governance + 4/10 security checks automatiseren. READY. |
-| 3 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is. |
+| 1 | Research Compas Kennisvisie | `inbox/IDEA_DEVHUB_RESEARCH_COMPAS_KENNISVISIE_2026-03-27.md` | 3 | P3 | Strategische kennisvisie, nog niet geshaped |
+| 2 | Kennispipeline Afhankelijkheden | `inbox/KENNISPIPELINE_AFHANKELIJKHEDEN_2026-03-26.md` | 3 | P3 | Referentiedocument architectuurbeslissingen |
+| 3 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is |
+
+---
 
 ## Geparkeerd (buiten huidige fase)
 
@@ -47,58 +41,25 @@ _Leeg — alle items verplaatst naar sprints/ tijdens Planning Opschoning._
 | 19 | IDEA_DEVHUB_ROADMAP | `parked/` | Referentiedocument |
 | 20 | RESEARCH_MONOREPO_BUILD_SYSTEM_ANALYSE | `parked/` | Beslissing genomen: uv workspaces |
 
-## Afgeronde sprints
+---
 
-| Sprint | Fase | Tests | Datum |
-|--------|------|-------|-------|
-| SPRINT_FASE1_BOOTSTRAP | 1 | 218 → 299 (+81) | 2026-03-23 |
-| SPRINT_FASE2_SKILLS_GOVERNANCE | 2 | 299 → 339 (+40) | 2026-03-23 |
-| SPRINT_N8N_CICD_FOUNDATION | 2→3 | 339 → 370 (+31) | 2026-03-24/25 |
-| SPRINT_CODE_CHECK_ARCHITECTUUR | 2→3 | 370 → 394 (+24) | 2026-03-25 |
-| SPRINT_OPERATIONELE_VALIDATIE | 3 | 394 → 395 (+1) | 2026-03-25 |
-| Quick Fixes Ops Validatie | 3 | 395 → 397 (+2) | 2026-03-26 |
-| Planning Opschoning | 3 | 397 → 397 (+0) | 2026-03-26 |
-| Storage Interface + LocalAdapter | 3 (B) | 397 → 497 (+100) | 2026-03-26 |
-| Vectorstore Interface + ChromaDB | 3 (C) | 497 → 575 (+78) | 2026-03-26 |
-| Planning & Tracking Systeem | 3 | 575 → 575 (+0) | 2026-03-26 |
-| Mentor: Skill Radar + Contracts | 3 (M) | 575 → 611 (+36) | 2026-03-26 |
-| Governance: QA Checks | 3 (G) | 611 → 662 (+51) | 2026-03-26 |
+## Gearchiveerde intakes (`inbox/` met status: DONE)
 
-Gearchiveerde intakes in `sprints/`:
+| Intake | Afgerond als sprint |
+|--------|---------------------|
+| SPRINT_INTAKE_SPIKE_SPRINT_LIFECYCLE_HYGIENE_2026-03-27 | Sprint 25 |
+| SPRINT_INTAKE_KENNISPIPELINE_GOLF3_ANALYSE_PIPELINE_2026-03-26 | Sprint 22 (KP Golf 3) |
+| SPRINT_INTAKE_KENNISPIPELINE_GOLF2B_KWP_DEV_BOOTSTRAP_2026-03-26 | Sprint 21 (KP Golf 2B) |
+| SPRINT_INTAKE_KENNISPIPELINE_GOLF2A_RESEARCHER_CURATOR_2026-03-26 | Sprint 20 (KP Golf 2A) |
+| SPRINT_INTAKE_KENNISPIPELINE_GOLF1B_DOCUMENT_INTERFACE_2026-03-26 | Sprint 18 (KP Golf 1) |
+| SPRINT_INTAKE_KENNISPIPELINE_GOLF1A_RESEARCH_CONTRACTS_2026-03-26 | Sprint 18 (KP Golf 1) |
+| SPRINT_INTAKE_PLANNING_TRACKING_SYSTEEM_2026-03-26 | Sprint 11 |
+| SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23 | Sprint 12, 16, 23 |
+| SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25 | Sprint 13, 17 |
+
+Ouder archief in `docs/planning/sprints/`:
 - SPRINT_INTAKE_RED_TEAM_AGENT (operationeel: agent + skill + 40 tests)
-- SPRINT_INTAKE_N8N_DOCKER_FIX (Niels bevestigd afgerond)
-- SPRINT_INTAKE_N8N_HEALTH_CHECK (geleverd in N8N CICD sprint)
-- SPRINT_INTAKE_N8N_GOVERNANCE_CHECK (geleverd in N8N CICD sprint)
-- SPRINT_INTAKE_N8N_PR_QUALITY_GATE (geleverd in N8N CICD sprint)
-- SPRINT_INTAKE_UV_WORKSPACE_TRANSITIE (Track A afgerond, 394 tests)
-- SPRINT_INTAKE_CODE_CHECK_ARCHITECTUUR (5-laags code check afgerond)
-- SPRINT_INTAKE_PLANNING_GOVERNANCE (10/10 deliverables afgerond)
-- SPRINT_INTAKE_OPERATIONELE_VALIDATIE (alle 3 lagen bewezen, 395 tests)
-- TRIAGE_UPDATE_FASE3_OVERGANG (transitiedocument)
-
----
-
-## Kritiek pad Fase 3
-
-```
-Track A: UV Workspace ✅ (394 tests)
-    ├── Operationele Validatie ✅ (395 tests)
-    ├── Track B S1: Storage Interface ✅ (497 tests) ── Track B S2: Google Drive ──┐
-    ├── Track C S1: Vectorstore ✅ (575 tests) ──────── Track C S2: Weaviate ──────┤── KWP DEV setup
-    ├── Planning & Tracking ✅ (575 tests)                                          │
-    └── Code Check Architectuur ✅                                                 ├── Mentor Supervisor
-                                                                                   └── EVIDENCE-kopie
-```
-
----
-
-## Tellingen
-
-| Categorie | Aantal |
-|-----------|--------|
-| Backlog | 0 |
-| Inbox | 3 |
-| Geparkeerd | 14 |
-| Afgeronde sprints | 13 |
-| Gearchiveerde intakes | 10 |
-| Test baseline | 662 |
+- SPRINT_INTAKE_N8N_DOCKER_FIX, N8N_HEALTH_CHECK, N8N_GOVERNANCE_CHECK, N8N_PR_QUALITY_GATE
+- SPRINT_INTAKE_UV_WORKSPACE_TRANSITIE, CODE_CHECK_ARCHITECTUUR
+- SPRINT_INTAKE_PLANNING_GOVERNANCE, OPERATIONELE_VALIDATIE
+- TRIAGE_UPDATE_FASE3_OVERGANG
