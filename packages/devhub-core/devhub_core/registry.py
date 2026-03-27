@@ -104,18 +104,47 @@ class NodeRegistry:
         return adapter.get_report()
 
     def _instantiate_adapter(self, config: NodeConfig) -> NodeInterface:
-        """Instantieer een adapter op basis van de fully qualified class name."""
-        module_path, class_name = config.adapter.rsplit(".", 1)
-        try:
-            import importlib
+        """Instantieer een adapter op basis van de fully qualified class name.
 
+        Ondersteunt externe adapters (Provider Pattern): als de module niet
+        direct importeerbaar is, wordt config.path tijdelijk aan sys.path
+        toegevoegd zodat project-specifieke adapters gevonden worden.
+        """
+        import importlib
+        import sys
+
+        module_path, class_name = config.adapter.rsplit(".", 1)
+
+        # Probeer eerst direct import (interne adapters)
+        try:
             module = importlib.import_module(module_path)
             adapter_class: type[NodeInterface] = getattr(module, class_name)
+            return adapter_class(config.path)
+        except ImportError:
+            pass
+
+        # Fallback: voeg project-pad toe voor externe adapters (Provider Pattern)
+        if not config.path:
+            raise ImportError(
+                f"Cannot load adapter '{config.adapter}' for node '{config.node_id}': "
+                f"module '{module_path}' not found and no project path configured"
+            )
+
+        added_path = False
+        if config.path not in sys.path:
+            sys.path.insert(0, config.path)
+            added_path = True
+        try:
+            module = importlib.import_module(module_path)
+            adapter_class = getattr(module, class_name)
             return adapter_class(config.path)
         except (ImportError, AttributeError) as e:
             raise ImportError(
                 f"Cannot load adapter '{config.adapter}' for node '{config.node_id}': {e}"
             ) from e
+        finally:
+            if added_path and config.path in sys.path:
+                sys.path.remove(config.path)
 
     def to_dict(self) -> dict[str, dict]:
         """Exporteer registry als dict (voor serialisatie)."""

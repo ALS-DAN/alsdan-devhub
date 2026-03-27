@@ -76,13 +76,14 @@ class TestSkillDefinitions:
 
     @pytest.mark.parametrize("skill_name", REQUIRED_SKILLS)
     def test_skill_has_python_integration(self, skill_name: str):
-        """Elke skill moet Python-laag integratie tonen (BorisAdapter of devhub imports)."""
+        """Elke skill moet Python-laag integratie tonen (adapter of devhub imports)."""
         content = (SKILLS_DIR / skill_name / "SKILL.md").read_text(encoding="utf-8")
         has_python = (
             "PYTHONPATH" in content
             or "devhub_core." in content
-            or "BorisAdapter" in content
             or "NodeRegistry" in content
+            or "NodeInterface" in content
+            or "adapter" in content.lower()
         )
         assert has_python, f"{skill_name} mist Python-laag integratie"
 

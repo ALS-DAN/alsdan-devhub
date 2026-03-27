@@ -288,7 +288,7 @@ _CATALOGUE: list[_ResourceEntry] = [
         estimated_minutes=60,
         difficulty=3,
         evidence_grade="GOLD",
-        rationale="Het patroon achter NodeInterface + BorisAdapter in DevHub",
+        rationale="Het patroon achter NodeInterface + Provider adapters in DevHub",
     ),
     _ResourceEntry(
         domain="Architecture",

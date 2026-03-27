@@ -23,7 +23,7 @@ class TestNodeConfig:
             node_id="boris-buurts",
             name="BORIS",
             path="/tmp/boris",
-            adapter="devhub_core.adapters.boris_adapter.BorisAdapter",
+            adapter="devhub_integration.boris_node.BorisAdapter",
         )
         assert cfg.enabled is True
         assert cfg.devagents_enabled is False
@@ -170,3 +170,126 @@ nodes:
         registry.register(cfg)
         with pytest.raises(ImportError, match="Cannot load adapter"):
             registry.get_adapter("bad")
+
+
+# ---------------------------------------------------------------------------
+# Provider Pattern — externe adapters via sys.path
+# ---------------------------------------------------------------------------
+
+
+class TestProviderPattern:
+    """Tests voor het Provider Pattern: adapters laden van externe paden."""
+
+    def test_external_adapter_loaded_via_project_path(self, tmp_path):
+        """Adapter in een extern project-pad wordt gevonden via sys.path fallback."""
+        # Maak een extern adapter-pakket
+        pkg_dir = tmp_path / "ext_provider"
+        pkg_dir.mkdir()
+        (pkg_dir / "__init__.py").write_text("")
+        (pkg_dir / "my_adapter.py").write_text(
+            "from devhub_core.contracts.node_interface import (\n"
+            "    NodeHealth, NodeDocStatus, NodeInterface, NodeReport, TestResult,\n"
+            ")\n\n"
+            "class ExtAdapter(NodeInterface):\n"
+            "    def __init__(self, path): self.path = path\n"
+            "    def get_report(self):\n"
+            "        return NodeReport(\n"
+            "            node_id='ext', timestamp='t',\n"
+            "            health=NodeHealth(status='UP', components={},\n"
+            "                test_count=0, test_pass_rate=0.0, coverage_pct=0.0),\n"
+            "            doc_status=NodeDocStatus(total_pages=0, stale_pages=0,\n"
+            "                diataxis_coverage={}),\n"
+            "        )\n"
+            "    def get_health(self):\n"
+            "        return NodeHealth(status='UP', components={},\n"
+            "            test_count=0, test_pass_rate=0.0, coverage_pct=0.0)\n"
+            "    def list_docs(self): return []\n"
+            "    def run_tests(self):\n"
+            "        return TestResult(total=0, passed=0, failed=0, errors=0,\n"
+            "            duration_seconds=0.0)\n"
+        )
+
+        registry = NodeRegistry()
+        cfg = NodeConfig(
+            node_id="ext-test",
+            name="External",
+            path=str(tmp_path),
+            adapter="ext_provider.my_adapter.ExtAdapter",
+        )
+        registry.register(cfg)
+        adapter = registry.get_adapter("ext-test")
+        report = adapter.get_report()
+        assert report.node_id == "ext"
+
+    def test_sys_path_cleaned_after_external_import(self, tmp_path):
+        """sys.path bevat het project-pad niet meer na succesvolle import."""
+        import sys
+
+        pkg_dir = tmp_path / "clean_provider"
+        pkg_dir.mkdir()
+        (pkg_dir / "__init__.py").write_text("")
+        (pkg_dir / "adapter.py").write_text(
+            "from devhub_core.contracts.node_interface import (\n"
+            "    NodeHealth, NodeDocStatus, NodeInterface, NodeReport, TestResult,\n"
+            ")\n\n"
+            "class CleanAdapter(NodeInterface):\n"
+            "    def __init__(self, path): self.path = path\n"
+            "    def get_report(self):\n"
+            "        return NodeReport(\n"
+            "            node_id='clean', timestamp='t',\n"
+            "            health=NodeHealth(status='UP', components={},\n"
+            "                test_count=0, test_pass_rate=0.0, coverage_pct=0.0),\n"
+            "            doc_status=NodeDocStatus(total_pages=0, stale_pages=0,\n"
+            "                diataxis_coverage={}),\n"
+            "        )\n"
+            "    def get_health(self):\n"
+            "        return NodeHealth(status='UP', components={},\n"
+            "            test_count=0, test_pass_rate=0.0, coverage_pct=0.0)\n"
+            "    def list_docs(self): return []\n"
+            "    def run_tests(self):\n"
+            "        return TestResult(total=0, passed=0, failed=0, errors=0,\n"
+            "            duration_seconds=0.0)\n"
+        )
+
+        path_str = str(tmp_path)
+        # Zorg dat het pad er niet al in zit
+        if path_str in sys.path:
+            sys.path.remove(path_str)
+
+        registry = NodeRegistry()
+        cfg = NodeConfig(
+            node_id="clean-test",
+            name="Clean",
+            path=path_str,
+            adapter="clean_provider.adapter.CleanAdapter",
+        )
+        registry.register(cfg)
+        registry.get_adapter("clean-test")
+
+        assert path_str not in sys.path
+
+    def test_external_adapter_import_error_with_path(self, tmp_path):
+        """Duidelijke foutmelding bij ontbrekende adapter op extern pad."""
+        registry = NodeRegistry()
+        cfg = NodeConfig(
+            node_id="missing",
+            name="Missing",
+            path=str(tmp_path),
+            adapter="nonexistent_provider.adapter.Missing",
+        )
+        registry.register(cfg)
+        with pytest.raises(ImportError, match="Cannot load adapter"):
+            registry.get_adapter("missing")
+
+    def test_external_adapter_no_path_raises_import_error(self):
+        """Zonder project-pad faalt import met duidelijke melding."""
+        registry = NodeRegistry()
+        cfg = NodeConfig(
+            node_id="nopath",
+            name="NoPath",
+            path="/tmp",
+            adapter="totally_nonexistent.Adapter",
+        )
+        registry.register(cfg)
+        with pytest.raises(ImportError, match="Cannot load adapter"):
+            registry.get_adapter("nopath")

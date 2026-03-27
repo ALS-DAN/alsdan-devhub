@@ -128,10 +128,10 @@ def _contract_first_design() -> KnowledgeArticle:
         "In DevHub is NodeInterface het kerncontract: 13"
         " frozen dataclasses (NodeReport, HealthStatus,"
         " AgentManifest, etc.) plus een ABC met abstracte"
-        " methodes. BorisAdapter vertaalt BORIS-specifieke"
-        " data naar deze generieke types. Een tweede adapter"
-        " voor een ander project implementeert dezelfde"
-        " interface zonder de contracts te wijzigen.\n\n"
+        " methodes. Project-adapters (Providers) vertalen"
+        " project-specifieke data naar deze generieke types."
+        " Elk project implementeert dezelfde interface"
+        " zonder de contracts te wijzigen.\n\n"
         "Kernprincipes: (1) Geen vendor imports in"
         " contracts — alleen stdlib en eigen types."
         " (2) Adapters vertalen: vendor-type naar contract,"
@@ -153,7 +153,7 @@ def _contract_first_design() -> KnowledgeArticle:
         grade="SILVER",
         sources=(
             "devhub_core/contracts/node_interface.py",
-            "devhub_core/adapters/boris_adapter.py",
+            "devhub_core/registry.py",
         ),
         verification_pct=70.0,
         date="2026-03-27",
