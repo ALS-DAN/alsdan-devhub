@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: 3
-laatste_sprint: 27
-test_baseline: 1156
+laatste_sprint: 28
+test_baseline: 1191
 laatst_bijgewerkt: 2026-03-27
 ---
 
@@ -53,9 +53,9 @@ Skills + Governance (incl. 2b red-team).
 
 **Start:** 2026-03-25 (na Ops Validatie SPIKE)
 **Baseline:** 395 tests | 6 agents | 8 skills | 3 packages
-**Huidig:** 1165 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
+**Huidig:** 1191 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
-**Bijgewerkt:** 2026-03-27 — sprint 27 afgerond
+**Bijgewerkt:** 2026-03-27 — sprint 28 afgerond
 
 ---
 
@@ -111,7 +111,7 @@ _Nieuwe track — niet voorzien in originele planning. Uitgegroeid uit Track C v
 
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
-| Storage: Reconciliation engine | B | S | ⏳ WACHT | ░░░░░░░░░░░░ | Track B S3 |
+| Storage: Reconciliation engine | B | S | ✅ DONE | ████████████ | Track B S3 ✅ |
 | KWP DEV setup | — | S | ✅ DONE | ████████████ | KP Golf 2B ✅ |
 | SPIKE: Sprint Lifecycle Hygiene | — | XS | ✅ DONE | ████████████ | — |
 | FEAT: Lifecycle Hygiene Implementatie | — | S | ✅ DONE | ████████████ | SPIKE ✅ |
@@ -211,6 +211,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 25 | SPIKE: Sprint Lifecycle Hygiene | XS (<1u) | XS (<1u) | +0 | 100% |
 | 26 | FEAT: Lifecycle Hygiene Implementatie | S (1 sprint) | S (1 sprint) | +0 | 100% |
 | 27 | FEAT: Lifecycle Hygiene Afronding | XS (<1u) | XS (<1u) | +0 | 100% |
+| 28 | Storage: Reconciliation Engine | S (1 sprint) | S (1 sprint) | +35 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -218,10 +219,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 27 | Alle binnen geschatte tijd |
-| Test baseline | 1156 | Geverifieerd na Sprint 27 (1156 passed, 2 skipped) |
-| Gemiddelde test-delta | +42.5 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
-| Schattingsnauwkeurigheid | 100% | 27/27 sprints binnen appetite |
+| Sprints afgerond | 28 | Alle binnen geschatte tijd |
+| Test baseline | 1191 | Geverifieerd na Sprint 28 (1191 passed, 2 skipped) |
+| Gemiddelde test-delta | +42.1 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
+| Schattingsnauwkeurigheid | 100% | 28/28 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -259,6 +260,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | SPIKE: Lifecycle Hygiene | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | FEAT: Lifecycle Hygiene Impl. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | FEAT: Lifecycle Hygiene Afr. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
+| Storage: Reconciliation Engine | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
 
 ### Afgeleide SLA's
 

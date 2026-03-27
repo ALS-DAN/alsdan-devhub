@@ -26,6 +26,12 @@ from devhub_storage.contracts import (
 from devhub_storage.factory import StorageFactory
 from devhub_storage.interface import StorageInterface
 from devhub_storage.mixins import Organizable, Reconcilable, Watchable
+from devhub_storage.reconciliation import (
+    ReconciliationEngine,
+    ReconciliationSpec,
+    SpecItem,
+    parse_spec,
+)
 
 __version__ = "0.3.0"
 
@@ -55,6 +61,11 @@ __all__ = [
     "Organizable",
     "Reconcilable",
     "Watchable",
+    # Reconciliation
+    "ReconciliationEngine",
+    "ReconciliationSpec",
+    "SpecItem",
+    "parse_spec",
     # Exceptions
     "StorageAlreadyExistsError",
     "StorageError",

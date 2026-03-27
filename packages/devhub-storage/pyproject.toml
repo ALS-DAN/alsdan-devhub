@@ -1,6 +1,6 @@
 [project]
 name = "devhub-storage"
-version = "0.2.0"
+version = "0.3.0"
 description = "Storage interface and adapters for DevHub (Google Drive, SharePoint, local)"
 requires-python = ">=3.11"
 dependencies = [
@@ -13,11 +13,17 @@ google = [
     "google-auth>=2.0",
     "google-auth-oauthlib>=1.0",
 ]
+sharepoint = [
+    "msal>=1.0",
+    "httpx>=0.24",
+]
 test = ["hypothesis>=6.0"]
 dev = [
     "google-api-python-client>=2.0",
     "google-auth>=2.0",
     "google-auth-oauthlib>=1.0",
+    "msal>=1.0",
+    "httpx>=0.24",
     "hypothesis>=6.0",
 ]
 
