@@ -2,7 +2,7 @@
 
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
-status: INBOX
+status: DONE
 type: afhankelijkheidsdocument
 doel: Claude Code gebruikt dit om de juiste volgorde en parallellisatie te bepalen
 ---

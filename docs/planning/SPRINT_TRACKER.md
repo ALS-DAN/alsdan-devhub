@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 28
-test_baseline: 1191
+laatste_sprint: 29
+test_baseline: 1202
 laatst_bijgewerkt: 2026-03-27
 ---
 
@@ -217,6 +217,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 26 | FEAT: Lifecycle Hygiene Implementatie | S (1 sprint) | S (1 sprint) | +0 | 100% |
 | 27 | FEAT: Lifecycle Hygiene Afronding | XS (<1u) | XS (<1u) | +0 | 100% |
 | 28 | Storage: Reconciliation Engine | S (1 sprint) | S (1 sprint) | +35 | 100% |
+| 29 | KWP DEV Operationeel | S (1 sprint) | S (1 sprint) | +11 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -224,10 +225,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 28 | Alle binnen geschatte tijd |
-| Test baseline | 1191 | Geverifieerd na Sprint 28 (1191 passed, 2 skipped) |
-| Gemiddelde test-delta | +42.1 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
-| Schattingsnauwkeurigheid | 100% | 28/28 sprints binnen appetite |
+| Sprints afgerond | 29 | Alle binnen geschatte tijd |
+| Test baseline | 1202 | Geverifieerd na Sprint 29 (1202 passed, 2 skipped) |
+| Gemiddelde test-delta | +41.4 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
+| Schattingsnauwkeurigheid | 100% | 29/29 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -266,6 +267,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | FEAT: Lifecycle Hygiene Impl. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | FEAT: Lifecycle Hygiene Afr. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | Storage: Reconciliation Engine | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
+| KWP DEV Operationeel | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 
 ### Afgeleide SLA's
 

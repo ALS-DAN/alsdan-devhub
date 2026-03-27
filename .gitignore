@@ -18,3 +18,4 @@ docker/n8n-local-files/dev_os.db
 .mcp.json
 .claude/plans/
 .claude/scratchpad/
+.kwp-dev/
