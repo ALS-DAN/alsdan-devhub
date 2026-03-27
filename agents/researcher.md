@@ -62,14 +62,26 @@ author: researcher-agent
 <hoe dit relevant is voor DevHub en managed projecten>
 ```
 
+## Input-bronnen
+
+De researcher ontvangt onderzoeksvragen via twee kanalen:
+
+1. **Directe delegatie** — dev-lead wijst een onderzoeksvraag toe (bestaand)
+2. **ResearchQueue** — agents (coder, reviewer, planner) dienen zelf `ResearchRequest`s in via de queue wanneer ze kennislacunes detecteren (demand-driven)
+
+De queue is gedefinieerd in `devhub_core.contracts.research_contracts.ResearchQueue`. Requests bevatten: `requesting_agent`, `question`, `domain`, `depth` (QUICK/STANDARD/DEEP), `priority` (1-10), en optioneel `deadline` en `related_knowledge`.
+
+Bij het oppakken van werk: check eerst de queue (`next()` geeft het hoogste-prioriteit PENDING request), verwerk dat, en check daarna of er directe opdrachten zijn.
+
 ## Werkwijze
 
-1. **Ontvang onderzoeksvraag** van dev-lead
-2. **Zoek bronnen** via WebSearch, WebFetch, en bestaande `knowledge/` bestanden
-3. **Analyseer en verifieer** — kruis bronnen, check feiten
-4. **Gradeer de kennis** — GOLD (peer-reviewed/bewezen), SILVER (gedocumenteerd), BRONZE (ervaring), SPECULATIVE (aanname)
-5. **Schrijf kennisnotitie** in het juiste `knowledge/` subdomein
-6. **Rapporteer aan dev-lead** met samenvatting en pad naar notitie
+1. **Check ResearchQueue** — pak het hoogste-prioriteit PENDING request op via `queue.next()`
+2. **Of ontvang onderzoeksvraag** van dev-lead (directe delegatie)
+3. **Zoek bronnen** via WebSearch, WebFetch, en bestaande `knowledge/` bestanden
+4. **Analyseer en verifieer** — kruis bronnen, check feiten
+5. **Gradeer de kennis** — GOLD (peer-reviewed/bewezen), SILVER (gedocumenteerd), BRONZE (ervaring), SPECULATIVE (aanname)
+6. **Schrijf kennisnotitie** in het juiste `knowledge/` subdomein
+7. **Rond af** — bij queue-request: `queue.complete(request_id, response)` met ResearchResponse. Bij directe delegatie: rapporteer aan dev-lead
 
 ## Beperkingen
 

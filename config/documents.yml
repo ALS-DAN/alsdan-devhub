@@ -1,0 +1,9 @@
+documents:
+  default_format: markdown
+  adapters:
+    markdown:
+      enabled: true
+    odf:
+      enabled: true
+      requires: odfpy
+  output_dir: "output/documents"

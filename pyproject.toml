@@ -3,6 +3,7 @@ members = [
     "packages/devhub-core",
     "packages/devhub-storage",
     "packages/devhub-vectorstore",
+    "packages/devhub-documents",
 ]
 
 [tool.uv]
@@ -15,7 +16,7 @@ dev-dependencies = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["packages/devhub-core/tests", "packages/devhub-storage/tests", "packages/devhub-vectorstore/tests"]
+testpaths = ["packages/devhub-core/tests", "packages/devhub-storage/tests", "packages/devhub-vectorstore/tests", "packages/devhub-documents/tests"]
 asyncio_mode = "auto"
 
 [tool.ruff]
