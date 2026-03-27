@@ -3,7 +3,7 @@
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
-actieve_fase: 3
+actieve_fase: null
 laatste_sprint: 28
 test_baseline: 1191
 laatst_bijgewerkt: 2026-03-27
@@ -12,7 +12,7 @@ laatst_bijgewerkt: 2026-03-27
 ## Fase-overzicht
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄 → Fase 4 🔲 → Fase 5 🔲
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → Fase 3 ✅ → Fase 4 🔲 → Fase 5 🔲
 ```
 
 **Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
@@ -49,13 +49,18 @@ Skills + Governance (incl. 2b red-team).
 
 ---
 
-## Fase 3 — Knowledge & Memory (ACTIEF)
+## Fase 3 — Knowledge & Memory (Afgerond 2026-03-27)
 
 **Start:** 2026-03-25 (na Ops Validatie SPIKE)
 **Baseline:** 395 tests | 6 agents | 8 skills | 3 packages
-**Huidig:** 1191 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
+**Eindstand:** 1191 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
-**Bijgewerkt:** 2026-03-27 — sprint 28 afgerond
+
+| Sprints | Tests | Duur |
+|---------|-------|------|
+| 22 (Sprint 7-28, 5 tracks + KP) | 395 → 1191 (+796) | 3 dagen |
+
+**Retrospective:** `knowledge/retrospectives/RETRO_FASE3_KNOWLEDGE_MEMORY.md`
 
 ---
 
