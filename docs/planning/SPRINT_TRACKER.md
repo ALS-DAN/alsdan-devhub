@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 29
-test_baseline: 1202
+laatste_sprint: 30
+test_baseline: 673
 laatst_bijgewerkt: 2026-03-27
 ---
 
@@ -61,6 +61,18 @@ Skills + Governance (incl. 2b red-team).
 | 22 (Sprint 7-28, 5 tracks + KP) | 395 → 1191 (+796) | 3 dagen |
 
 **Retrospective:** `knowledge/retrospectives/RETRO_FASE3_KNOWLEDGE_MEMORY.md`
+
+---
+
+## Intermezzo — Provider Pattern (Sprint 30)
+
+_Standalone sprint tussen Fase 3 en Fase 4. BorisAdapter verhuisd van devhub-core naar BORIS repo (Provider Pattern / SPI). DevHub behoudt alleen het contract (NodeInterface ABC) en discovery (NodeRegistry + sys.path support)._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Provider Pattern | FEAT | S | ✅ DONE | ████████████ | BorisAdapter → BORIS, registry sys.path support, +4 tests |
+
+**Test-impact:** 1202 → 673 devhub tests (netto -529). Tests zijn verhuisd naar BORIS repo, niet verwijderd.
 
 ---
 
@@ -218,17 +230,19 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 27 | FEAT: Lifecycle Hygiene Afronding | XS (<1u) | XS (<1u) | +0 | 100% |
 | 28 | Storage: Reconciliation Engine | S (1 sprint) | S (1 sprint) | +35 | 100% |
 | 29 | KWP DEV Operationeel | S (1 sprint) | S (1 sprint) | +11 | 100% |
+| 30 | Provider Pattern | S (1 sprint) | S (1 sprint) | +4* | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
+*\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
 
 ### Afgeleide metrics
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 29 | Alle binnen geschatte tijd |
-| Test baseline | 1202 | Geverifieerd na Sprint 29 (1202 passed, 2 skipped) |
-| Gemiddelde test-delta | +41.4 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene) |
-| Schattingsnauwkeurigheid | 100% | 29/29 sprints binnen appetite |
+| Sprints afgerond | 30 | Alle binnen geschatte tijd |
+| Test baseline | 673 | Na Sprint 30 (verhuizing BorisAdapter tests naar BORIS repo) |
+| Gemiddelde test-delta | +39.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
+| Schattingsnauwkeurigheid | 100% | 30/30 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -268,6 +282,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | FEAT: Lifecycle Hygiene Afr. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | Storage: Reconciliation Engine | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
 | KWP DEV Operationeel | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
+| Provider Pattern | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 
 ### Afgeleide SLA's
 

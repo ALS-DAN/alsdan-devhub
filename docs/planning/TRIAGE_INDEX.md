@@ -18,7 +18,6 @@ Filter: `status: INBOX` in frontmatter.
 |---|------|---------|------|------|---------|
 | 1 | Research Compas Kennisvisie | `inbox/IDEA_DEVHUB_RESEARCH_COMPAS_KENNISVISIE_2026-03-27.md` | 3 | P3 | Strategische kennisvisie, nog niet geshaped |
 | 3 | Claude Optimalisatie Research | `inbox/RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23.md` | 2-3 | P3 | Achtergrond-research wanneer er ruimte is |
-| 4 | Provider Pattern Adapter Scheiding | `inbox/IDEA_PROVIDER_PATTERN_ADAPTER_SCHEIDING_2026-03-27.md` | 3 | P2 | BorisAdapter → BORIS repo, Provider Pattern / SPI |
 
 ---
 
@@ -57,6 +56,7 @@ Filter: `status: INBOX` in frontmatter.
 | SPRINT_INTAKE_MENTOR_SUPERVISOR_SYSTEEM_2026-03-23 | Sprint 12, 16, 23 |
 | SPRINT_INTAKE_GOVERNANCE_AUTOMATION_2026-03-25 | Sprint 13, 17 |
 
+| IDEA_PROVIDER_PATTERN_ADAPTER_SCHEIDING_2026-03-27 | Sprint 30 (Provider Pattern) |
 | KENNISPIPELINE_AFHANKELIJKHEDEN_2026-03-26 | Referentiedocument, alle deps afgerond |
 
 Ouder archief in `docs/planning/sprints/`:
