@@ -1,0 +1,22 @@
+# Kennispipeline configuratie — KWP DEV
+knowledge:
+  domains:
+    ai_engineering:
+      freshness_months: 3
+      description: "Prompt engineering, agent architectuur, RAG, context management"
+    claude_specific:
+      freshness_months: 6
+      description: "Model capabilities, Claude Code, MCP, plugin-architectuur"
+    python_architecture:
+      freshness_months: 12
+      description: "Design patterns, uv, Pydantic v2, testing"
+    development_methodology:
+      freshness_months: 12
+      description: "Shape Up, Cynefin, DORA metrics, trunk-based development"
+  health:
+    max_speculative_pct: 60
+    max_stale_pct: 20
+    max_single_source_pct: 70
+  grading:
+    gold_min_verification_pct: 80
+    silver_min_verification_pct: 50

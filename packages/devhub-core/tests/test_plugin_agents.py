@@ -12,7 +12,15 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 AGENTS_DIR = REPO_ROOT / "agents"
 
-REQUIRED_AGENTS = ["dev-lead", "coder", "reviewer", "researcher", "planner", "red-team"]
+REQUIRED_AGENTS = [
+    "dev-lead",
+    "coder",
+    "reviewer",
+    "researcher",
+    "planner",
+    "red-team",
+    "knowledge-curator",
+]
 VALID_MODELS = {"opus", "sonnet", "haiku"}
 
 

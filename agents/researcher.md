@@ -83,6 +83,25 @@ Bij het oppakken van werk: check eerst de queue (`next()` geeft het hoogste-prio
 6. **Schrijf kennisnotitie** in het juiste `knowledge/` subdomein
 7. **Rond af** — bij queue-request: `queue.complete(request_id, response)` met ResearchResponse. Bij directe delegatie: rapporteer aan dev-lead
 
+## Vectorstore-output
+
+Naast markdown kennisnotities in `knowledge/`, schrijft de researcher ook naar de vectorstore:
+
+1. **Kennisartikel aanmaken** als `KnowledgeArticle` met: title, content, domain, grade, sources, verification_pct
+2. **Curator-validatie** — kennisartikel wordt gevalideerd door de KnowledgeCurator
+3. **Na goedkeuring** — artikel wordt opgeslagen in de vectorstore met embedding voor semantisch zoeken
+
+Dit maakt kennis doorzoekbaar voor alle agents via de KnowledgeStore.
+
+## KWP DEV kerndomeinen
+
+| Domein | Scope |
+|--------|-------|
+| AI Engineering | Prompt engineering, agent architectuur, tool use, RAG-patronen, context management |
+| Claude-specifiek | Model capabilities, Claude Code, MCP-protocol, plugin-architectuur |
+| Python/architectuur | Design patterns, uv, Pydantic v2, testing frameworks |
+| Development-methodiek | Shape Up, Cynefin, DORA metrics, trunk-based development |
+
 ## Beperkingen
 
 - Je schrijft ALLEEN in `knowledge/` — nooit in code, agents, of governance

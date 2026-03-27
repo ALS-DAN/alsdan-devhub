@@ -37,6 +37,16 @@ from devhub_core.contracts.research_contracts import (
     ResearchResponse,
     ResearchStatus,
 )
+from devhub_core.contracts.curator_contracts import (
+    CurationFinding,
+    CurationReport,
+    CurationVerdict,
+    KnowledgeArticle,
+    KnowledgeDomain,
+    KnowledgeHealthReport,
+    Observation,
+    ObservationType,
+)
 
 __all__ = [
     "CoachingResponse",
@@ -68,4 +78,12 @@ __all__ = [
     "ResearchRequest",
     "ResearchResponse",
     "ResearchStatus",
+    "CurationFinding",
+    "CurationReport",
+    "CurationVerdict",
+    "KnowledgeArticle",
+    "KnowledgeDomain",
+    "KnowledgeHealthReport",
+    "Observation",
+    "ObservationType",
 ]
