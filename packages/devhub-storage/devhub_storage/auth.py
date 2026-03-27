@@ -171,3 +171,71 @@ class OAuth2Auth(StorageAuth):
             return creds.valid or (creds.expired and creds.refresh_token is not None)
         except Exception:
             return False
+
+
+@dataclass(frozen=True)
+class SharePointAuth(StorageAuth):
+    """Microsoft Entra ID (Azure AD) authenticatie via MSAL (client credentials).
+
+    Gebruikt de Microsoft Authentication Library (MSAL) voor OAuth2
+    client credentials flow. Geschikt voor server-to-server communicatie
+    zonder gebruikersinteractie.
+
+    Credentials worden NOOIT in code opgeslagen (DEV_CONSTITUTION Art. 8).
+    Gebruik environment variables of een secrets-manager.
+
+    Args:
+        tenant_id: Azure AD tenant ID.
+        client_id: Application (client) ID.
+        client_secret: Client secret waarde.
+        scopes: OAuth2 scopes (default: Microsoft Graph).
+    """
+
+    tenant_id: str
+    client_id: str
+    client_secret: str
+    scopes: tuple[str, ...] = ("https://graph.microsoft.com/.default",)
+
+    def __post_init__(self) -> None:
+        if not self.tenant_id:
+            raise ValueError("tenant_id is required")
+        if not self.client_id:
+            raise ValueError("client_id is required")
+        if not self.client_secret:
+            raise ValueError("client_secret is required")
+
+    def authenticate(self) -> Any:
+        """Authentiseer via MSAL client credentials flow.
+
+        Returns:
+            Dict met 'access_token' key.
+
+        Raises:
+            StorageAuthError: Bij authenticatie-fout.
+            ImportError: Als msal niet geinstalleerd is.
+        """
+        try:
+            import msal
+        except ImportError:
+            raise ImportError(
+                "msal is required for SharePointAuth. "
+                "Install with: uv pip install 'devhub-storage[sharepoint]'"
+            ) from None
+
+        authority = f"https://login.microsoftonline.com/{self.tenant_id}"
+        app = msal.ConfidentialClientApplication(
+            self.client_id,
+            authority=authority,
+            client_credential=self.client_secret,
+        )
+
+        result = app.acquire_token_for_client(scopes=list(self.scopes))
+        if "access_token" not in result:
+            error = result.get("error_description", result.get("error", "unknown"))
+            raise StorageAuthError(f"SharePoint authentication failed: {error}")
+
+        return result
+
+    def is_valid(self) -> bool:
+        """Controleer of credentials compleet zijn (kan niet token valideren zonder call)."""
+        return bool(self.tenant_id and self.client_id and self.client_secret)

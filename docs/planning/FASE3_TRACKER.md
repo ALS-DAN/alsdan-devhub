@@ -58,7 +58,7 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
-| Storage: SharePoint adapter | B | S | 📋 KLAAR | ░░░░░░░░░░░░ | Track B S2 ✅ |
+| Storage: SharePoint adapter | B | S | ✅ DONE | ████████████ | Track B S2 ✅ |
 | Vectorstore: Embeddings + DevHub Weaviate | C | S | ✅ DONE | ████████████ | Track C S2 ✅ |
 | Mentor: Research Advisor + Dashboard | M | S | ✅ DONE | ████████████ | Mentor S2 ✅ |
 
@@ -171,6 +171,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 21 | KP Golf 2B: KWP DEV Bootstrap | S (1 sprint) | S (1 sprint) | +29 | 100% |
 | 22 | KP Golf 3: Analyse Pipeline | S (1 sprint) | S (1 sprint) | +39 | 100% |
 | 23 | Mentor S3: Research Advisor + Dashboard | S (1 sprint) | S (1 sprint) | +49 | 100% |
+| 24 | Storage: SharePoint adapter | S (1 sprint) | S (1 sprint) | +34 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -178,10 +179,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 23 | Alle binnen geschatte tijd |
-| Test baseline | 1131 | Na Sprint 23 (Mentor S3) |
-| Gemiddelde test-delta | +42.9 | Per sprint (excl. UV workspace + Planning Opschoning) |
-| Schattingsnauwkeurigheid | 100% | 23/23 sprints binnen appetite |
+| Sprints afgerond | 24 | Alle binnen geschatte tijd |
+| Test baseline | 1165 | Na Sprint 24 (Storage SharePoint) |
+| Gemiddelde test-delta | +42.5 | Per sprint (excl. UV workspace + Planning Opschoning) |
+| Schattingsnauwkeurigheid | 100% | 24/24 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 **Opmerking:** De schattingsnauwkeurigheid is opvallend hoog. Dit kan betekenen dat (a) de schattingen conservatief zijn, of (b) de scope goed afgebakend is. Na Fase 3 sprints herijken.
@@ -217,6 +218,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | KP Golf 2B: KWP DEV Bootstrap | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
 | KP Golf 3: Analyse Pipeline | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
 | Mentor S3: Research Advisor | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
+| Storage: SharePoint adapter | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
 
 ### Afgeleide SLA's
 
