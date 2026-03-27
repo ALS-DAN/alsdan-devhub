@@ -2,12 +2,13 @@
 
 ---
 gegenereerd_door: "Sprint Operationele Validatie"
-status: INBOX
+status: DONE
 fase: 3
 prioriteit: P2 (verhoogd — 1/16 governance + 0/10 security automatisering is structureel onhoudbaar)
 sprint_type: FEAT
 cynefin: complicated (bekende patronen, vereist engineering)
 impact_zone: YELLOW (wijzigt QA Agent en voegt SecurityScanner toe)
+afgerond: 2026-03-26 (Golf 1 Governance: GA-01..GA-05 in qa_agent.py; Golf 2 Governance: SecurityScanner SA-01..SA-04; GA-06 in node_interface.py)
 bron: docs/planning/sprints/SPRINT_OPERATIONELE_VALIDATIE.md
 ---
 

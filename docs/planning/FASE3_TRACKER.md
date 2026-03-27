@@ -15,9 +15,10 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → FASE 3 🔄
 
 **Start:** 2026-03-25 (na Ops Validatie SPIKE)
 **Baseline:** 395 tests | 6 agents | 8 skills | 3 packages (core active, storage+vectorstore stubs)
-**Huidig:** 852 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0)
+**Huidig:** 1082 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline (research, analysis modules)
 **Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
 **Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
+**Bijgewerkt:** 2026-03-27 — kennispipeline Golf 1-3 (+230 tests) toegevoegd, KWP DEV als DONE, Vectorstore Golf 3 als DONE, test baseline gecorrigeerd 852→1082
 
 ---
 
@@ -58,15 +59,27 @@ Elke sprint bouwt voort op Golf 1. Start pas na succesvolle afronding van de bij
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
 | Storage: SharePoint adapter | B | S | 📋 KLAAR | ░░░░░░░░░░░░ | Track B S2 ✅ |
-| Vectorstore: Embeddings + DevHub Weaviate | C | S | 📋 KLAAR | ░░░░░░░░░░░░ | Track C S2 ✅ |
-| Mentor: Research Advisor + Dashboard | M | S | 📋 KLAAR | ░░░░░░░░░░░░ | Mentor S2 ✅ |
+| Vectorstore: Embeddings + DevHub Weaviate | C | S | ✅ DONE | ████████████ | Track C S2 ✅ |
+| Mentor: Research Advisor + Dashboard | M | S | ✅ DONE | ████████████ | Mentor S2 ✅ |
+
+### Kennispipeline Track (toegevoegd Golf 3+)
+
+_Nieuwe track — niet voorzien in originele planning. Uitgegroeid uit Track C vectorstore-werk._
+
+| Sprint | Track | Size | Status | Hill | Toelichting |
+|--------|-------|------|--------|------|-------------|
+| KP Golf 1: Research Contracts + DocumentInterface | KP | S | ✅ DONE | ████████████ | +79 tests, 931 totaal |
+| Track C S5: EmbeddingProvider implementaties | C | S | ✅ DONE | ████████████ | +30 tests, 961 totaal |
+| KP Golf 2A: KnowledgeCurator + Researcher verrijking | KP | S | ✅ DONE | ████████████ | +53 tests, 1014 totaal |
+| KP Golf 2B: KWP DEV Bootstrap | KP | S | ✅ DONE | ████████████ | +29 tests, 1043 totaal |
+| KP Golf 3: Analyse Pipeline | KP | S | ✅ DONE | ████████████ | +39 tests, 1082 totaal |
 
 ### Golf 4: Afsluiting & Integratie
 
 | Sprint | Track | Size | Status | Hill | Geblokkeerd door |
 |--------|-------|------|--------|------|------------------|
 | Storage: Reconciliation engine | B | S | ⏳ WACHT | ░░░░░░░░░░░░ | Track B S3 |
-| KWP DEV setup | — | S | ⏳ WACHT | ░░░░░░░░░░░░ | Track C S2+ |
+| KWP DEV setup | — | S | ✅ DONE | ████████████ | KP Golf 2B ✅ |
 
 ---
 
@@ -152,6 +165,12 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 15 | Vectorstore: Weaviate + Multi-tenancy | S (1 sprint) | S (1 sprint) | +59 | 100% |
 | 16 | Mentor: Challenge Engine + Scaffolding | S (1 sprint) | S (1 sprint) | +43 | 100% |
 | 17 | Governance: SecurityScanner | S (1 sprint) | S (1 sprint) | +34 | 100% |
+| 18 | KP Golf 1: Research Contracts + DocumentInterface | S (1 sprint) | S (1 sprint) | +79 | 100% |
+| 19 | Track C S5: EmbeddingProvider implementaties | S (1 sprint) | S (1 sprint) | +30 | 100% |
+| 20 | KP Golf 2A: KnowledgeCurator + Researcher verrijking | S (1 sprint) | S (1 sprint) | +53 | 100% |
+| 21 | KP Golf 2B: KWP DEV Bootstrap | S (1 sprint) | S (1 sprint) | +29 | 100% |
+| 22 | KP Golf 3: Analyse Pipeline | S (1 sprint) | S (1 sprint) | +39 | 100% |
+| 23 | Mentor S3: Research Advisor + Dashboard | S (1 sprint) | S (1 sprint) | +49 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 
@@ -159,10 +178,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 17 | Alle binnen geschatte tijd |
-| Test baseline | 852 | Na Sprint 17 (Governance S2) |
-| Gemiddelde test-delta | +37.7 | Per sprint (excl. UV workspace + Planning Opschoning) |
-| Schattingsnauwkeurigheid | 100% | 17/17 sprints binnen appetite |
+| Sprints afgerond | 23 | Alle binnen geschatte tijd |
+| Test baseline | 1131 | Na Sprint 23 (Mentor S3) |
+| Gemiddelde test-delta | +42.9 | Per sprint (excl. UV workspace + Planning Opschoning) |
+| Schattingsnauwkeurigheid | 100% | 23/23 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 **Opmerking:** De schattingsnauwkeurigheid is opvallend hoog. Dit kan betekenen dat (a) de schattingen conservatief zijn, of (b) de scope goed afgebakend is. Na Fase 3 sprints herijken.
@@ -192,6 +211,12 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Vectorstore: Weaviate | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
 | Mentor: Challenge Engine | 2026-03-23 | 2026-03-26 | 2026-03-26 | 3 dagen |
 | Governance: SecurityScanner | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
+| KP Golf 1: Research Contracts | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| Track C S5: EmbeddingProvider | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| KP Golf 2A: KnowledgeCurator | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| KP Golf 2B: KWP DEV Bootstrap | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| KP Golf 3: Analyse Pipeline | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
+| Mentor S3: Research Advisor | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 
 ### Afgeleide SLA's
 
@@ -209,13 +234,19 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 **Context:** Niels werkt solo, avonduren + weekenden (zie user_work_context memory).
 
-### Golf 1 capaciteit (actueel)
+### Golf 1-3 capaciteit (gerealiseerd)
 
 | Week | Beschikbaar | Allocatie | Status |
 |------|-------------|-----------|--------|
 | Week 1 (26 mrt) | Normaal | Golf 0 + Track B S1 + Track C S1 | ✅ Afgerond |
-| Week 2 (26 mrt) | Normaal | Planning Tracking (S) ✅ + Mentor S1 + Governance S1 | 🔄 Actief |
-| Week 3 | Normaal | Golf 1 afronden / Golf 2 voorbereiding | ⏳ |
+| Week 2 (26 mrt) | Normaal | Golf 1 (alle tracks) + Golf 2 (alle tracks) | ✅ Afgerond |
+| Week 3 (27 mrt) | Normaal | Kennispipeline Golf 1-3 + Track C S5 + Golf 4 (KWP DEV) | ✅ Afgerond |
+
+### Golf 4+ capaciteit (huidig)
+
+| Week | Beschikbaar | Allocatie | Status |
+|------|-------------|-----------|--------|
+| Week 4 (27 mrt+) | Normaal | Golf 3 openstaand: Storage SharePoint + Mentor S3 | 🔄 Actief |
 
 **Advies:** Niet meer dan 2 feature-sprints tegelijk. De derde plek gebruiken voor een CHORE of achtergrond-research.
 
@@ -226,8 +257,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | # | Risico | Impact | Status | Mitigatie |
 |---|--------|--------|--------|-----------|
 | R1 | Track B+C patroon-inconsistentie | Hoog | GEMITIGEERD | Beide S1's afgerond met consistent ABC + frozen dataclasses + factory patroon |
-| R2 | sentence-transformers dependency (~500MB) | Middel | OPEN | Optional dependency, lazy loading (Track C S2+) |
-| R3 | Weaviate versie-incompatibiliteit | Middel | OPEN | Pin op 1.27.x (Track C S2) |
+| R2 | sentence-transformers dependency (~500MB) | Middel | GEMITIGEERD | Optional dependency + lazy loading geïmplementeerd in Track C S5 |
+| R3 | Weaviate versie-incompatibiliteit | Middel | GEMITIGEERD | Opgelost in Track C S2+S5 |
 | R4 | GA-06 raakt NodeInterface ABC | Middel | GEMITIGEERD | Concrete default methode (niet abstract), backward compatible |
 | R5 | Capaciteitsoverschatting (avonduren) | Middel | OPEN | Conservatief plannen, max 2 parallel |
 
