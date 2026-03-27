@@ -212,3 +212,58 @@ class TestDevOrchestrator:
         orch = DevOrchestrator(registry, scratchpad_path=scratchpad)
         assert orch.get_current_task() is None
         assert orch.get_doc_queue() == []
+
+    # --- Golf 3: Analyse-taken ---
+
+    def test_create_analysis_task_returns_analyse_task_type(self, tmp_path):
+        registry = _make_registry_with_fake(tmp_path)
+        orch = DevOrchestrator(registry, scratchpad_path=tmp_path / "scratchpad")
+
+        task = orch.create_analysis_task(
+            question="Wat is de stand van zaken rond embeddings?",
+            title="Embeddings SOTA",
+        )
+
+        assert task.task_id.startswith("ANALYSE-")
+        assert task.task_type == "analyse"
+
+    def test_create_analysis_task_writes_to_scratchpad(self, tmp_path):
+        registry = _make_registry_with_fake(tmp_path)
+        scratchpad = tmp_path / "scratchpad"
+        orch = DevOrchestrator(registry, scratchpad_path=scratchpad)
+
+        orch.create_analysis_task(
+            question="Trade-offs tussen ChromaDB en Weaviate?",
+            title="Vector DB Vergelijking",
+            analysis_type="comparative",
+        )
+
+        queue_file = scratchpad / "analysis_queue.json"
+        assert queue_file.exists()
+        import json
+
+        data = json.loads(queue_file.read_text())
+        assert len(data) == 1
+        assert data[0]["analysis_type"] == "comparative"
+
+    def test_get_analysis_queue_empty_initially(self, tmp_path):
+        registry = _make_registry_with_fake(tmp_path)
+        orch = DevOrchestrator(registry, scratchpad_path=tmp_path / "scratchpad")
+
+        assert orch.get_analysis_queue() == []
+
+    def test_analysis_queue_roundtrip(self, tmp_path):
+        registry = _make_registry_with_fake(tmp_path)
+        orch = DevOrchestrator(registry, scratchpad_path=tmp_path / "scratchpad")
+
+        orch.create_analysis_task(
+            question="Hoe past Weaviate in DevHub?",
+            title="Weaviate Toepassingsanalyse",
+            analysis_type="application",
+            domains=["ai_engineering"],
+        )
+
+        queue = orch.get_analysis_queue()
+        assert len(queue) == 1
+        assert queue[0].title == "Weaviate Toepassingsanalyse"
+        assert queue[0].question == "Hoe past Weaviate in DevHub?"

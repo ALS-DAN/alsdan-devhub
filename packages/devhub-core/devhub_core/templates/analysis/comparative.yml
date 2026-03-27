@@ -1,0 +1,31 @@
+analysis_type: comparative
+title_prefix: "Vergelijkende Analyse:"
+description: "Wat zijn de trade-offs tussen [A] en [B]?"
+sections:
+  - id: scope
+    heading: "Scope en Vergelijkingscriteria"
+    prompt_hint: "Definieer wat vergeleken wordt en op welke dimensies"
+    required: true
+  - id: option_a
+    heading: "Optie A"
+    prompt_hint: "Beschrijf optie A op basis van kennisbank, inclusief voor- en nadelen"
+    required: true
+  - id: option_b
+    heading: "Optie B"
+    prompt_hint: "Beschrijf optie B op basis van kennisbank, inclusief voor- en nadelen"
+    required: true
+  - id: tradeoffs
+    heading: "Trade-offs Analyse"
+    prompt_hint: "Vergelijk de opties systematisch op elk criterium"
+    required: true
+  - id: gaps
+    heading: "Ontbrekende Informatie"
+    prompt_hint: "Welke informatie ontbreekt voor een volledige vergelijking?"
+    required: false
+  - id: recommendation
+    heading: "Aanbeveling"
+    prompt_hint: "Op basis van de analyse: welke optie past het beste bij de context?"
+    required: true
+search_domains: []
+default_depth: standard
+default_grade: SPECULATIVE

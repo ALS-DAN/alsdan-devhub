@@ -8,7 +8,17 @@ en QA Agent. Frozen voor immutability (conform BORIS ADR-049 pattern).
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Literal
+
+
+class TaskType(Enum):
+    """Type dev-taak voor DevOrchestrator routing."""
+
+    DEV = "dev"
+    DOCS = "docs"
+    QA = "qa"
+    ANALYSE = "analyse"
 
 
 @dataclass(frozen=True)
@@ -21,6 +31,7 @@ class DevTaskRequest:
     scope_files: list[str] = field(default_factory=list)
     constraints: list[str] = field(default_factory=list)
     sprint_ref: str | None = None  # e.g. "SPRINT_DEVAGENTS_F0"
+    task_type: str = "dev"  # TaskType.value — string voor JSON-serializatie
 
     def __post_init__(self) -> None:
         if not self.task_id:
@@ -29,6 +40,9 @@ class DevTaskRequest:
             raise ValueError("description is required")
         if not self.node_id:
             raise ValueError("node_id is required")
+        valid_types = {t.value for t in TaskType}
+        if self.task_type not in valid_types:
+            raise ValueError(f"task_type must be one of {valid_types}, got '{self.task_type}'")
 
 
 @dataclass(frozen=True)

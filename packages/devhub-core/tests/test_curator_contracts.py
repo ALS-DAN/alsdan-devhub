@@ -36,7 +36,10 @@ class TestObservationTypeEnum:
         assert ObservationType.INGEST_REJECTION.value == "ingest_rejection"
         assert ObservationType.HEALTH_DEGRADED.value == "health_degraded"
         assert ObservationType.DUPLICATE_DETECTED.value == "duplicate_detected"
-        assert len(ObservationType) == 6
+        assert ObservationType.ANALYSIS_COMPLETED.value == "analysis_completed"
+        assert ObservationType.ANALYSIS_FAILED.value == "analysis_failed"
+        assert ObservationType.KNOWLEDGE_GAP_DETECTED.value == "knowledge_gap_detected"
+        assert len(ObservationType) == 9
 
 
 class TestCurationVerdictEnum:

@@ -1,0 +1,27 @@
+analysis_type: sota
+title_prefix: "SOTA-Analyse:"
+description: "Wat is de huidige stand van zaken rondom [onderwerp]?"
+sections:
+  - id: context
+    heading: "Context en Achtergrond"
+    prompt_hint: "Beschrijf de huidige stand van de technologie of het onderwerp"
+    required: true
+  - id: findings
+    heading: "Bevindingen uit Kennisbank"
+    prompt_hint: "Vat de relevante kennisartikelen samen, inclusief gradering en bronnen"
+    required: true
+  - id: trends
+    heading: "Trends en Ontwikkelingen"
+    prompt_hint: "Welke ontwikkelingen zijn relevant voor de komende periode?"
+    required: false
+  - id: gaps
+    heading: "Kennisleemtes"
+    prompt_hint: "Welke vragen blijven onbeantwoord? Wat ontbreekt in de kennisbank?"
+    required: false
+  - id: conclusion
+    heading: "Conclusie"
+    prompt_hint: "Synthetiseer naar een antwoord op de onderzoeksvraag met kennisgradering"
+    required: true
+search_domains: []
+default_depth: standard
+default_grade: SPECULATIVE

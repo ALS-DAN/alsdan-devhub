@@ -1,0 +1,31 @@
+analysis_type: application
+title_prefix: "Toepassingsanalyse:"
+description: "Hoe past [technologie/patroon] in DevHub/[project]?"
+sections:
+  - id: technology
+    heading: "Technologie of Patroon"
+    prompt_hint: "Beschrijf de technologie of het patroon op basis van kennisbank"
+    required: true
+  - id: context
+    heading: "DevHub Context"
+    prompt_hint: "Beschrijf de huidige DevHub-architectuur en het toepassingsdomein"
+    required: true
+  - id: fit_analysis
+    heading: "Passendheid Analyse"
+    prompt_hint: "Hoe past dit in de bestaande architectuur? Wat zijn de integratiepunten?"
+    required: true
+  - id: risks
+    heading: "Risicos en Aandachtspunten"
+    prompt_hint: "Welke risicos of uitdagingen zijn er bij toepassing?"
+    required: false
+  - id: gaps
+    heading: "Kennisleemtes"
+    prompt_hint: "Welke informatie is nog nodig voor een weloverwogen beslissing?"
+    required: false
+  - id: conclusion
+    heading: "Conclusie en Volgende Stappen"
+    prompt_hint: "Is toepassing aanbevolen? Wat zijn de concrete volgende stappen?"
+    required: true
+search_domains: []
+default_depth: standard
+default_grade: SPECULATIVE

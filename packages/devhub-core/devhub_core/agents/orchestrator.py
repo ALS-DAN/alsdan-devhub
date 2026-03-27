@@ -16,8 +16,15 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
-from devhub_core.contracts.dev_contracts import DevTaskRequest, DevTaskResult, DocGenRequest
+from devhub_core.contracts.analysis_contracts import AnalysisRequest, AnalysisType
+from devhub_core.contracts.dev_contracts import (
+    DevTaskRequest,
+    DevTaskResult,
+    DocGenRequest,
+    TaskType,
+)
 from devhub_core.contracts.node_interface import NodeReport
+from devhub_core.contracts.research_contracts import ResearchDepth
 from devhub_core.registry import NodeRegistry
 
 logger = logging.getLogger(__name__)
@@ -152,6 +159,7 @@ class DevOrchestrator:
             return None
         try:
             data = json.loads(task_file.read_text())
+            data.setdefault("task_type", "dev")  # backward-compat voor oude JSON zonder task_type
             return DevTaskRequest(**data)
         except (json.JSONDecodeError, TypeError, ValueError):
             logger.warning("DevOrchestrator: current_task.json corrupt")
@@ -181,6 +189,91 @@ class DevOrchestrator:
         if queue_file.exists():
             queue_file.unlink()
 
+    def create_analysis_task(
+        self,
+        question: str,
+        title: str,
+        analysis_type: str = "free",
+        domains: list[str] | None = None,
+        depth: str = "standard",
+        skip_research: bool = False,
+        sprint_ref: str | None = None,
+    ) -> DevTaskRequest:
+        """Maak een analyse-taak aan en schrijf naar scratchpad.
+
+        Args:
+            question: De onderzoeksvraag.
+            title: Titel voor het analyse-document.
+            analysis_type: Type analyse (sota/comparative/application/free).
+            domains: Domeinen om te doorzoeken in KWP DEV.
+            depth: Onderzoeksdiepte (quick/standard/deep).
+            skip_research: Sla aanvullend onderzoek over.
+            sprint_ref: Sprint referentie.
+
+        Returns:
+            DevTaskRequest met task_type=ANALYSE.
+        """
+        task_id = f"ANALYSE-{datetime.now(UTC).strftime('%Y%m%d-%H%M%S')}"
+
+        task = DevTaskRequest(
+            task_id=task_id,
+            description=question,
+            node_id="devhub",
+            task_type=TaskType.ANALYSE.value,
+            sprint_ref=sprint_ref,
+        )
+
+        try:
+            analysis_type_enum = AnalysisType(analysis_type)
+        except ValueError:
+            analysis_type_enum = AnalysisType.FREE
+
+        try:
+            depth_enum = ResearchDepth(depth)
+        except ValueError:
+            depth_enum = ResearchDepth.STANDARD
+
+        analysis_request = AnalysisRequest(
+            request_id=task_id,
+            title=title,
+            question=question,
+            analysis_type=analysis_type_enum,
+            domains=tuple(domains or ["general"]),
+            depth=depth_enum,
+            skip_research=skip_research,
+            requesting_agent="dev-orchestrator",
+            created_at=datetime.now(UTC).isoformat(),
+        )
+
+        self._write_analysis_queue(analysis_request)
+        self._write_task(task)
+        logger.info("DevOrchestrator: analyse-taak %s aangemaakt", task_id)
+        return task
+
+    def get_analysis_queue(self) -> list[AnalysisRequest]:
+        """Lees de analyse-wachtrij uit scratchpad."""
+        queue_file = self._scratchpad / "analysis_queue.json"
+        if not queue_file.exists():
+            return []
+        try:
+            data = json.loads(queue_file.read_text())
+            result = []
+            for item in data:
+                item["analysis_type"] = AnalysisType(item["analysis_type"])
+                item["depth"] = ResearchDepth(item["depth"])
+                item["domains"] = tuple(item["domains"])
+                result.append(AnalysisRequest(**item))
+            return result
+        except (json.JSONDecodeError, TypeError, ValueError):
+            logger.warning("DevOrchestrator: analysis_queue.json corrupt")
+            return []
+
+    def clear_analysis_queue(self) -> None:
+        """Leeg de analyse-wachtrij."""
+        queue_file = self._scratchpad / "analysis_queue.json"
+        if queue_file.exists():
+            queue_file.unlink()
+
     # --- Privé helpers ---
 
     def _write_task(self, task: DevTaskRequest) -> None:
@@ -198,4 +291,30 @@ class DevOrchestrator:
             except json.JSONDecodeError:
                 queue = []
         queue.append(asdict(doc_request))
+        queue_file.write_text(json.dumps(queue, indent=2))
+
+    def _write_analysis_queue(self, request: AnalysisRequest) -> None:
+        """Voeg een analyse-opdracht toe aan de wachtrij."""
+        queue_file = self._scratchpad / "analysis_queue.json"
+        queue: list[dict] = []
+        if queue_file.exists():
+            try:
+                queue = json.loads(queue_file.read_text())
+            except json.JSONDecodeError:
+                queue = []
+        # Handmatig serialiseren: enums naar string-values
+        item = {
+            "request_id": request.request_id,
+            "title": request.title,
+            "question": request.question,
+            "analysis_type": request.analysis_type.value,
+            "domains": list(request.domains),
+            "depth": request.depth.value,
+            "skip_research": request.skip_research,
+            "output_format": request.output_format,
+            "output_dir": request.output_dir,
+            "requesting_agent": request.requesting_agent,
+            "created_at": request.created_at,
+        }
+        queue.append(item)
         queue_file.write_text(json.dumps(queue, indent=2))

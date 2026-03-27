@@ -29,6 +29,9 @@ class ObservationType(Enum):
     INGEST_REJECTION = "ingest_rejection"
     HEALTH_DEGRADED = "health_degraded"
     DUPLICATE_DETECTED = "duplicate_detected"
+    ANALYSIS_COMPLETED = "analysis_completed"
+    ANALYSIS_FAILED = "analysis_failed"
+    KNOWLEDGE_GAP_DETECTED = "knowledge_gap_detected"
 
 
 class CurationVerdict(Enum):

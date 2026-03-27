@@ -20,6 +20,7 @@ REQUIRED_SKILLS = [
     "devhub-research-loop",
     "devhub-governance-check",
     "devhub-redteam",
+    "devhub-analyse",
 ]
 
 # Secties die elke skill moet bevatten (minimaal één per groep)

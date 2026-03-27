@@ -1,0 +1,23 @@
+analysis_type: free
+title_prefix: "Analyse:"
+description: "Beantwoord [onderzoeksvraag]"
+sections:
+  - id: question
+    heading: "Onderzoeksvraag"
+    prompt_hint: "Formuleer de centrale vraag en de scope van de analyse"
+    required: true
+  - id: findings
+    heading: "Bevindingen"
+    prompt_hint: "Vat de relevante kennis samen op basis van de kennisbank"
+    required: true
+  - id: gaps
+    heading: "Kennisleemtes"
+    prompt_hint: "Welke vragen blijven onbeantwoord?"
+    required: false
+  - id: conclusion
+    heading: "Conclusie"
+    prompt_hint: "Synthetiseer naar een antwoord op de onderzoeksvraag"
+    required: true
+search_domains: []
+default_depth: standard
+default_grade: SPECULATIVE
