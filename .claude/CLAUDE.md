@@ -26,8 +26,9 @@ De runtime — analyseert, decomponeert, checkt kwaliteit. Gemanaged als uv work
 | Package | Pad | Status |
 |---------|-----|--------|
 | devhub-core | `packages/devhub-core/` | Actief (v0.2.0) |
-| devhub-storage | `packages/devhub-storage/` | Stub (v0.1.0) |
-| devhub-vectorstore | `packages/devhub-vectorstore/` | Stub (v0.1.0) |
+| devhub-storage | `packages/devhub-storage/` | Actief (v0.3.0) |
+| devhub-vectorstore | `packages/devhub-vectorstore/` | Actief (v0.3.0) |
+| devhub-documents | `packages/devhub-documents/` | Actief (v0.1.0) |
 
 **Aanroepen vanuit agents:**
 ```bash
@@ -102,7 +103,7 @@ fase: 3
 - `.claude/agents/` (project-level agents: dev_orchestrator, docs_agent, qa_agent) zijn INTERN — niet wijzigen vanuit plugin-context
 - `agents/` (plugin-level agents: dev-lead, coder) zijn voor DISTRIBUTIE
 - Beide mogen naast elkaar bestaan
-- Bestaande tests (218+) moeten altijd groen blijven
+- Bestaande tests (882+) moeten altijd groen blijven
 - Geen secrets, credentials of PII in commits (Art. 8)
 - Voordat je planning-artifacts aanmaakt of wijzigt: lees SPRINT_TRACKER.md en `docs/adr/` (Art. 9 DEV_CONSTITUTION)
 - SPRINT_TRACKER.md is het single source of truth voor alle fase-tracking (ADR-003). Geen losse fase-trackers aanmaken.

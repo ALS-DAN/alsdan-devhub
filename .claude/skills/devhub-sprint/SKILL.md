@@ -14,34 +14,65 @@ De kracht: (1) governance-gate die implementatie zonder akkoord voorkomt, (2) co
 ## Setup
 
 Voordat deze skill werkt, moet de target node geregistreerd zijn in `config/nodes.yml`.
-De skill gebruikt de BorisAdapter (of andere NodeInterface-implementatie) om node-data te lezen.
+Bij BORIS-sprints gebruikt de skill de BorisAdapter (of andere NodeInterface-implementatie) om node-data te lezen.
 
 ```python
+# Alleen bij node: boris-buurts (of andere managed node)
 from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
-adapter = registry.get_adapter("boris-buurts")
+adapter = registry.get_adapter("<node-id>")  # bijv. "boris-buurts"
 ```
 
 ---
 
 ## Workflow: Sprint Start
 
-### 0. Intake-scan + context (altijd eerst)
+### -1. Node bepalen (ALTIJD EERST — vóór alles)
 
-**0A — Sprint-type detecteren + context ophalen:**
+> **HARD GATE**: Laad GEEN context voordat de node bepaald is.
 
-Controleer het `node:` veld in de sprint-intake (of de werkmap):
-- `node: devhub` (of geen node-veld) → **DevHub-pad**: skip adapter-calls, laad alleen DevHub-docs
-- `node: boris-buurts` → **BORIS-pad**: laad volledige node-context via adapter
+Bepaal de target node op één van deze manieren:
+1. **Intake-bestand aanwezig**: lees het `node:` veld uit de frontmatter
+2. **Geen intake**: VRAAG de developer welke node (devhub of boris-buurts)
+3. **Geen node-veld in intake**: default = `devhub`
 
-**DevHub-pad** (geen BORIS-context nodig):
+Resultaat: `node = devhub` of `node = boris-buurts`
+
+> Lanceer NOOIT parallel agents voor meerdere nodes. Eén node per sprint-start.
+
+---
+
+### 0. Intake-scan + context (pad volgt uit stap -1)
+
+#### DevHub-pad (node: devhub)
+
+Laad ALLEEN DevHub-eigen bestanden. Geen adapter-calls, geen BORIS-context.
+
+**0A — DevHub-context ophalen:**
 - Lees `docs/planning/SPRINT_TRACKER.md` — golf-positie, actieve sprint, velocity
 - Lees `docs/planning/TRIAGE_INDEX.md` — inbox-items met `status: INBOX`
 - Lees de sprint-intake indien aanwezig
 
-**BORIS-pad** (node: boris-buurts):
+**0B — Inbox scannen (DevHub):**
+- Scan `docs/planning/inbox/` voor bestanden met `status: INBOX` en `node: devhub` (of geen node-veld)
+- Toon kandidaten aan developer
+- Bij keuze: lees het gekozen intake-bestand
+
+**0C — SPRINT_TRACKER positie:**
+- Vind de sprint in de golfplanning tabel
+- Rapporteer huidige golf, actieve sprints, en volgende kandidaten
+
+> Spring naar stap 0G (readiness assessment) na DevHub-context.
+
+---
+
+#### BORIS-pad (node: boris-buurts)
+
+Laad volledige node-context via adapter.
+
+**0A — BORIS-context ophalen:**
 - Haal NodeReport op via `adapter.get_report()` — health, doc status, observaties
 - Lees CLAUDE.md via `adapter.read_claude_md()` — actieve sprint, constraints
 - Lees OVERDRACHT.md via `adapter.read_overdracht()` — recente beslissingen, open werk
@@ -56,7 +87,7 @@ Controleer het `node:` veld in de sprint-intake (of de werkmap):
 - Benoem het kritiek pad (welk item blokkeert andere?)
 - Check open beslissingen uit OVERDRACHT.md
 
-**0D — Inbox scannen:**
+**0D — Inbox scannen (BORIS):**
 - Haal inbox op via `adapter.list_inbox()`
 - Toon SPRINT_INTAKE_* en IDEA_* bestanden aan developer
 - Bij keuze voor een intake: lees via `adapter.read_file(intake_path)`
@@ -66,7 +97,7 @@ Controleer het `node:` veld in de sprint-intake (of de werkmap):
 - Toon telling per state: INBOX / TRIAGED / SHAPING / READY / IN_SPRINT
 - Benoem aging items (>30 dagen in TRIAGED)
 
-**0F — SPRINT_TRACKER positie (DevHub-sprints):**
+**0F — SPRINT_TRACKER positie (alleen DevHub-sprints):**
 - Lees `docs/planning/SPRINT_TRACKER.md`
 - Vind de sprint in de golfplanning tabel
 - Update status: 📋 KLAAR → 🔄 ACTIEF
@@ -111,9 +142,14 @@ Acties om READY te worden:
 
 > Bij NIET READY: presenteer acties aan developer. Implementatie start pas na READY.
 
-### 1. Context laden
+### 1. Context laden (node-specifiek)
 
-Lees altijd (via adapter):
+**DevHub-pad:**
+- Lees `docs/planning/SPRINT_TRACKER.md` — actieve sprint, velocity, golf-positie
+- Lees het gekozen sprint-doc of intake-bestand
+- Lees relevante `docs/adr/` als de sprint architectuur raakt
+
+**BORIS-pad (via adapter):**
 - `adapter.read_claude_md()` — rollen, sprint status, module-map
 - `adapter.read_overdracht()` — actieve sprint, recente beslissingen
 - `adapter.read_goals()` — huidige top-goals en roadmap-context
@@ -229,6 +265,10 @@ success, output = adapter.run_herald_sync("Sprint NAAM afgerond")
 ---
 
 ## Regels (altijd van toepassing)
+- **Node-keuze eerst** — laad GEEN context voordat de node bepaald is (stap -1)
+- **Één node per sprint** — lanceer nooit parallel agents voor meerdere nodes
+- **Respecteer Claude Code modes** — in plan mode: alleen planbestand schrijven, geen memory, geen edits, geen code
+- **Vraag toestemming voor memory** — schrijf nooit feedback of memories zonder expliciete developer-goedkeuring
 - Één fase tegelijk — geen scope creep
 - Test-first: geen feature zonder test
 - Developer beslist. DevHub voert uit.

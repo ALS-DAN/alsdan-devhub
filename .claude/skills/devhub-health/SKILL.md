@@ -12,21 +12,47 @@ De kracht: (1) het vaste contract (`FullHealthReport`) met severity levels zorgt
 
 ## Setup
 
-De target node moet geregistreerd zijn in `config/nodes.yml`.
+Bij BORIS-sprints moet de target node geregistreerd zijn in `config/nodes.yml`.
 
 ```python
+# Alleen bij node: boris-buurts (of andere managed node)
 from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
-adapter = registry.get_adapter("boris-buurts")
+adapter = registry.get_adapter("<node-id>")  # bijv. "boris-buurts"
 ```
 
 ---
 
 ## Workflow
 
-### Stap 0: Node-context laden
+### Stap -1: Node bepalen (ALTIJD EERST — vóór alles)
+
+> **HARD GATE**: Laad GEEN context voordat de node bepaald is.
+
+Bepaal de target node:
+1. **Developer specificeert node**: gebruik die
+2. **Geen specificatie**: VRAAG de developer welke node (devhub of boris-buurts)
+3. **Contextclue**: als je in een DevHub-sprint zit → `devhub`, als je in een BORIS-sprint zit → `boris-buurts`
+
+> Lanceer NOOIT parallel agents voor meerdere nodes.
+
+---
+
+### Stap 0: Node-context laden (pad volgt uit stap -1)
+
+#### DevHub-pad (node: devhub)
+
+Geen adapter-calls. Draai lokale checks direct:
+- `uv run pytest` — testcount + slagen/falen
+- `uv run ruff check` — lint status
+- Lees `docs/planning/SPRINT_TRACKER.md` — test baseline, actieve sprint
+- Lees recente health-reports in `docs/reports/` indien aanwezig
+
+> Spring naar stap 1 met lokale resultaten.
+
+#### BORIS-pad (node: boris-buurts)
 
 ```python
 report = adapter.get_report()  # NodeReport: health, doc_status, observaties
@@ -198,6 +224,10 @@ Alleen als de developer expliciet vraagt, of als er ≥2 P2-bevindingen zijn:
 
 ## Regels (altijd van toepassing)
 
+- **Node-keuze eerst** — laad GEEN context voordat de node bepaald is (stap -1)
+- **Één node per check** — lanceer nooit parallel agents voor meerdere nodes
+- **Respecteer Claude Code modes** — in plan mode: alleen planbestand schrijven, geen memory, geen edits
+- **Vraag toestemming voor memory** — schrijf nooit feedback of memories zonder expliciete developer-goedkeuring
 - Health check is **ALTIJD read-only** — nooit corrigerende acties zonder akkoord
 - Bij ❌ Kritiek: **direct melden** aan developer, geen automatische fixes
 - **Deterministisch**: geen LLM-aanroepen in het health check proces zelf

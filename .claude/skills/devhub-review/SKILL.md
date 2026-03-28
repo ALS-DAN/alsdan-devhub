@@ -16,21 +16,48 @@ De kracht: (1) de QA Agent checklist garandeert dat standaard-checks nooit verge
 ## Setup
 
 ```python
-from devhub_core.registry import NodeRegistry
 from devhub_core.agents.qa_agent import QAAgent
 from devhub_core.contracts.dev_contracts import DevTaskResult
+
+qa = QAAgent()
+
+# Alleen bij node: boris-buurts (of andere managed node)
+from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
-adapter = registry.get_adapter("boris-buurts")
-qa = QAAgent()
+adapter = registry.get_adapter("<node-id>")  # bijv. "boris-buurts"
 ```
 
 ---
 
 ## Workflow
 
-### Stap 1: Wijzigingen verzamelen
+### Stap 0: Node bepalen (ALTIJD EERST — vóór alles)
+
+> **HARD GATE**: Laad GEEN context voordat de node bepaald is.
+
+Bepaal de target node:
+1. **Developer specificeert node**: gebruik die
+2. **Geen specificatie**: VRAAG de developer welke node (devhub of boris-buurts)
+3. **Contextclue**: als je in een DevHub-sprint zit → `devhub`, als je in een BORIS-sprint zit → `boris-buurts`
+
+> Lanceer NOOIT parallel agents voor meerdere nodes.
+
+---
+
+### Stap 1: Wijzigingen verzamelen (pad volgt uit stap 0)
+
+#### DevHub-pad (node: devhub)
+
+Verzamel wijzigingen via directe git commands:
+- `git diff` — unstaged changes
+- `git diff --staged` — staged changes
+- `git diff --name-only` + `git diff --staged --name-only` — gewijzigde bestanden
+
+QA Agent werkt direct op het DevHub-project (geen adapter nodig).
+
+#### BORIS-pad (node: boris-buurts)
 
 ```python
 ctx = adapter.get_review_context()
@@ -155,6 +182,10 @@ Severity levels: CRITICAL > ERROR > WARNING > INFO
 
 ## Regels
 
+- **Node-keuze eerst** — laad GEEN context voordat de node bepaald is (stap 0)
+- **Één node per review** — lanceer nooit parallel agents voor meerdere nodes
+- **Respecteer Claude Code modes** — in plan mode: alleen planbestand schrijven, geen memory, geen edits
+- **Vraag toestemming voor memory** — schrijf nooit feedback of memories zonder expliciete developer-goedkeuring
 - Review is **ALTIJD read-only** — nooit zelf code wijzigen tijdens review
 - Bij twijfel: rapporteer, laat de developer beslissen
 - Nieuwe code zonder tests = automatisch ⚠️ WARNING

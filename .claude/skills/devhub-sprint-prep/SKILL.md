@@ -20,18 +20,64 @@ Synthetiseer alle beschikbare bronnen tot een beslissingsklare SPRINT_INPUT. Het
 ## Setup
 
 ```python
+# Alleen bij node: boris-buurts (of andere managed node)
 from devhub_core.registry import NodeRegistry
 from pathlib import Path
 
 registry = NodeRegistry(config_path=Path("config/nodes.yml"))
-adapter = registry.get_adapter("boris-buurts")
+adapter = registry.get_adapter("<node-id>")  # bijv. "boris-buurts"
 ```
 
 ---
 
 ## Workflow
 
-### Stap 1: Alle context in één call ophalen
+### Stap 0: Node bepalen (ALTIJD EERST — vóór alles)
+
+> **HARD GATE**: Laad GEEN context voordat de node bepaald is.
+
+Bepaal de target node op één van deze manieren:
+1. **Intake-bestand aanwezig**: lees het `node:` veld uit de frontmatter
+2. **Geen intake**: VRAAG de developer welke node (devhub of boris-buurts)
+3. **Geen node-veld in intake**: default = `devhub`
+
+Resultaat: `node = devhub` of `node = boris-buurts`
+
+> Lanceer NOOIT parallel agents voor meerdere nodes.
+
+---
+
+### Stap 1: Context ophalen (pad volgt uit stap 0)
+
+#### DevHub-pad (node: devhub)
+
+Laad ALLEEN DevHub planning directories. Geen adapter-calls, geen BORIS-context.
+
+```
+docs/planning/inbox/              — Nieuwe items (SPRINT_INTAKE_*, IDEA_*, RESEARCH_*)
+docs/planning/backlog/            — Shaped items klaar voor sprint
+docs/planning/sprints/            — Afgeronde en actieve sprints
+docs/planning/parked/             — Buiten huidige fase, niet vergeten
+docs/planning/TRIAGE_INDEX.md     — Overzicht van alle items + tellingen
+docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
+docs/planning/SPRINT_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
+```
+
+**Acties:**
+1. Lees `docs/planning/TRIAGE_INDEX.md` voor actuele tellingen en fase-positie
+2. Lees `docs/planning/SPRINT_TRACKER.md` voor golfplanning-status, velocity en capaciteit
+3. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
+4. Scan `docs/planning/inbox/` voor nieuwe items met `node: devhub` (of geen node-veld) die nog getriaged moeten worden
+5. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden
+6. Vermeld het aantal items per directory in de SPRINT_INPUT output
+
+> Spring naar stap 2 (systeem-status) na DevHub-context. Stappen 3-5 (developer-signaal, decisions, ADRs) gebruiken directe file reads in plaats van adapter-calls.
+
+---
+
+#### BORIS-pad (node: boris-buurts)
+
+Laad project-context via adapter, PLUS DevHub planning directories.
 
 ```python
 ctx = adapter.get_sprint_prep_context()
@@ -50,30 +96,15 @@ Dit levert een dict met:
 | `sprint_docs` | Actieve sprint-documenten |
 | `adr_files` | Beschikbare ADR bestanden |
 
-### Stap 1b: DevHub planningssysteem scannen
+Scan daarna ook de DevHub planning directories (TRIAGE_INDEX, SPRINT_TRACKER, inbox) voor cross-referentie.
 
-Naast project-specifieke context, scan de DevHub planning directories:
-
-```
-docs/planning/inbox/              — Nieuwe items (SPRINT_INTAKE_*, IDEA_*, RESEARCH_*)
-docs/planning/backlog/            — Shaped items klaar voor sprint
-docs/planning/sprints/            — Afgeronde en actieve sprints
-docs/planning/parked/             — Buiten huidige fase, niet vergeten
-docs/planning/TRIAGE_INDEX.md     — Overzicht van alle items + tellingen
-docs/planning/ROADMAP.md          — Strategische roadmap + fase-positie
-docs/planning/SPRINT_TRACKER.md    — Golfplanning, velocity, cycle time, capaciteit
-```
-
-**Acties:**
-1. Lees `docs/planning/TRIAGE_INDEX.md` voor actuele tellingen en fase-positie
-2. Lees `docs/planning/SPRINT_TRACKER.md` voor golfplanning-status, velocity en capaciteit
-3. Scan `docs/planning/backlog/` voor items die klaar zijn voor de komende sprint
-4. Scan `docs/planning/inbox/` voor nieuwe items die nog getriaged moeten worden
-5. Controleer of backlog-items voldoen aan de DoR voordat ze in de sprint opgenomen worden
-6. Vermeld het aantal items per directory in de SPRINT_INPUT output
+---
 
 ### Stap 2: Systeem-status analyseren
 
+**DevHub-pad:** Draai `uv run pytest` en `uv run ruff check` lokaal. Rapporteer testcount en lint-status.
+
+**BORIS-pad:**
 ```python
 health_status = ctx["health_status"]
 health_report = ctx["health_report_latest"]
@@ -202,6 +233,10 @@ Of: _Geen open beslissingen — sprint kan direct starten._
 
 ## Regels
 
+- **Node-keuze eerst** — laad GEEN context voordat de node bepaald is (stap 0)
+- **Één node per prep** — lanceer nooit parallel agents voor meerdere nodes
+- **Respecteer Claude Code modes** — in plan mode: alleen planbestand schrijven, geen memory, geen edits
+- **Vraag toestemming voor memory** — schrijf nooit feedback of memories zonder expliciete developer-goedkeuring
 - **READ-ONLY** — schrijft alleen SPRINT_INPUT.md
 - **Synthese boven opsomming** — trek conclusies, niet alles herhalen
 - **Leeslijst is verplicht** — altijd invullen
