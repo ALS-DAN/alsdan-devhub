@@ -46,13 +46,40 @@ from devhub_core.contracts.node_interface import FullHealthReport
 health_report: FullHealthReport = adapter.run_full_health_check()
 ```
 
-Dit voert 6 dimensies uit in volgorde:
+Dit voert 7 dimensies uit in volgorde:
 1. **Code Quality** — tests (`run_tests()`) + lint (`run_lint()`)
 2. **Dependencies** — CVE scan (`run_pip_audit()`)
 3. **Version Consistency** — versie-sync check (`get_version_info()`)
 4. **Architecture** — module/config/CI integriteit (`get_architecture_scan()`)
-5. **Vectorstore** — curator audit of directory fallback
-6. **n8n Workflows** — bereikbaarheid en workflow count
+5. **Knowledge Health** — domein-dekking, RQ-dekking, grading, freshness (Sprint 35)
+6. **Vectorstore** — curator audit of directory fallback
+7. **n8n Workflows** — bereikbaarheid en workflow count
+
+#### Stap 1.5: Knowledge Health (optioneel, als vectorstore beschikbaar)
+
+```python
+from devhub_core.research.knowledge_health import KnowledgeHealthChecker
+from devhub_core.research.knowledge_config import load_knowledge_config
+from devhub_core.research.knowledge_store import KnowledgeStore
+
+config = load_knowledge_config(
+    Path("config/knowledge.yml"),
+    Path("config/agent_knowledge.yml"),
+)
+# Alleen als vectorstore beschikbaar:
+checker = KnowledgeHealthChecker(config, store)
+health_dim = checker.check()
+```
+
+Als vectorstore offline: rapporteer "Knowledge Health: niet testbaar — vectorstore offline".
+
+Beoordeling:
+| Aspect | Gezond | Aandacht | Kritiek |
+|--------|--------|----------|---------|
+| Domein-dekking | Alle domeinen ≥1 artikel | >50% domeinen leeg | >80% domeinen leeg |
+| RQ-dekking | ≥80% gemiddeld | 50-79% | <50% |
+| Grading | ≥30% SILVER+GOLD | 10-29% | <10% |
+| Freshness | Geen stale domeinen | 1-2 stale | ≥3 stale |
 
 ### Stap 2: MCP Services (optioneel, als backend draait)
 
@@ -97,6 +124,7 @@ Genereer het rapport in dit format:
 | Dependencies | [✅/⚠️/❌] | [summary] |
 | Version Consistency | [✅/⚠️/❌] | [summary] |
 | Architecture | [✅/⚠️/❌] | [summary] |
+| Knowledge Health | [✅/⚠️/❌] | [summary] |
 | Vectorstore | [✅/⚠️/❌] | [summary] |
 | n8n Workflows | [✅/⚠️/❌] | [summary] |
 

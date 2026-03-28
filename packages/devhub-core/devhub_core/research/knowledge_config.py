@@ -15,6 +15,20 @@ from devhub_core.contracts.curator_contracts import KnowledgeDomain
 
 
 @dataclass(frozen=True)
+class SeedQuestion:
+    """Een seed-vraag voor auto-bootstrap."""
+
+    question: str
+    rq_tag: str
+
+    def __post_init__(self) -> None:
+        if not self.question:
+            raise ValueError("question is required")
+        if not self.rq_tag:
+            raise ValueError("rq_tag is required")
+
+
+@dataclass(frozen=True)
 class RingConfig:
     """Configuratie voor een ring (core/agent/project)."""
 
@@ -36,6 +50,7 @@ class DomainConfig:
     description: str = ""
     node_scope: str = ""
     monitored_sources: tuple[str, ...] = ()
+    seed_questions: tuple[SeedQuestion, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.name:
@@ -137,6 +152,13 @@ def load_knowledge_config(
             description=cfg.get("description", ""),
             node_scope=cfg.get("node_scope", ""),
             monitored_sources=tuple(cfg.get("monitored_sources", [])),
+            seed_questions=tuple(
+                SeedQuestion(
+                    question=sq["question"],
+                    rq_tag=sq["rq_tag"],
+                )
+                for sq in cfg.get("seed_questions", [])
+            ),
         )
         for name, cfg in domains_raw.items()
     )

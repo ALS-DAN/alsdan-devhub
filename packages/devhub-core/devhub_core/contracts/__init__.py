@@ -54,6 +54,13 @@ from devhub_core.contracts.pipeline_contracts import (
     KnowledgeContext,
     PublishStatus,
 )
+from devhub_core.contracts.scanner_contracts import (
+    BootstrapAuditReport,
+    BootstrapDomainReport,
+    DomainScanStatus,
+    KnowledgeScanResult,
+    grade_gte,
+)
 
 __all__ = [
     "CoachingResponse",
@@ -98,4 +105,9 @@ __all__ = [
     "FolderRoute",
     "KnowledgeContext",
     "PublishStatus",
+    "BootstrapAuditReport",
+    "BootstrapDomainReport",
+    "DomainScanStatus",
+    "KnowledgeScanResult",
+    "grade_gte",
 ]

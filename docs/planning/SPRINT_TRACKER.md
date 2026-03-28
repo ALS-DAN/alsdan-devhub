@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 34
-test_baseline: 814
+laatste_sprint: 35
+test_baseline: 882
 laatst_bijgewerkt: 2026-03-28
 ---
 
@@ -113,6 +113,16 @@ _DocumentService orchestrator verbindt vectorstore → documents → storage. Fo
 | Sprint | Type | Size | Status | Hill | Toelichting |
 |--------|------|------|--------|------|-------------|
 | Doc Pipeline & BORIS-blauwdruk | FEAT | S | ✅ DONE | ████████████ | DocumentService, FolderRouter, 4 documenten, +71 tests |
+
+---
+
+## Intermezzo — Research Compas Runtime & Bootstrap (Sprint 35)
+
+_KnowledgeScanner (pre-task knowledge scan), ConfigDrivenBootstrap (Ring 1 auto-bootstrap), KnowledgeHealthChecker (7e health dimensie). Kennisketen end-to-end operationeel._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Research Compas — Runtime & Bootstrap | FEAT | S | ✅ DONE | ████████████ | KnowledgeScanner, ConfigDrivenBootstrap, KnowledgeHealthChecker, +83 tests |
 
 ---
 
@@ -275,6 +285,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 32 | Diátaxis+ Taxonomie & PoC | S (1 sprint) | S (1 sprint) | +70 | 100% |
 | 33 | Research Compas — Config & Contracts | S (1 sprint) | S (1 sprint) | +56 | 100% |
 | 34 | Doc Pipeline & BORIS-blauwdruk | S (1 sprint) | S (1 sprint) | +71 | 100% |
+| 35 | Research Compas — Runtime & Bootstrap | S (1 sprint) | S (1 sprint) | +83 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -283,10 +294,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 34 | Alle binnen geschatte tijd |
-| Test baseline | 814 | Na Sprint 34 (Doc Pipeline & BORIS-blauwdruk) |
-| Gemiddelde test-delta | +42.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
-| Schattingsnauwkeurigheid | 100% | 34/34 sprints binnen appetite |
+| Sprints afgerond | 35 | Alle binnen geschatte tijd |
+| Test baseline | 882 | Na Sprint 35 (Research Compas Runtime & Bootstrap) |
+| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
+| Schattingsnauwkeurigheid | 100% | 35/35 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -331,6 +342,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Diátaxis+ Taxonomie & PoC | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Research Compas Config & Contracts | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Doc Pipeline & BORIS-blauwdruk | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Research Compas Runtime & Bootstrap | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 
 ### Afgeleide SLA's
 

@@ -12,6 +12,7 @@ from devhub_core.research.knowledge_config import (
     DomainConfig,
     KnowledgeConfig,
     RingConfig,
+    SeedQuestion,
     load_knowledge_config,
 )
 
@@ -268,3 +269,52 @@ class TestLoadKnowledgeConfig:
         claude = config.get_domain("claude_specific")
         assert claude is not None
         assert len(claude.monitored_sources) > 0
+
+    def test_load_seed_questions_core_domains(self) -> None:
+        """Alle kerndomeinen hebben minstens 6 seed questions."""
+        config = load_knowledge_config(KNOWLEDGE_YML)
+        for d in config.domains_by_ring("core"):
+            assert (
+                len(d.seed_questions) >= 6
+            ), f"Core domain {d.name} has only {len(d.seed_questions)} seed questions"
+
+    def test_load_seed_questions_rq_tags_valid(self) -> None:
+        """Seed question rq_tags moeten in het domein's rq_focus zitten."""
+        config = load_knowledge_config(KNOWLEDGE_YML)
+        for d in config.domains_by_ring("core"):
+            for sq in d.seed_questions:
+                assert sq.rq_tag in d.rq_focus, (
+                    f"Domain {d.name}: seed question rq_tag {sq.rq_tag} "
+                    f"not in rq_focus {d.rq_focus}"
+                )
+
+    def test_load_seed_questions_non_core_empty(self) -> None:
+        """Non-core domeinen hebben geen seed questions."""
+        config = load_knowledge_config(KNOWLEDGE_YML)
+        for d in config.domains:
+            if d.ring != "core":
+                assert (
+                    len(d.seed_questions) == 0
+                ), f"Non-core domain {d.name} should not have seed questions"
+
+
+class TestSeedQuestion:
+    """Tests voor SeedQuestion dataclass."""
+
+    def test_creation(self) -> None:
+        sq = SeedQuestion(question="Test vraag?", rq_tag="RQ1")
+        assert sq.question == "Test vraag?"
+        assert sq.rq_tag == "RQ1"
+
+    def test_frozen(self) -> None:
+        sq = SeedQuestion(question="Test", rq_tag="RQ1")
+        with pytest.raises(AttributeError):
+            sq.question = "other"  # type: ignore[misc]
+
+    def test_question_required(self) -> None:
+        with pytest.raises(ValueError, match="question is required"):
+            SeedQuestion(question="", rq_tag="RQ1")
+
+    def test_rq_tag_required(self) -> None:
+        with pytest.raises(ValueError, match="rq_tag is required"):
+            SeedQuestion(question="Test", rq_tag="")

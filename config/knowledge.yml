@@ -21,6 +21,19 @@ knowledge:
       related_domains: [claude_specific, python_architecture]
       bootstrap_priority: 1
       description: "Prompt engineering, agent architectuur, RAG, context management"
+      seed_questions:
+        - question: "Wat zijn de huidige SOTA prompt engineering technieken en anti-patronen?"
+          rq_tag: RQ1
+        - question: "Welke multi-agent architectuur patronen zijn bewezen effectief?"
+          rq_tag: RQ1
+        - question: "Wat zijn de beste RAG chunking strategieën voor kennisbanken?"
+          rq_tag: RQ4
+        - question: "Wat zijn bewezen tool use patterns en best practices voor LLM agents?"
+          rq_tag: RQ4
+        - question: "Hoe optimaliseer je context window management bij grote codebases?"
+          rq_tag: RQ5
+        - question: "Welke agent memory patronen zijn er voor korte en lange termijn persistentie?"
+          rq_tag: RQ5
     claude_specific:
       ring: core
       freshness_months: 1
@@ -31,6 +44,19 @@ knowledge:
       monitored_sources:
         - "https://docs.anthropic.com/en/docs/changelog"
         - "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code"
+      seed_questions:
+        - question: "Wat zijn de actuele capabilities en beperkingen van Claude modellen?"
+          rq_tag: RQ1
+        - question: "Wat zijn bewezen Claude Code best practices en workflow patronen?"
+          rq_tag: RQ1
+        - question: "Hoe werkt het MCP protocol en wat zijn security best practices?"
+          rq_tag: RQ4
+        - question: "Wat is de optimale structuur voor Claude Code plugins?"
+          rq_tag: RQ4
+        - question: "Hoe ontwerp je effectieve system prompts voor complexe agent-taken?"
+          rq_tag: RQ6
+        - question: "Wat zijn de trade-offs tussen Claude modellen voor agent-taken?"
+          rq_tag: RQ6
     python_architecture:
       ring: core
       freshness_months: 12
@@ -38,6 +64,19 @@ knowledge:
       related_domains: [ai_engineering, testing_qa]
       bootstrap_priority: 2
       description: "Design patterns, uv, Pydantic v2, testing"
+      seed_questions:
+        - question: "Wanneer gebruik je ABC + frozen dataclass vs. Protocol + TypedDict?"
+          rq_tag: RQ2
+        - question: "Wat zijn best practices voor uv workspace monorepo management?"
+          rq_tag: RQ2
+        - question: "Wat zijn moderne pytest patronen: fixture design en parametrize?"
+          rq_tag: RQ4
+        - question: "Pydantic v2 vs. frozen dataclasses: wanneer welke?"
+          rq_tag: RQ4
+        - question: "Welke factory pattern varianten zijn er in Python?"
+          rq_tag: RQ5
+        - question: "Hoe ontwerp je een effectieve adapter/interface laag?"
+          rq_tag: RQ5
     development_methodology:
       ring: core
       freshness_months: 12
@@ -45,6 +84,19 @@ knowledge:
       related_domains: [sprint_planning, product_ownership]
       bootstrap_priority: 2
       description: "Shape Up, Cynefin, DORA metrics, trunk-based development"
+      seed_questions:
+        - question: "Hoe pas je Shape Up toe in solo/klein team development?"
+          rq_tag: RQ4
+        - question: "Hoe gebruik je het Cynefin framework voor technische beslissingen?"
+          rq_tag: RQ4
+        - question: "Hoe implementeer je DORA metrics in een solo developer context?"
+          rq_tag: RQ5
+        - question: "Trunk-based development vs. feature branches voor AI-assisted development?"
+          rq_tag: RQ5
+        - question: "Hoe combineer je iteratieve planning met governance vereisten?"
+          rq_tag: RQ6
+        - question: "Wat zijn bewezen sprint retrospective patronen voor continuous improvement?"
+          rq_tag: RQ6
     governance_compliance:
       ring: core
       freshness_months: 6
@@ -52,6 +104,19 @@ knowledge:
       related_domains: [security_appsec, development_methodology]
       bootstrap_priority: 3
       description: "DEV_CONSTITUTION, ADR governance, audit compliance, impact-zonering"
+      seed_questions:
+        - question: "Wat zijn best practices voor ADR governance in software projecten?"
+          rq_tag: RQ5
+        - question: "Hoe ontwerp je effectieve impact-zonering voor AI agents?"
+          rq_tag: RQ5
+        - question: "Welke compliance frameworks zijn relevant voor AI development systemen?"
+          rq_tag: RQ6
+        - question: "Hoe implementeer je audit trails voor AI-gegenereerde code?"
+          rq_tag: RQ6
+        - question: "Wat zijn bewezen patronen voor human-in-the-loop governance?"
+          rq_tag: RQ5
+        - question: "Hoe balanceer je autonomie en controle in AI-assisted development?"
+          rq_tag: RQ6
 
     # --- Ring 2: Agent-specifiek (8) ---
     sprint_planning:
