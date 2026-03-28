@@ -4,18 +4,18 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 35
-test_baseline: 882
+laatste_sprint: 40
+test_baseline: 1357
 laatst_bijgewerkt: 2026-03-28
 ---
 
 ## Fase-overzicht
 
 ```
-Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → Fase 3 ✅ → Fase 4 🔲 → Fase 5 🔲
+Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → Fase 3 ✅ → Fase 4 🔄 → Fase 5 🔲
 ```
 
-**Fase 4 gate:** NIET starten zonder expliciete Niels-goedkeuring (DEV_CONSTITUTION Art. 1).
+**Fase 4 gate:** Goedgekeurd door Niels (2026-03-28).
 
 ---
 
@@ -123,6 +123,49 @@ _KnowledgeScanner (pre-task knowledge scan), ConfigDrivenBootstrap (Ring 1 auto-
 | Sprint | Type | Size | Status | Hill | Toelichting |
 |--------|------|------|--------|------|-------------|
 | Research Compas — Runtime & Bootstrap | FEAT | S | ✅ DONE | ████████████ | KnowledgeScanner, ConfigDrivenBootstrap, KnowledgeHealthChecker, +83 tests |
+
+---
+
+## Intermezzo — Node-Guardrails & Procesverbetering (Sprint 36+37)
+
+_Skill-guardrails: node-keuze als hard gate, DevHub/BORIS-pad splitsing, 4 procesregels per skill. Toegepast op devhub-sprint (Sprint 36) en devhub-sprint-prep, devhub-health, devhub-review (Sprint 37)._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Node-Guardrails devhub-sprint | CHORE | XS | ✅ DONE | ████████████ | Node-keuze stap, DevHub-pad, mode-bewaking |
+| Node-Guardrails 3 skills | CHORE | XS | ✅ DONE | ████████████ | sprint-prep, health, review — zelfde guardrails |
+
+---
+
+## Intermezzo — DriveSyncAdapter (Sprint 38)
+
+_Google Drive sync via filesystem adapter. Lokale folder-sync strategie i.p.v. Google Cloud API._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| DriveSyncAdapter | FEAT | S | ✅ DONE | ████████████ | Google Drive via filesystem sync, +26 tests |
+
+**Test-impact:** 882 → 1357 tests (+475). Inclusief nieuwe storage-tests.
+
+---
+
+## Fase 4 — Agent Teams SPIKE (Sprint 39)
+
+_SPIKE: onderzoek of Claude Code Agent Teams DevHub's agents kan upgraden. Conclusie: GEPARKEERD — custom agents niet als teammates, nog experimenteel._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Agent Teams Activatie | SPIKE | XS | ✅ DONE | ████████████ | Fact-finding + gate-check → GEPARKEERD herbevestigd |
+
+---
+
+## Fase 4 — n8n Event Scheduler SPIKE (Sprint 40)
+
+_SPIKE: onderzoek n8n als externe event-scheduler. Conclusie: GO — `claude -p` via Execute Command, file-based event queue, Docker lokaal, <$5/maand. 3 PoC workflows ontworpen, prioriteringsmatrix voor 9 IDEAs._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| n8n Event Scheduler | SPIKE | XS | ✅ DONE | ████████████ | GO — architectuur + 2 PoC ontwerpen + prioriteringsmatrix |
 
 ---
 
@@ -286,18 +329,24 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 33 | Research Compas — Config & Contracts | S (1 sprint) | S (1 sprint) | +56 | 100% |
 | 34 | Doc Pipeline & BORIS-blauwdruk | S (1 sprint) | S (1 sprint) | +71 | 100% |
 | 35 | Research Compas — Runtime & Bootstrap | S (1 sprint) | S (1 sprint) | +83 | 100% |
+| 36 | Node-Guardrails devhub-sprint | XS (<1u) | XS (<1u) | +0 | 100% |
+| 37 | Node-Guardrails 3 skills | XS (<1u) | XS (<1u) | +0 | 100% |
+| 38 | DriveSyncAdapter | S (1 sprint) | S (1 sprint) | +475* | 100% |
+| 39 | Agent Teams SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
+| 40 | n8n Event Scheduler SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
+*\* DriveSyncAdapter: +26 nieuwe tests, netto +475 door inclusie BORIS-project tests in workspace.*
 
 ### Afgeleide metrics
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 35 | Alle binnen geschatte tijd |
-| Test baseline | 882 | Na Sprint 35 (Research Compas Runtime & Bootstrap) |
-| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
-| Schattingsnauwkeurigheid | 100% | 35/35 sprints binnen appetite |
+| Sprints afgerond | 40 | Alle binnen geschatte tijd |
+| Test baseline | 1357 | Na Sprint 38 (DriveSyncAdapter) |
+| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails*) |
+| Schattingsnauwkeurigheid | 100% | 40/40 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -343,6 +392,11 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Research Compas Config & Contracts | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Doc Pipeline & BORIS-blauwdruk | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Research Compas Runtime & Bootstrap | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Node-Guardrails devhub-sprint | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Node-Guardrails 3 skills | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| DriveSyncAdapter | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Agent Teams SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| n8n Event Scheduler SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 
 ### Afgeleide SLA's
 

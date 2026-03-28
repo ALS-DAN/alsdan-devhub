@@ -37,9 +37,9 @@ Niels wil een kennisbank aanleggen over "perfecte productontwikkeling" — een e
   - Werkwijze (Shape Up, DoR, impact-zonering)
   - EVIDENCE-grading: SILVER (gebaseerd op eigen architectuur + ADRs)
 - [ ] **Output in Markdown + ODF** — beide adapters testen met het PoC-document
-- [ ] **Google Drive mappenstructuur** — handmatig aanmaken en document uploaden als validatie:
+- [ ] **Google Drive mappenstructuur via LocalAdapter** — Drive voor Desktop sync pad: `~/Library/CloudStorage/GoogleDrive-<email>/My Drive/`. Schrijf via `LocalAdapter` naar dit pad, Drive synct automatisch. Geen API/OAuth nodig.
   ```
-  /DevHub/
+  My Drive/DevHub/
     /explanation/
     /tutorial/
     /howto/
@@ -53,6 +53,9 @@ Niels wil een kennisbank aanleggen over "perfecte productontwikkeling" — een e
     /playbook/
     /retrospective/
   ```
+  - Mappenstructuur aanmaken via LocalAdapter.mkdir()
+  - PoC-document direct naar `My Drive/DevHub/explanation/` schrijven
+  - Verifiëren dat bestand in Google Drive verschijnt na sync
 - [ ] **Taxonomie-documentatie** — een `reference`-document dat de taxonomie zelf beschrijft (meta: de kennisbank documenteert zichzelf)
 
 ## Afhankelijkheden
@@ -88,7 +91,8 @@ Fase 3 — Knowledge & Memory. Past direct: de kennispipeline (Track K) is opera
 - Gebruik bestaande `DocumentFormat` enum als patroon voor een nieuwe `DocumentCategory` enum in contracts.py
 - Breid `documents.yml` uit met `taxonomy` sectie
 - Genereer het PoC-document via DocsAgent → DocumentRequest → MarkdownAdapter + ODFAdapter
-- Mappenstructuur: `output/documents/{category}/` lokaal, `/DevHub/{category}/` in Drive
+- Mappenstructuur: `output/documents/{category}/` lokaal, via LocalAdapter naar `~/Library/CloudStorage/GoogleDrive-<email>/My Drive/DevHub/{category}/` (Drive voor Desktop sync)
+- **Geen GoogleDriveAdapter API nodig** — LocalAdapter schrijft naar Drive-map, Drive synct automatisch
 
 ## DEV_CONSTITUTION impact
 
