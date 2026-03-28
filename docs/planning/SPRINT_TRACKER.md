@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 32
-test_baseline: 743
+laatste_sprint: 34
+test_baseline: 814
 laatst_bijgewerkt: 2026-03-28
 ---
 
@@ -93,6 +93,16 @@ _Documentatie-taxonomie uitgebreid van 4 naar 12 categorieën (3 lagen), PoC doc
 | Sprint | Type | Size | Status | Hill | Toelichting |
 |--------|------|------|--------|------|-------------|
 | Diátaxis+ Taxonomie & PoC | FEAT | S | ✅ DONE | ████████████ | DocumentCategory enum, 8 templates, 2 documenten, +70 tests |
+
+---
+
+## Intermezzo — Research Compas Configuratie & Contracts (Sprint 33)
+
+_Drie-ringen domeinstructuur (Core/Agent/Project), KnowledgeDomain 4→16, RQ-tagging op contracts, knowledge.yml + agent_knowledge.yml configuratie, KnowledgeConfig parser._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Research Compas — Configuratie & Contracts | FEAT | S | ✅ DONE | ████████████ | 16 domeinen, RQ-tags, agent profiles, +56 tests |
 
 ---
 
@@ -253,6 +263,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 30 | Provider Pattern | S (1 sprint) | S (1 sprint) | +4* | 100% |
 | 31 | Claude Optimalisatie Research | XS (<1u) | XS (<1u) | +0 | 100% |
 | 32 | Diátaxis+ Taxonomie & PoC | S (1 sprint) | S (1 sprint) | +70 | 100% |
+| 33 | Research Compas — Config & Contracts | S (1 sprint) | S (1 sprint) | +56 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -261,10 +272,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 32 | Alle binnen geschatte tijd |
-| Test baseline | 743 | Na Sprint 32 (Diátaxis+ Taxonomie PoC) |
-| Gemiddelde test-delta | +41.0 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
-| Schattingsnauwkeurigheid | 100% | 32/32 sprints binnen appetite |
+| Sprints afgerond | 33 | Alle binnen geschatte tijd |
+| Test baseline | 799 | Na Sprint 33 (Research Compas Config & Contracts) |
+| Gemiddelde test-delta | +41.6 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
+| Schattingsnauwkeurigheid | 100% | 33/33 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -307,6 +318,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Provider Pattern | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
 | Claude Optimalisatie Research | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 | Diátaxis+ Taxonomie & PoC | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Research Compas Config & Contracts | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 
 ### Afgeleide SLA's
 
