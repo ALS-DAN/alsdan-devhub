@@ -106,6 +106,16 @@ _Drie-ringen domeinstructuur (Core/Agent/Project), KnowledgeDomain 4→16, RQ-ta
 
 ---
 
+## Intermezzo — Documentatie-productie Pipeline (Sprint 34)
+
+_DocumentService orchestrator verbindt vectorstore → documents → storage. FolderRouter voor node-specifieke routing. CredentialResolver voor OAuth2. BORIS-blauwdruk als node-config._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Doc Pipeline & BORIS-blauwdruk | FEAT | S | ✅ DONE | ████████████ | DocumentService, FolderRouter, 4 documenten, +71 tests |
+
+---
+
 ## Golfplanning (Fase 3)
 
 ### Golf 0: Opruiming ✅
@@ -264,6 +274,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 31 | Claude Optimalisatie Research | XS (<1u) | XS (<1u) | +0 | 100% |
 | 32 | Diátaxis+ Taxonomie & PoC | S (1 sprint) | S (1 sprint) | +70 | 100% |
 | 33 | Research Compas — Config & Contracts | S (1 sprint) | S (1 sprint) | +56 | 100% |
+| 34 | Doc Pipeline & BORIS-blauwdruk | S (1 sprint) | S (1 sprint) | +71 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -272,10 +283,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 33 | Alle binnen geschatte tijd |
-| Test baseline | 799 | Na Sprint 33 (Research Compas Config & Contracts) |
-| Gemiddelde test-delta | +41.6 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
-| Schattingsnauwkeurigheid | 100% | 33/33 sprints binnen appetite |
+| Sprints afgerond | 34 | Alle binnen geschatte tijd |
+| Test baseline | 814 | Na Sprint 34 (Doc Pipeline & BORIS-blauwdruk) |
+| Gemiddelde test-delta | +42.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern*) |
+| Schattingsnauwkeurigheid | 100% | 34/34 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -319,6 +330,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Claude Optimalisatie Research | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
 | Diátaxis+ Taxonomie & PoC | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Research Compas Config & Contracts | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Doc Pipeline & BORIS-blauwdruk | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 
 ### Afgeleide SLA's
 

@@ -74,6 +74,7 @@ Deze items waren geparkeerd maar zijn nu ontgrendeld doordat hun dependencies zi
 | IDEA_PROVIDER_PATTERN_ADAPTER_SCHEIDING_2026-03-27 | Sprint 30 (Provider Pattern) |
 | RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23 | Sprint 31 (Claude Optimalisatie Research) |
 | SPRINT_INTAKE_DIATAXIS_PLUS_TAXONOMIE_POC_2026-03-28 | Sprint 32 (Diátaxis+ Taxonomie & PoC) |
+| SPRINT_INTAKE_DOCUMENTATIE_PIPELINE_BORIS_BLAUWDRUK_2026-03-28 | Sprint 34 (Doc Pipeline & BORIS-blauwdruk) |
 | KENNISPIPELINE_AFHANKELIJKHEDEN_2026-03-26 | Referentiedocument, alle deps afgerond |
 
 Ouder archief in `docs/planning/sprints/`:
