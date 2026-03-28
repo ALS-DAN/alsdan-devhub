@@ -1,18 +1,142 @@
 # Kennispipeline configuratie — KWP DEV
+# Research Compas: drie-ringen domeinstructuur (Sprint 33)
 knowledge:
+  rings:
+    core:
+      description: "Altijd actief, alle agents"
+      auto_bootstrap: true
+    agent:
+      description: "Geactiveerd per agent-profiel"
+      auto_bootstrap: false
+    project:
+      description: "Node-specifiek, geactiveerd via nodes.yml"
+      auto_bootstrap: false
+
   domains:
+    # --- Ring 1: Core (5) ---
     ai_engineering:
+      ring: core
       freshness_months: 3
+      rq_focus: [RQ1, RQ4, RQ5]
+      related_domains: [claude_specific, python_architecture]
+      bootstrap_priority: 1
       description: "Prompt engineering, agent architectuur, RAG, context management"
     claude_specific:
-      freshness_months: 6
+      ring: core
+      freshness_months: 1
+      rq_focus: [RQ1, RQ4, RQ6]
+      related_domains: [ai_engineering]
+      bootstrap_priority: 1
       description: "Model capabilities, Claude Code, MCP, plugin-architectuur"
+      monitored_sources:
+        - "https://docs.anthropic.com/en/docs/changelog"
+        - "https://docs.anthropic.com/en/docs/agents-and-tools/claude-code"
     python_architecture:
+      ring: core
       freshness_months: 12
+      rq_focus: [RQ2, RQ4, RQ5]
+      related_domains: [ai_engineering, testing_qa]
+      bootstrap_priority: 2
       description: "Design patterns, uv, Pydantic v2, testing"
     development_methodology:
+      ring: core
       freshness_months: 12
+      rq_focus: [RQ4, RQ5, RQ6]
+      related_domains: [sprint_planning, product_ownership]
+      bootstrap_priority: 2
       description: "Shape Up, Cynefin, DORA metrics, trunk-based development"
+    governance_compliance:
+      ring: core
+      freshness_months: 6
+      rq_focus: [RQ5, RQ6]
+      related_domains: [security_appsec, development_methodology]
+      bootstrap_priority: 3
+      description: "DEV_CONSTITUTION, ADR governance, audit compliance, impact-zonering"
+
+    # --- Ring 2: Agent-specifiek (8) ---
+    sprint_planning:
+      ring: agent
+      freshness_months: 6
+      rq_focus: [RQ4, RQ5, RQ6]
+      related_domains: [development_methodology, product_ownership]
+      bootstrap_priority: 2
+      description: "Sprint lifecycle, Shape Up appetite, DoR/DoD, velocity tracking"
+    code_review:
+      ring: agent
+      freshness_months: 6
+      rq_focus: [RQ1, RQ4]
+      related_domains: [python_architecture, testing_qa, security_appsec]
+      bootstrap_priority: 2
+      description: "Review checklists, anti-patronen, code quality metrics"
+    security_appsec:
+      ring: agent
+      freshness_months: 3
+      rq_focus: [RQ1, RQ4, RQ6]
+      related_domains: [governance_compliance, code_review]
+      bootstrap_priority: 2
+      description: "OWASP ASI 2026, dependency scanning, secrets management"
+    testing_qa:
+      ring: agent
+      freshness_months: 6
+      rq_focus: [RQ2, RQ4]
+      related_domains: [python_architecture, code_review]
+      bootstrap_priority: 2
+      description: "Test strategie, pytest patterns, coverage, property-based testing"
+    knowledge_methodology:
+      ring: agent
+      freshness_months: 12
+      rq_focus: [RQ1, RQ5]
+      related_domains: [ai_engineering, documentation]
+      bootstrap_priority: 3
+      description: "RAG pipelines, curation, knowledge grading, Research Questions"
+    coaching_learning:
+      ring: agent
+      freshness_months: 12
+      rq_focus: [RQ3, RQ4, RQ5]
+      related_domains: [knowledge_methodology, development_methodology]
+      bootstrap_priority: 3
+      description: "Dreyfus model, ZPD, threshold concepts, O-B-B coaching"
+    documentation:
+      ring: agent
+      freshness_months: 12
+      rq_focus: [RQ2, RQ3]
+      related_domains: [knowledge_methodology, coaching_learning]
+      bootstrap_priority: 3
+      description: "Diataxis framework, MkDocs, API docs, knowledge articles"
+    product_ownership:
+      ring: agent
+      freshness_months: 6
+      rq_focus: [RQ4, RQ5, RQ6]
+      related_domains: [sprint_planning, development_methodology]
+      bootstrap_priority: 3
+      description: "Backlog management, stakeholder alignment, roadmap planning"
+
+    # --- Ring 3: Project-specifiek (3) ---
+    healthcare_ict:
+      ring: project
+      freshness_months: 6
+      rq_focus: [RQ1, RQ4, RQ6]
+      related_domains: [privacy_avg, governance_compliance]
+      bootstrap_priority: 0
+      description: "HL7 FHIR, NEN-normen, zorginformatiesystemen, interoperabiliteit"
+      node_scope: boris-buurts
+    privacy_avg:
+      ring: project
+      freshness_months: 3
+      rq_focus: [RQ4, RQ5, RQ6]
+      related_domains: [healthcare_ict, governance_compliance, security_appsec]
+      bootstrap_priority: 0
+      description: "GDPR/AVG, DPIA, verwerkersovereenkomsten, dataminimalisatie"
+      node_scope: boris-buurts
+    multi_tenancy:
+      ring: project
+      freshness_months: 12
+      rq_focus: [RQ2, RQ4, RQ6]
+      related_domains: [python_architecture, security_appsec]
+      bootstrap_priority: 0
+      description: "Tenant isolation, data partitioning, configuratie-scheiding"
+      node_scope: boris-buurts
+
   health:
     max_speculative_pct: 60
     max_stale_pct: 20

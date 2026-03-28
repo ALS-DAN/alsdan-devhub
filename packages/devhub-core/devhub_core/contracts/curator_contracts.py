@@ -12,12 +12,80 @@ from typing import Any, Literal
 
 
 class KnowledgeDomain(Enum):
-    """Kerndomeinen voor KWP DEV kennisbank."""
+    """Kerndomeinen voor KWP DEV kennisbank.
 
+    Drie-ringen structuur (Research Compas):
+    - Ring 1 (Core): altijd actief, alle agents
+    - Ring 2 (Agent): geactiveerd per agent-profiel
+    - Ring 3 (Project): node-specifiek, via nodes.yml
+    """
+
+    # Ring 1: Core (5)
     AI_ENGINEERING = "ai_engineering"
-    CLAUDE_SPECIFIC = "claude_specific"
+    CLAUDE_SPECIFIC = "claude_specific"  # toekomstige rename → claude_anthropic
     PYTHON_ARCHITECTURE = "python_architecture"
     DEVELOPMENT_METHODOLOGY = "development_methodology"
+    GOVERNANCE_COMPLIANCE = "governance_compliance"
+
+    # Ring 2: Agent-specifiek (8)
+    SPRINT_PLANNING = "sprint_planning"
+    CODE_REVIEW = "code_review"
+    SECURITY_APPSEC = "security_appsec"
+    TESTING_QA = "testing_qa"
+    KNOWLEDGE_METHODOLOGY = "knowledge_methodology"
+    COACHING_LEARNING = "coaching_learning"
+    DOCUMENTATION = "documentation"
+    PRODUCT_OWNERSHIP = "product_ownership"
+
+    # Ring 3: Project-specifiek (3)
+    HEALTHCARE_ICT = "healthcare_ict"
+    PRIVACY_AVG = "privacy_avg"
+    MULTI_TENANCY = "multi_tenancy"
+
+    @property
+    def ring(self) -> str:
+        """Retourneer de ring waarin dit domein valt."""
+        return _DOMAIN_RINGS[self]
+
+    @classmethod
+    def by_ring(cls, ring: str) -> list[KnowledgeDomain]:
+        """Retourneer alle domeinen in een ring."""
+        return [d for d in cls if _DOMAIN_RINGS[d] == ring]
+
+    @classmethod
+    def core_domains(cls) -> list[KnowledgeDomain]:
+        """Retourneer Ring 1 (core) domeinen."""
+        return cls.by_ring("core")
+
+    @classmethod
+    def agent_domains(cls) -> list[KnowledgeDomain]:
+        """Retourneer Ring 2 (agent) domeinen."""
+        return cls.by_ring("agent")
+
+    @classmethod
+    def project_domains(cls) -> list[KnowledgeDomain]:
+        """Retourneer Ring 3 (project) domeinen."""
+        return cls.by_ring("project")
+
+
+_DOMAIN_RINGS: dict[KnowledgeDomain, str] = {
+    KnowledgeDomain.AI_ENGINEERING: "core",
+    KnowledgeDomain.CLAUDE_SPECIFIC: "core",
+    KnowledgeDomain.PYTHON_ARCHITECTURE: "core",
+    KnowledgeDomain.DEVELOPMENT_METHODOLOGY: "core",
+    KnowledgeDomain.GOVERNANCE_COMPLIANCE: "core",
+    KnowledgeDomain.SPRINT_PLANNING: "agent",
+    KnowledgeDomain.CODE_REVIEW: "agent",
+    KnowledgeDomain.SECURITY_APPSEC: "agent",
+    KnowledgeDomain.TESTING_QA: "agent",
+    KnowledgeDomain.KNOWLEDGE_METHODOLOGY: "agent",
+    KnowledgeDomain.COACHING_LEARNING: "agent",
+    KnowledgeDomain.DOCUMENTATION: "agent",
+    KnowledgeDomain.PRODUCT_OWNERSHIP: "agent",
+    KnowledgeDomain.HEALTHCARE_ICT: "project",
+    KnowledgeDomain.PRIVACY_AVG: "project",
+    KnowledgeDomain.MULTI_TENANCY: "project",
+}
 
 
 class ObservationType(Enum):
@@ -60,6 +128,9 @@ class KnowledgeArticle:
     date: str = ""  # ISO 8601
     author: str = "researcher-agent"
     embedding: tuple[float, ...] | None = None
+    rq_tags: tuple[str, ...] = ()  # ("RQ1", "RQ4") — Research Question tags
+    entity_refs: tuple[str, ...] = ()  # graph-ready entity references
+    domain_ring: Literal["core", "agent", "project"] = "core"
 
     def __post_init__(self) -> None:
         if not self.article_id:
@@ -85,6 +156,9 @@ class KnowledgeArticle:
             "verification_pct": self.verification_pct,
             "date": self.date,
             "author": self.author,
+            "rq_tags": list(self.rq_tags),
+            "entity_refs": list(self.entity_refs),
+            "domain_ring": self.domain_ring,
         }
 
     def to_document_chunk(self) -> Any:
@@ -102,6 +176,9 @@ class KnowledgeArticle:
             ("date", self.date),
             ("author", self.author),
             ("title", self.title),
+            ("rq_tags", "|".join(self.rq_tags)),
+            ("entity_refs", "|".join(self.entity_refs)),
+            ("domain_ring", self.domain_ring),
         )
         return DocumentChunk(
             chunk_id=self.article_id,

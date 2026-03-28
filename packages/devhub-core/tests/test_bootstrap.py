@@ -51,10 +51,10 @@ class TestKWPBootstrap:
             assert len(requests[domain]) > 0
 
     def test_get_requests_total_count(self):
-        """24 totale bootstrap requests."""
+        """48 totale bootstrap requests (24 origineel + 24 nieuwe domeinen)."""
         requests = KWPBootstrap.get_requests()
         total = sum(len(r) for r in requests.values())
-        assert total == 24
+        assert total == 48
 
     def test_get_requests_ai_engineering_count(self):
         """8 AI engineering requests."""
@@ -97,12 +97,12 @@ class TestKWPBootstrap:
                 assert 1 <= r.priority <= 10
 
     def test_submit_all_to_queue(self):
-        """submit_all plaatst 24 requests in de queue."""
+        """submit_all plaatst 48 requests in de queue."""
         bootstrap = KWPBootstrap()
         queue = InMemoryResearchQueue()
         count = bootstrap.submit_all(queue)
-        assert count == 24
-        assert len(queue.pending()) == 24
+        assert count == 48
+        assert len(queue.pending()) == 48
 
     def test_submit_domain(self):
         """submit_domain plaatst alleen domein-requests."""
@@ -129,11 +129,17 @@ class TestSeedArticles:
         articles = get_seed_articles()
         assert len(articles) == 8
 
-    def test_seed_articles_all_domains_covered(self):
-        """Alle 4 domeinen zijn vertegenwoordigd."""
+    def test_seed_articles_all_core_domains_covered(self):
+        """Alle 4 originele core domeinen zijn vertegenwoordigd in seeds."""
         articles = get_seed_articles()
         domains = {a.domain for a in articles}
-        assert len(domains) == len(KnowledgeDomain)
+        core_domains = {
+            KnowledgeDomain.AI_ENGINEERING,
+            KnowledgeDomain.CLAUDE_SPECIFIC,
+            KnowledgeDomain.PYTHON_ARCHITECTURE,
+            KnowledgeDomain.DEVELOPMENT_METHODOLOGY,
+        }
+        assert core_domains.issubset(domains)
 
     def test_seed_articles_all_valid(self):
         """Curator keurt alle seed articles goed."""

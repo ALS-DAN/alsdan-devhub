@@ -1,0 +1,58 @@
+# Agent Knowledge Profiles — Research Compas (Sprint 33)
+# Definieert per agent welke domeinen relevant zijn en met welke gradering.
+agent_profiles:
+  dev-lead:
+    domains:
+      ai_engineering: SILVER
+      development_methodology: SILVER
+      governance_compliance: BRONZE
+      product_ownership: BRONZE
+    pre_task_check: true
+    auto_research: true
+
+  planner:
+    domains:
+      sprint_planning: SILVER
+      development_methodology: SILVER
+      product_ownership: BRONZE
+    pre_task_check: true
+    auto_research: true
+
+  coder:
+    domains:
+      python_architecture: SILVER
+      ai_engineering: BRONZE
+      testing_qa: BRONZE
+    pre_task_check: true
+    auto_research: true
+
+  reviewer:
+    domains:
+      code_review: SILVER
+      python_architecture: SILVER
+      testing_qa: BRONZE
+      security_appsec: BRONZE
+    pre_task_check: true
+    auto_research: false
+
+  researcher:
+    domains:
+      knowledge_methodology: GOLD
+      ai_engineering: SILVER
+    pre_task_check: false
+    auto_research: false
+
+  knowledge-curator:
+    domains:
+      knowledge_methodology: GOLD
+      governance_compliance: SILVER
+    pre_task_check: false
+    auto_research: false
+
+  red-team:
+    domains:
+      security_appsec: GOLD
+      ai_engineering: SILVER
+      governance_compliance: SILVER
+    pre_task_check: true
+    auto_research: true

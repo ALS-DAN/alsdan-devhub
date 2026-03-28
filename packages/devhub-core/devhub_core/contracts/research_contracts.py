@@ -49,6 +49,7 @@ class ResearchRequest:
     output_format: str = "knowledge_note"
     verification_required: bool = True
     created_at: str = ""
+    rq_tags: tuple[str, ...] = ()  # ("RQ1", "RQ4") — Research Question tags
 
     def __post_init__(self) -> None:
         if not self.request_id:
@@ -77,6 +78,7 @@ class ResearchRequest:
             "output_format": self.output_format,
             "verification_required": self.verification_required,
             "created_at": self.created_at,
+            "rq_tags": list(self.rq_tags),
         }
 
 

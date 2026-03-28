@@ -75,13 +75,19 @@ class TestKWPSearch:
 
 
 class TestKWPDomainCoverage:
-    """Alle 4 domeinen hebben content na bootstrap."""
+    """Core domeinen hebben content na bootstrap."""
 
-    def test_all_domains_populated(self) -> None:
+    def test_original_domains_populated(self) -> None:
         pipeline, store = _create_pipeline()
         pipeline.run_seed(get_seed_articles())
         counts = store.count_by_domain()
-        for domain in KnowledgeDomain:
+        original_domains = [
+            KnowledgeDomain.AI_ENGINEERING,
+            KnowledgeDomain.CLAUDE_SPECIFIC,
+            KnowledgeDomain.PYTHON_ARCHITECTURE,
+            KnowledgeDomain.DEVELOPMENT_METHODOLOGY,
+        ]
+        for domain in original_domains:
             assert counts.get(domain, 0) > 0, f"Domain {domain} is leeg"
 
     def test_total_article_count(self) -> None:
@@ -105,7 +111,9 @@ class TestKWPHealth:
         pipeline, _store = _create_pipeline()
         pipeline.run_seed(get_seed_articles())
         health = pipeline.health_check()
-        assert len(health.findings) == 0
+        # Met 16 domeinen maar seeds voor 4: INFO findings verwacht voor lege domeinen
+        critical = [f for f in health.findings if f.severity == "CRITICAL"]
+        assert len(critical) == 0
 
     def test_health_freshness_score(self) -> None:
         pipeline, _store = _create_pipeline()

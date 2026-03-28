@@ -187,21 +187,13 @@ class TestAuditHealth:
             _make_article(
                 article_id=f"ART-{i}",
                 domain=domain,
-                grade=grade,
+                grade="SILVER",
                 sources=("src1", "src2"),
                 date="2026-03-01",
             )
-            for i, (domain, grade) in enumerate(
-                [
-                    (KnowledgeDomain.AI_ENGINEERING, "GOLD"),
-                    (KnowledgeDomain.CLAUDE_SPECIFIC, "SILVER"),
-                    (KnowledgeDomain.PYTHON_ARCHITECTURE, "BRONZE"),
-                    (KnowledgeDomain.DEVELOPMENT_METHODOLOGY, "SILVER"),
-                ],
-                start=1,
-            )
+            for i, domain in enumerate(KnowledgeDomain, start=1)
         ]
-        # Fix GOLD verification
+        # Maak eerste GOLD met hoge verificatie
         articles[0] = _make_article(
             article_id="ART-1",
             domain=KnowledgeDomain.AI_ENGINEERING,
@@ -278,7 +270,7 @@ class TestAuditHealth:
         curator = KnowledgeCurator()
         report = curator.audit_health(articles, reference_date=REF_DATE)
         empty = [d for d, c in report.domain_coverage.items() if c == 0]
-        assert len(empty) == 3
+        assert len(empty) == 15  # 16 domeinen - 1 gevuld = 15 leeg
         assert any(f.category == "scope" for f in report.findings)
 
     def test_audit_health_empty_list(self) -> None:

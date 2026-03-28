@@ -25,7 +25,53 @@ class TestKnowledgeDomainEnum:
         assert KnowledgeDomain.CLAUDE_SPECIFIC.value == "claude_specific"
         assert KnowledgeDomain.PYTHON_ARCHITECTURE.value == "python_architecture"
         assert KnowledgeDomain.DEVELOPMENT_METHODOLOGY.value == "development_methodology"
-        assert len(KnowledgeDomain) == 4
+        assert KnowledgeDomain.GOVERNANCE_COMPLIANCE.value == "governance_compliance"
+        assert len(KnowledgeDomain) == 16
+
+    def test_knowledge_domain_ring_core(self) -> None:
+        core = KnowledgeDomain.core_domains()
+        assert len(core) == 5
+        assert KnowledgeDomain.AI_ENGINEERING in core
+        assert KnowledgeDomain.CLAUDE_SPECIFIC in core
+        assert KnowledgeDomain.GOVERNANCE_COMPLIANCE in core
+        for d in core:
+            assert d.ring == "core"
+
+    def test_knowledge_domain_ring_agent(self) -> None:
+        agent = KnowledgeDomain.agent_domains()
+        assert len(agent) == 8
+        assert KnowledgeDomain.SPRINT_PLANNING in agent
+        assert KnowledgeDomain.CODE_REVIEW in agent
+        assert KnowledgeDomain.SECURITY_APPSEC in agent
+        assert KnowledgeDomain.TESTING_QA in agent
+        assert KnowledgeDomain.KNOWLEDGE_METHODOLOGY in agent
+        assert KnowledgeDomain.COACHING_LEARNING in agent
+        assert KnowledgeDomain.DOCUMENTATION in agent
+        assert KnowledgeDomain.PRODUCT_OWNERSHIP in agent
+        for d in agent:
+            assert d.ring == "agent"
+
+    def test_knowledge_domain_ring_project(self) -> None:
+        project = KnowledgeDomain.project_domains()
+        assert len(project) == 3
+        assert KnowledgeDomain.HEALTHCARE_ICT in project
+        assert KnowledgeDomain.PRIVACY_AVG in project
+        assert KnowledgeDomain.MULTI_TENANCY in project
+        for d in project:
+            assert d.ring == "project"
+
+    def test_knowledge_domain_by_ring_covers_all(self) -> None:
+        all_domains = (
+            KnowledgeDomain.by_ring("core")
+            + KnowledgeDomain.by_ring("agent")
+            + KnowledgeDomain.by_ring("project")
+        )
+        assert len(all_domains) == len(KnowledgeDomain)
+        assert set(all_domains) == set(KnowledgeDomain)
+
+    def test_knowledge_domain_ring_property_all_members(self) -> None:
+        for d in KnowledgeDomain:
+            assert d.ring in ("core", "agent", "project")
 
 
 class TestObservationTypeEnum:
@@ -102,18 +148,48 @@ class TestKnowledgeArticle:
         with pytest.raises(AttributeError):
             article.title = "Modified"  # type: ignore[misc]
 
-    def test_knowledge_article_to_dict(self) -> None:
+    def test_knowledge_article_defaults_new_fields(self) -> None:
         article = _make_article()
+        assert article.rq_tags == ()
+        assert article.entity_refs == ()
+        assert article.domain_ring == "core"
+
+    def test_knowledge_article_with_rq_tags(self) -> None:
+        article = _make_article(
+            rq_tags=("RQ1", "RQ4"),
+            entity_refs=("ENT-001", "ENT-002"),
+            domain_ring="agent",
+        )
+        assert article.rq_tags == ("RQ1", "RQ4")
+        assert article.entity_refs == ("ENT-001", "ENT-002")
+        assert article.domain_ring == "agent"
+
+    def test_knowledge_article_to_dict(self) -> None:
+        article = _make_article(rq_tags=("RQ1",), entity_refs=("ENT-001",), domain_ring="core")
         d = article.to_dict()
         assert d["article_id"] == "ART-001"
         assert d["domain"] == "ai_engineering"
         assert d["sources"] == ["https://example.com"]
         assert isinstance(d["sources"], list)
+        assert d["rq_tags"] == ["RQ1"]
+        assert d["entity_refs"] == ["ENT-001"]
+        assert d["domain_ring"] == "core"
         # Embedding should not be in dict
         assert "embedding" not in d
 
+    def test_knowledge_article_to_dict_empty_new_fields(self) -> None:
+        article = _make_article()
+        d = article.to_dict()
+        assert d["rq_tags"] == []
+        assert d["entity_refs"] == []
+        assert d["domain_ring"] == "core"
+
     def test_knowledge_article_to_document_chunk(self) -> None:
-        article = _make_article(embedding=(0.1, 0.2, 0.3))
+        article = _make_article(
+            embedding=(0.1, 0.2, 0.3),
+            rq_tags=("RQ1", "RQ4"),
+            domain_ring="core",
+        )
         chunk = article.to_document_chunk()
         assert chunk.chunk_id == "ART-001"
         assert chunk.content == article.content
@@ -122,6 +198,15 @@ class TestKnowledgeArticle:
         meta = chunk.metadata_dict
         assert meta["domain"] == "ai_engineering"
         assert meta["grade"] == "SILVER"
+        assert meta["rq_tags"] == "RQ1|RQ4"
+        assert meta["domain_ring"] == "core"
+
+    def test_knowledge_article_to_document_chunk_empty_rq_tags(self) -> None:
+        article = _make_article(embedding=(0.1,))
+        chunk = article.to_document_chunk()
+        meta = chunk.metadata_dict
+        assert meta["rq_tags"] == ""
+        assert meta["entity_refs"] == ""
 
 
 # --- CurationFinding tests ---

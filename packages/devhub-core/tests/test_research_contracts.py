@@ -45,6 +45,7 @@ class TestResearchRequest:
         assert req.output_format == "knowledge_note"
         assert req.verification_required is True
         assert req.created_at == ""
+        assert req.rq_tags == ()
 
     def test_research_request_validation_empty_request_id(self) -> None:
         with pytest.raises(ValueError, match="request_id is required"):
@@ -102,6 +103,16 @@ class TestResearchRequest:
                 priority=11,
             )
 
+    def test_research_request_with_rq_tags(self) -> None:
+        req = ResearchRequest(
+            request_id="RES-001",
+            requesting_agent="researcher",
+            question="Taxonomie van prompt engineering?",
+            domain="ai_engineering",
+            rq_tags=("RQ1", "RQ4"),
+        )
+        assert req.rq_tags == ("RQ1", "RQ4")
+
     def test_research_request_to_dict(self) -> None:
         req = ResearchRequest(
             request_id="RES-002",
@@ -111,6 +122,7 @@ class TestResearchRequest:
             depth=ResearchDepth.DEEP,
             priority=2,
             related_knowledge=("KN-001", "KN-002"),
+            rq_tags=("RQ4", "RQ6"),
         )
         d = req.to_dict()
         assert d["request_id"] == "RES-002"
@@ -118,6 +130,17 @@ class TestResearchRequest:
         assert d["priority"] == 2
         assert d["related_knowledge"] == ["KN-001", "KN-002"]
         assert isinstance(d["related_knowledge"], list)
+        assert d["rq_tags"] == ["RQ4", "RQ6"]
+
+    def test_research_request_to_dict_empty_rq_tags(self) -> None:
+        req = ResearchRequest(
+            request_id="RES-003",
+            requesting_agent="agent",
+            question="vraag",
+            domain="dev",
+        )
+        d = req.to_dict()
+        assert d["rq_tags"] == []
 
     def test_research_request_frozen(self) -> None:
         req = ResearchRequest(

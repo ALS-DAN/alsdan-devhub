@@ -69,6 +69,8 @@ def _abc_frozen_dataclass() -> KnowledgeArticle:
         verification_pct=70.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ2", "RQ4"),
+        domain_ring="core",
     )
 
 
@@ -114,6 +116,8 @@ def _multi_agent_orchestrator() -> KnowledgeArticle:
         verification_pct=65.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ1", "RQ4"),
+        domain_ring="core",
     )
 
 
@@ -158,6 +162,8 @@ def _contract_first_design() -> KnowledgeArticle:
         verification_pct=70.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ2", "RQ5"),
+        domain_ring="core",
     )
 
 
@@ -202,6 +208,8 @@ def _factory_pattern_python() -> KnowledgeArticle:
         verification_pct=75.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ2", "RQ4"),
+        domain_ring="core",
     )
 
 
@@ -247,6 +255,8 @@ def _shape_up_solo() -> KnowledgeArticle:
         verification_pct=50.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ4", "RQ6"),
+        domain_ring="core",
     )
 
 
@@ -291,6 +301,8 @@ def _demand_driven_research() -> KnowledgeArticle:
         verification_pct=60.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ1", "RQ2"),
+        domain_ring="core",
     )
 
 
@@ -336,6 +348,8 @@ def _knowledge_grading() -> KnowledgeArticle:
         verification_pct=65.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ1", "RQ5"),
+        domain_ring="core",
     )
 
 
@@ -383,6 +397,8 @@ def _zone_based_isolation() -> KnowledgeArticle:
         verification_pct=70.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ2", "RQ4"),
+        domain_ring="core",
     )
 
 
@@ -433,4 +449,6 @@ def _claude_code_plugin_structure() -> KnowledgeArticle:
         verification_pct=60.0,
         date="2026-03-27",
         author="kwp-bootstrap",
+        rq_tags=("RQ1", "RQ2"),
+        domain_ring="core",
     )

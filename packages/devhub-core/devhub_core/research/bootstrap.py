@@ -336,6 +336,282 @@ class KWPBootstrap:
                     context=("DevHub werkt op main — valideer" " trunk-based approach"),
                 ),
             ],
+            # --- Ring 1: Governance Compliance (nieuw) ---
+            KnowledgeDomain.GOVERNANCE_COMPLIANCE: [
+                ResearchRequest(
+                    request_id="BOOT-GC-001",
+                    requesting_agent="kwp-bootstrap",
+                    question="Wat zijn best practices voor ADR governance in software projecten?",
+                    domain="governance_compliance",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ5", "RQ6"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-GC-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Hoe ontwerp je effectieve impact-zonering"
+                        " (GREEN/YELLOW/RED) voor AI agents?"
+                    ),
+                    domain="governance_compliance",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+            ],
+            # --- Ring 2: Agent-specifiek (8 domeinen) ---
+            KnowledgeDomain.SPRINT_PLANNING: [
+                ResearchRequest(
+                    request_id="BOOT-SP-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Welke sprint planning technieken werken"
+                        " bij solo AI-assisted development?"
+                    ),
+                    domain="sprint_planning",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-SP-002",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe meet je sprint velocity en cycle time voor AI-agent development?",
+                    domain="sprint_planning",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ4", "RQ5"),
+                ),
+            ],
+            KnowledgeDomain.CODE_REVIEW: [
+                ResearchRequest(
+                    request_id="BOOT-CR-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Wat zijn de meest effectieve code review"
+                        " checklists voor Python projecten?"
+                    ),
+                    domain="code_review",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ1", "RQ4"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-CR-002",
+                    requesting_agent="kwp-bootstrap",
+                    question="Welke anti-patronen moeten AI code reviewers prioriteren?",
+                    domain="code_review",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ4",),
+                ),
+            ],
+            KnowledgeDomain.SECURITY_APPSEC: [
+                ResearchRequest(
+                    request_id="BOOT-SA-001",
+                    requesting_agent="kwp-bootstrap",
+                    question="Wat zijn de OWASP ASI 2026 richtlijnen voor AI-systeem security?",
+                    domain="security_appsec",
+                    depth=ResearchDepth.STANDARD,
+                    priority=2,
+                    rq_tags=("RQ1", "RQ4"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-SA-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Hoe implementeer je secrets management" " in een AI development pipeline?"
+                    ),
+                    domain="security_appsec",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+            ],
+            KnowledgeDomain.TESTING_QA: [
+                ResearchRequest(
+                    request_id="BOOT-TQ-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Wat zijn bewezen pytest patterns voor" " grote test suites (1000+ tests)?"
+                    ),
+                    domain="testing_qa",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ2", "RQ4"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-TQ-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Hoe pas je property-based testing toe"
+                        " in een frozen dataclass architectuur?"
+                    ),
+                    domain="testing_qa",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ4",),
+                ),
+            ],
+            KnowledgeDomain.KNOWLEDGE_METHODOLOGY: [
+                ResearchRequest(
+                    request_id="BOOT-KM-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Welke RAG curation strategieen" " maximaliseren kenniskwaliteit over tijd?"
+                    ),
+                    domain="knowledge_methodology",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ1", "RQ5"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-KM-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Hoe ontwerp je Research Questions (RQ)"
+                        " voor systematisch kennismanagement?"
+                    ),
+                    domain="knowledge_methodology",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ5",),
+                ),
+            ],
+            KnowledgeDomain.COACHING_LEARNING: [
+                ResearchRequest(
+                    request_id="BOOT-CL-101",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe pas je het Dreyfus model toe voor AI-assisted developer groei?",
+                    domain="coaching_learning",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ3", "RQ5"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-CL-102",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Wat zijn threshold concepts in software"
+                        " engineering en hoe identificeer je ze?"
+                    ),
+                    domain="coaching_learning",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ3", "RQ4"),
+                ),
+            ],
+            KnowledgeDomain.DOCUMENTATION: [
+                ResearchRequest(
+                    request_id="BOOT-DOC-001",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe pas je het Diataxis framework toe op technische documentatie?",
+                    domain="documentation",
+                    depth=ResearchDepth.STANDARD,
+                    priority=3,
+                    rq_tags=("RQ2", "RQ3"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-DOC-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Wat zijn best practices voor" " geautomatiseerde docs-generatie uit code?"
+                    ),
+                    domain="documentation",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ2",),
+                ),
+            ],
+            KnowledgeDomain.PRODUCT_OWNERSHIP: [
+                ResearchRequest(
+                    request_id="BOOT-PO-001",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe combineer je product ownership met solo AI-assisted development?",
+                    domain="product_ownership",
+                    depth=ResearchDepth.STANDARD,
+                    priority=4,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-PO-002",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Welke backlog management technieken"
+                        " werken voor kennisintensieve projecten?"
+                    ),
+                    domain="product_ownership",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ4", "RQ5"),
+                ),
+            ],
+            # --- Ring 3: Project-specifiek (3 domeinen) ---
+            KnowledgeDomain.HEALTHCARE_ICT: [
+                ResearchRequest(
+                    request_id="BOOT-HC-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Wat zijn de HL7 FHIR standaarden" " relevant voor zorginformatiesystemen?"
+                    ),
+                    domain="healthcare_ict",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ1", "RQ4"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-HC-002",
+                    requesting_agent="kwp-bootstrap",
+                    question="Welke NEN-normen zijn verplicht voor ICT in de Nederlandse zorg?",
+                    domain="healthcare_ict",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+            ],
+            KnowledgeDomain.PRIVACY_AVG: [
+                ResearchRequest(
+                    request_id="BOOT-PA-001",
+                    requesting_agent="kwp-bootstrap",
+                    question="Wat zijn de AVG/GDPR vereisten voor AI-systemen in de zorgsector?",
+                    domain="privacy_avg",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-PA-002",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe voer je een DPIA uit voor een AI-kennissysteem?",
+                    domain="privacy_avg",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ4", "RQ5"),
+                ),
+            ],
+            KnowledgeDomain.MULTI_TENANCY: [
+                ResearchRequest(
+                    request_id="BOOT-MT-001",
+                    requesting_agent="kwp-bootstrap",
+                    question=(
+                        "Welke tenant isolation patronen zijn er" " voor multi-tenant AI systemen?"
+                    ),
+                    domain="multi_tenancy",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ2", "RQ4"),
+                ),
+                ResearchRequest(
+                    request_id="BOOT-MT-002",
+                    requesting_agent="kwp-bootstrap",
+                    question="Hoe implementeer je configuratie-scheiding per tenant in Python?",
+                    domain="multi_tenancy",
+                    depth=ResearchDepth.STANDARD,
+                    priority=5,
+                    rq_tags=("RQ4", "RQ6"),
+                ),
+            ],
         }
 
     def submit_all(self, queue: ResearchQueue) -> int:
