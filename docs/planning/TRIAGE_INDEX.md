@@ -76,6 +76,7 @@ Deze items waren geparkeerd maar zijn nu ontgrendeld doordat hun dependencies zi
 | SPRINT_INTAKE_DIATAXIS_PLUS_TAXONOMIE_POC_2026-03-28 | Sprint 32 (Diátaxis+ Taxonomie & PoC) |
 | SPRINT_INTAKE_DOCUMENTATIE_PIPELINE_BORIS_BLAUWDRUK_2026-03-28 | Sprint 34 (Doc Pipeline & BORIS-blauwdruk) |
 | KENNISPIPELINE_AFHANKELIJKHEDEN_2026-03-26 | Referentiedocument, alle deps afgerond |
+| SPRINT_INTAKE_EVENT_BUS_LIFECYCLE_HOOKS_2026-03-28 | Sprint 42 (Event Bus Lifecycle Hooks) |
 
 Ouder archief in `docs/planning/sprints/`:
 - SPRINT_INTAKE_RED_TEAM_AGENT (operationeel: agent + skill + 40 tests)

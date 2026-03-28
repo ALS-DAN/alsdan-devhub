@@ -4,7 +4,7 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 41
+laatste_sprint: 42
 test_baseline: 1424
 laatst_bijgewerkt: 2026-03-28
 ---
@@ -171,11 +171,21 @@ _SPIKE: onderzoek n8n als externe event-scheduler. Conclusie: GO — `claude -p`
 
 ## Fase 4 — n8n Docker Setup (Sprint 41)
 
-_CHORE: Docker infrastructure productie-waardig gemaakt. Health check RED→YELLOW, pytest 1154 passed, ruff clean, pip/wheel CVEs gefixt. Enige resterende CVE: pygments (geen fix beschikbaar)._
+_CHORE: Docker infrastructure productie-waardig gemaakt. Health check RED→YELLOW, deps gepind, pip/wheel CVEs gefixt._
 
 | Sprint | Type | Size | Status | Hill | Toelichting |
 |--------|------|------|--------|------|-------------|
 | n8n Docker Setup | CHORE | XS | ✅ DONE | ████████████ | Health RED→YELLOW, lint fixes, deps gepind, entrypoint gefixed |
+
+---
+
+## Fase 4 — Event Bus Lifecycle Hooks (Sprint 42)
+
+_FEAT: Lightweight event bus met pub/sub en typed events. EventBusInterface ABC, 10 typed event subclasses, InMemoryEventBus (thread-safe, recursie-detectie), AnalysisPipeline + DevOrchestrator integratie, wiring helpers. Alle agents kunnen nu reactief samenwerken via lifecycle hooks._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Event Bus Lifecycle Hooks | FEAT | S | ✅ DONE | ████████████ | EventBus ABC + InMemoryEventBus + 10 events + integraties, +67 tests |
 
 ---
 
@@ -344,21 +354,21 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 38 | DriveSyncAdapter | S (1 sprint) | S (1 sprint) | +475* | 100% |
 | 39 | Agent Teams SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
 | 40 | n8n Event Scheduler SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
-| 41 | n8n Docker Setup | XS (<1u) | XS (<1u) | +67* | 100% |
+| 41 | n8n Docker Setup | XS (<1u) | XS (<1u) | +0 | 100% |
+| 42 | Event Bus Lifecycle Hooks | S (1 sprint) | S (1 sprint) | +67 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
 *\* DriveSyncAdapter: +26 nieuwe tests, netto +475 door inclusie BORIS-project tests in workspace.*
-*\* n8n Docker Setup: +67 netto door lint fixes die ongebruikte imports verwijderden, waardoor eerder skipte test-modules nu correct laden.*
 
 ### Afgeleide metrics
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 41 | Alle binnen geschatte tijd |
-| Test baseline | 1424 | Na Sprint 41 (n8n Docker Setup) |
-| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails*) |
-| Schattingsnauwkeurigheid | 100% | 41/41 sprints binnen appetite |
+| Sprints afgerond | 42 | Alle binnen geschatte tijd |
+| Test baseline | 1424 | Na Sprint 42 (Event Bus Lifecycle Hooks) |
+| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
+| Schattingsnauwkeurigheid | 100% | 42/42 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -410,6 +420,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Agent Teams SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | n8n Event Scheduler SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | n8n Docker Setup | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Event Bus Lifecycle Hooks | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 
 ### Afgeleide SLA's
 
