@@ -1,5 +1,6 @@
 """DevHub Storage — interface and adapters for file storage backends."""
 
+from devhub_storage.adapters.drive_sync_adapter import DriveSyncAdapter
 from devhub_storage.adapters.local_adapter import LocalAdapter
 from devhub_storage.auth import (
     OAuth2Auth,
@@ -41,6 +42,7 @@ __all__ = [
     # Factory
     "StorageFactory",
     # Adapters
+    "DriveSyncAdapter",
     "LocalAdapter",
     # Auth
     "OAuth2Auth",

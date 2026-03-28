@@ -22,6 +22,7 @@ class StorageFactory:
 
     _registry: dict[str, str] = {
         "local": "devhub_storage.adapters.local_adapter.LocalAdapter",
+        "drive_sync": "devhub_storage.adapters.drive_sync_adapter.DriveSyncAdapter",
         "google_drive": "devhub_storage.adapters.google_drive_adapter.GoogleDriveAdapter",
         "sharepoint": "devhub_storage.adapters.sharepoint_adapter.SharePointAdapter",
     }

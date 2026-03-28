@@ -10,7 +10,7 @@ Genereert 4 documenten:
 Uitvoering:
     uv run python scripts/produce_sprint33_documents.py
 
-Optioneel met Google Drive publicatie (als credentials beschikbaar):
+Optioneel met Google Drive publicatie via Drive sync:
     uv run python scripts/produce_sprint33_documents.py --publish
 """
 
@@ -33,7 +33,7 @@ def main() -> None:
     parser.add_argument(
         "--publish",
         action="store_true",
-        help="Publiceer naar Google Drive (vereist credentials in ~/.devhub/credentials/)",
+        help="Publiceer naar Google Drive via Drive for Desktop sync",
     )
     args = parser.parse_args()
 
@@ -46,20 +46,18 @@ def main() -> None:
     factory = DocumentFactory(config_path=CONFIG_PATH)
     router = FolderRouter(config_path=CONFIG_PATH)
 
-    # Storage: lokaal of Google Drive
+    # Storage: lokaal of Google Drive via sync
     storage = None
     if args.publish:
-        from devhub_core.agents.credential_resolver import CredentialResolver
+        from devhub_storage.adapters.drive_sync_adapter import DriveSyncAdapter
+        from devhub_storage.contracts import StorageError
 
-        resolver = CredentialResolver()
-        if resolver.has_google_credentials():
-            from devhub_storage.adapters.google_drive_adapter import GoogleDriveAdapter
-
-            auth = resolver.resolve_google_drive_auth()
-            storage = GoogleDriveAdapter(auth=auth)
-            print("Google Drive storage geconfigureerd")
-        else:
-            print("Geen Google credentials gevonden, alleen lokale output")
+        try:
+            storage = DriveSyncAdapter(node_drive_root="DevHub")
+            print(f"Drive sync geconfigureerd: {storage.target_root}")
+        except StorageError as e:
+            print(f"Drive sync niet beschikbaar: {e}")
+            print("Alleen lokale output")
 
     service = DocumentService(
         document_factory=factory,

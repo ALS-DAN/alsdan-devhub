@@ -7,6 +7,9 @@ documents:
       enabled: true
       requires: odfpy
   output_dir: "output/documents"
+  storage:
+    backend: drive_sync
+    node_drive_root_key: drive_root  # per-node drive_root uit nodes sectie
 
 taxonomy:
   layers:
