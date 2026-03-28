@@ -62,6 +62,8 @@ class MarkdownAdapter(DocumentInterface):
         parts.append("---")
         parts.append(f"author: {meta.author}")
         parts.append(f"version: {meta.version}")
+        if meta.category:
+            parts.append(f"category: {meta.category}")
         if meta.date:
             parts.append(f"date: {meta.date}")
         if meta.grade:

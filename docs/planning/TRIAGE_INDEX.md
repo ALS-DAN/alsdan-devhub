@@ -1,7 +1,7 @@
 # Triage Index — DevHub Planning Items
 
 ---
-laatst_bijgewerkt: 2026-03-27
+laatst_bijgewerkt: 2026-03-28
 getriaged_door: "Claude Code — alsdan-devhub"
 ---
 
@@ -16,8 +16,21 @@ Filter: `status: INBOX` in frontmatter.
 
 | # | Item | Bestand | Fase | Prio | Notitie |
 |---|------|---------|------|------|---------|
-| 1 | Research Compas Kennisvisie | `inbox/IDEA_DEVHUB_RESEARCH_COMPAS_KENNISVISIE_2026-03-27.md` | 3 | P3 | Strategische kennisvisie, nog niet geshaped |
-| | _(inbox leeg)_ | | | | |
+| 1 | Research Compas Kennisvisie | `inbox/IDEA_DEVHUB_RESEARCH_COMPAS_KENNISVISIE_2026-03-27.md` | 4 | P3 | Strategische kennisvisie, nog niet geshaped |
+
+---
+
+## Ontgrendeld door Fase 3 (kandidaten voor Fase 4)
+
+Deze items waren geparkeerd maar zijn nu ontgrendeld doordat hun dependencies zijn opgeleverd.
+
+| # | Item | Bestand | Was geblokkeerd door | Nu beschikbaar omdat |
+|---|------|---------|---------------------|---------------------|
+| 8 | IDEA_N8N_PROMPT_EVOLUTION_LOOP | `parked/` | Vereist KWP DEV + n8n | KWP DEV is af (Sprint 21) |
+| 10 | IDEA_N8N_KNOWLEDGE_DECAY_SCAN | `parked/` | Vereist KWP DEV | KWP DEV is af (Sprint 21) |
+| 11 | IDEA_N8N_SPRINT_RETROSPECTIVE_LOOP | `parked/` | Vereist KWP DEV | KWP DEV is af (Sprint 21) |
+| 13 | RESEARCH_DEVHUB_MULTI_PROJECT_DATA_LAAG | `parked/` | Vereist monorepo + vectorstore | Beide af (Track A + C) |
+| 14 | RESEARCH_ZELFVERBETEREND_SYSTEEM | `parked/` | Pas na Fase 3 | Fase 3 is af |
 
 ---
 
@@ -25,15 +38,17 @@ Filter: `status: INBOX` in frontmatter.
 
 | # | Item | Bestand | Reden |
 |---|------|---------|-------|
-| 7 | IDEA_N8N_EXPERIMENT_LOOP_KARPATHY | `parked/` | Fase 5, verst weg |
-| 8 | IDEA_N8N_PROMPT_EVOLUTION_LOOP | `parked/` | Vereist KWP DEV + n8n |
+| 7 | IDEA_N8N_EXPERIMENT_LOOP_KARPATHY | `parked/` | Fase 5 |
 | 9 | IDEA_N8N_SELF_HEALING_WORKFLOW | `parked/` | Vereist bewezen n8n foundation |
-| 10 | IDEA_N8N_KNOWLEDGE_DECAY_SCAN | `parked/` | Vereist KWP DEV |
-| 11 | IDEA_N8N_SPRINT_RETROSPECTIVE_LOOP | `parked/` | Vereist KWP DEV |
 | 12 | IDEA_N8N_SPRINT_PREP_SYNTHESE | `parked/` | Nice-to-have |
-| 13 | RESEARCH_DEVHUB_MULTI_PROJECT_DATA_LAAG | `parked/` | Vereist monorepo + vectorstore |
-| 14 | RESEARCH_ZELFVERBETEREND_SYSTEEM | `parked/` | Meta-systeem, pas na Fase 3 |
-| 15 | IDEA_DEVHUB_MONOREPO_PANTS_STORAGE | `parked/` | Vervangen door uv workspace + storage intake |
+
+---
+
+## Verouderd / opgeruimd
+
+| # | Item | Bestand | Reden |
+|---|------|---------|-------|
+| 15 | IDEA_DEVHUB_MONOREPO_PANTS_STORAGE | `parked/` | Vervangen door uv workspace + storage |
 | 16 | IDEA_N8N_HEALTH_CHECK_WORKFLOW | `parked/` | Duplicaat, intake afgerond |
 | 17 | IDEA_N8N_GOVERNANCE_CHECK_ON_MERGE | `parked/` | Duplicaat, intake afgerond |
 | 18 | IDEA_N8N_PR_QUALITY_GATE | `parked/` | Duplicaat, intake afgerond |
@@ -58,6 +73,7 @@ Filter: `status: INBOX` in frontmatter.
 
 | IDEA_PROVIDER_PATTERN_ADAPTER_SCHEIDING_2026-03-27 | Sprint 30 (Provider Pattern) |
 | RESEARCH_VOORSTEL_CLAUDE_OPTIMALISATIE_2026-03-23 | Sprint 31 (Claude Optimalisatie Research) |
+| SPRINT_INTAKE_DIATAXIS_PLUS_TAXONOMIE_POC_2026-03-28 | Sprint 32 (Diátaxis+ Taxonomie & PoC) |
 | KENNISPIPELINE_AFHANKELIJKHEDEN_2026-03-26 | Referentiedocument, alle deps afgerond |
 
 Ouder archief in `docs/planning/sprints/`:

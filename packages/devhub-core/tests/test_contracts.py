@@ -189,6 +189,35 @@ class TestDocGenRequest:
         with pytest.raises(ValueError, match="target_files"):
             DocGenRequest(task_id="T1", target_files=[], diataxis_category="howto", audience="dev")
 
+    def test_new_categories_valid(self):
+        new_cats = [
+            "pattern",
+            "analysis",
+            "decision",
+            "retrospective",
+            "methodology",
+            "best_practice",
+            "sota_review",
+            "playbook",
+        ]
+        for cat in new_cats:
+            req = DocGenRequest(
+                task_id=f"T-{cat}",
+                target_files=[f"docs/{cat}/test.md"],
+                diataxis_category=cat,
+                audience="developer",
+            )
+            assert req.diataxis_category == cat
+
+    def test_invalid_category_still_rejected(self):
+        with pytest.raises(ValueError, match="diataxis_category"):
+            DocGenRequest(
+                task_id="T1",
+                target_files=["docs/x.md"],
+                diataxis_category="nonexistent",  # type: ignore[arg-type]
+                audience="dev",
+            )
+
 
 # ---------------------------------------------------------------------------
 # QAReport

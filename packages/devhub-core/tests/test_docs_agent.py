@@ -163,6 +163,155 @@ class TestDocsAgent:
         assert len(result.files_generated) == 2
 
     def test_all_templates_exist(self):
-        for cat in ["tutorial", "howto", "reference", "explanation"]:
+        all_categories = [
+            "tutorial",
+            "howto",
+            "reference",
+            "explanation",
+            "pattern",
+            "analysis",
+            "decision",
+            "retrospective",
+            "methodology",
+            "best_practice",
+            "sota_review",
+            "playbook",
+        ]
+        assert len(DIATAXIS_TEMPLATES) == 12
+        for cat in all_categories:
             assert cat in DIATAXIS_TEMPLATES
             assert len(DIATAXIS_TEMPLATES[cat]) > 50
+
+    # --- Laag 2: Proces templates ---
+
+    def test_generate_pattern_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="P1",
+            target_files=["pattern/abc.md"],
+            diataxis_category="pattern",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Pattern" in content
+        assert "Probleem" in content
+
+    def test_generate_analysis_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="A1",
+            target_files=["analysis/perf.md"],
+            diataxis_category="analysis",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Onderzoeksvraag" in content
+
+    def test_generate_decision_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="D1",
+            target_files=["decision/adr-001.md"],
+            diataxis_category="decision",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Beslissing" in content
+        assert "Status" in content
+
+    def test_generate_retrospective_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="R1",
+            target_files=["retrospective/sprint-1.md"],
+            diataxis_category="retrospective",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Wat ging goed" in content
+
+    # --- Laag 3: Kennisbank templates ---
+
+    def test_generate_methodology_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="M1",
+            target_files=["methodology/shape-up.md"],
+            diataxis_category="methodology",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Principes" in content
+
+    def test_generate_best_practice_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="B1",
+            target_files=["best_practice/frozen-dc.md"],
+            diataxis_category="best_practice",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Principe" in content
+        assert "Valkuilen" in content
+
+    def test_generate_sota_review_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="S1",
+            target_files=["sota_review/llm-agents.md"],
+            diataxis_category="sota_review",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Huidige stand" in content
+
+    def test_generate_playbook_doc(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "docs")
+        request = DocGenRequest(
+            task_id="PB1",
+            target_files=["playbook/incident.md"],
+            diataxis_category="playbook",
+            audience="developer",
+        )
+        result = agent.process_request(request)
+        assert result.status == "generated"
+        content = Path(result.files_generated[0]).read_text()
+        assert "Escalatiepunten" in content
+
+    # --- Coverage en detectie ---
+
+    def test_analyze_coverage_has_12_categories(self, tmp_path):
+        agent = DocsAgent(docs_root=tmp_path / "nonexistent")
+        coverage = agent.analyze_coverage()
+        assert len(coverage) == 13  # 12 categories + uncategorized
+
+    def test_detect_category_pattern(self, tmp_path):
+        docs_root = tmp_path / "docs"
+        docs_root.mkdir()
+        (docs_root / "abc-patroon.md").write_text("# ABC Patroon\n\nDit patroon beschrijft...")
+        agent = DocsAgent(docs_root=docs_root)
+        coverage = agent.analyze_coverage()
+        assert len(coverage["pattern"]) >= 1
+
+    def test_detect_category_decision(self, tmp_path):
+        docs_root = tmp_path / "docs"
+        docs_root.mkdir()
+        (docs_root / "adr-001.md").write_text("# ADR-001\n\nDeze beslissing betreft...")
+        agent = DocsAgent(docs_root=docs_root)
+        coverage = agent.analyze_coverage()
+        assert len(coverage["decision"]) >= 1

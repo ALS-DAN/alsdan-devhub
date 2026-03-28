@@ -7,6 +7,7 @@ from __future__ import annotations
 import pytest
 
 from devhub_documents.contracts import (
+    DocumentCategory,
     DocumentFormat,
     DocumentMetadata,
     DocumentRequest,
@@ -24,6 +25,55 @@ class TestDocumentFormat:
 
     def test_document_format_members(self) -> None:
         assert len(DocumentFormat) == 2
+
+
+class TestDocumentCategory:
+    """Tests voor DocumentCategory enum."""
+
+    def test_document_category_has_12_members(self) -> None:
+        assert len(DocumentCategory) == 12
+
+    def test_document_category_values(self) -> None:
+        expected = [
+            "tutorial",
+            "howto",
+            "reference",
+            "explanation",
+            "pattern",
+            "analysis",
+            "decision",
+            "retrospective",
+            "methodology",
+            "best_practice",
+            "sota_review",
+            "playbook",
+        ]
+        assert [m.value for m in DocumentCategory] == expected
+
+    def test_document_category_layer_product(self) -> None:
+        product = [c for c in DocumentCategory if c.layer() == "product"]
+        assert len(product) == 4
+        assert {c.value for c in product} == {"tutorial", "howto", "reference", "explanation"}
+
+    def test_document_category_layer_process(self) -> None:
+        process = [c for c in DocumentCategory if c.layer() == "process"]
+        assert len(process) == 4
+        assert {c.value for c in process} == {"pattern", "analysis", "decision", "retrospective"}
+
+    def test_document_category_layer_knowledge(self) -> None:
+        knowledge = [c for c in DocumentCategory if c.layer() == "knowledge"]
+        assert len(knowledge) == 4
+        expected = {"methodology", "best_practice", "sota_review", "playbook"}
+        assert {c.value for c in knowledge} == expected
+
+    def test_document_category_from_string(self) -> None:
+        assert DocumentCategory.from_string("tutorial") == DocumentCategory.TUTORIAL
+        assert DocumentCategory.from_string("BEST_PRACTICE") == DocumentCategory.BEST_PRACTICE
+        assert DocumentCategory.from_string("  Pattern  ") == DocumentCategory.PATTERN
+
+    def test_document_category_from_string_invalid(self) -> None:
+        with pytest.raises(ValueError, match="Unknown category"):
+            DocumentCategory.from_string("nonexistent")
 
 
 class TestDocumentSection:
@@ -85,6 +135,7 @@ class TestDocumentMetadata:
     def test_document_metadata_defaults(self) -> None:
         meta = DocumentMetadata()
         assert meta.author == "devhub"
+        assert meta.category is None
         assert meta.date == ""
         assert meta.grade is None
         assert meta.sources == ()
@@ -111,9 +162,19 @@ class TestDocumentMetadata:
         assert d["grade"] == "SILVER"
         assert d["tags"] == ["a"]
 
+    def test_document_metadata_with_category(self) -> None:
+        meta = DocumentMetadata(category="explanation")
+        assert meta.category == "explanation"
+
+    def test_document_metadata_to_dict_with_category(self) -> None:
+        meta = DocumentMetadata(category="pattern")
+        d = meta.to_dict()
+        assert d["category"] == "pattern"
+
     def test_document_metadata_to_dict_minimal(self) -> None:
         meta = DocumentMetadata()
         d = meta.to_dict()
+        assert "category" not in d
         assert "date" not in d
         assert "grade" not in d
         assert "sources" not in d

@@ -47,6 +47,8 @@ class ODFAdapter(DocumentInterface):
         doc.meta.addElement(odf_meta.InitialCreator(text=meta.author))
         if meta.date:
             doc.meta.addElement(odf_meta.CreationDate(text=meta.date))
+        if meta.category:
+            doc.meta.addElement(odf_meta.Keyword(text=f"category:{meta.category}"))
 
         # Title als heading level 1
         title_heading = H(outlinelevel=1, text=request.title)

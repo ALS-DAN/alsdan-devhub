@@ -7,3 +7,15 @@ documents:
       enabled: true
       requires: odfpy
   output_dir: "output/documents"
+
+taxonomy:
+  layers:
+    product:
+      categories: [tutorial, howto, reference, explanation]
+      description: "Diátaxis standaard — productdocumentatie"
+    process:
+      categories: [pattern, analysis, decision, retrospective]
+      description: "Procesgericht — ontwikkelproces documentatie"
+    knowledge:
+      categories: [methodology, best_practice, sota_review, playbook]
+      description: "Kennisbank — expert knowledge base"

@@ -66,7 +66,20 @@ class DocGenRequest:
 
     task_id: str
     target_files: list[str]  # Docs die gegenereerd/bijgewerkt moeten worden
-    diataxis_category: Literal["tutorial", "howto", "reference", "explanation"]
+    diataxis_category: Literal[
+        "tutorial",
+        "howto",
+        "reference",
+        "explanation",
+        "pattern",
+        "analysis",
+        "decision",
+        "retrospective",
+        "methodology",
+        "best_practice",
+        "sota_review",
+        "playbook",
+    ]
     audience: str  # e.g. "medewerker", "ict_data", "kerngroep", "developer"
     source_code_files: list[str] = field(default_factory=list)
     node_id: str | None = None
@@ -76,7 +89,20 @@ class DocGenRequest:
             raise ValueError("task_id is required")
         if not self.target_files:
             raise ValueError("target_files is required")
-        valid_categories = {"tutorial", "howto", "reference", "explanation"}
+        valid_categories = {
+            "tutorial",
+            "howto",
+            "reference",
+            "explanation",
+            "pattern",
+            "analysis",
+            "decision",
+            "retrospective",
+            "methodology",
+            "best_practice",
+            "sota_review",
+            "playbook",
+        }
         if self.diataxis_category not in valid_categories:
             raise ValueError(
                 f"diataxis_category must be one of {valid_categories}, "

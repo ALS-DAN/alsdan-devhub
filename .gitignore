@@ -8,6 +8,7 @@ dist/
 build/
 .ruff_cache/
 .DS_Store
+output/
 .env
 docker/.env
 docker/n8n-local-files/dev_os.db

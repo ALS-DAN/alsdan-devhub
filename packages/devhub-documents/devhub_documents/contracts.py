@@ -18,6 +18,55 @@ class DocumentFormat(Enum):
     MARKDOWN = "markdown"
 
 
+class DocumentCategory(Enum):
+    """Diátaxis+ documentatie-categorieën in drie lagen."""
+
+    # Laag 1: Product (Diátaxis standaard)
+    TUTORIAL = "tutorial"
+    HOWTO = "howto"
+    REFERENCE = "reference"
+    EXPLANATION = "explanation"
+
+    # Laag 2: Proces
+    PATTERN = "pattern"
+    ANALYSIS = "analysis"
+    DECISION = "decision"
+    RETROSPECTIVE = "retrospective"
+
+    # Laag 3: Kennisbank
+    METHODOLOGY = "methodology"
+    BEST_PRACTICE = "best_practice"
+    SOTA_REVIEW = "sota_review"
+    PLAYBOOK = "playbook"
+
+    def layer(self) -> str:
+        """Geeft de laag terug waartoe deze categorie behoort."""
+        _layers = {
+            "tutorial": "product",
+            "howto": "product",
+            "reference": "product",
+            "explanation": "product",
+            "pattern": "process",
+            "analysis": "process",
+            "decision": "process",
+            "retrospective": "process",
+            "methodology": "knowledge",
+            "best_practice": "knowledge",
+            "sota_review": "knowledge",
+            "playbook": "knowledge",
+        }
+        return _layers[self.value]
+
+    @classmethod
+    def from_string(cls, value: str) -> DocumentCategory:
+        """Case-insensitive lookup van een categorie string."""
+        normalized = value.strip().lower()
+        for member in cls:
+            if member.value == normalized:
+                return member
+        raise ValueError(f"Unknown category: '{value}'. " f"Valid: {[m.value for m in cls]}")
+
+
 @dataclass(frozen=True)
 class DocumentSection:
     """Een sectie binnen een document, met optionele subsecties."""
@@ -48,6 +97,7 @@ class DocumentMetadata:
     """Metadata voor een gegenereerd document."""
 
     author: str = "devhub"
+    category: str | None = None
     date: str = ""
     grade: Literal["GOLD", "SILVER", "BRONZE", "SPECULATIVE"] | None = None
     sources: tuple[str, ...] = ()
@@ -60,6 +110,8 @@ class DocumentMetadata:
             "author": self.author,
             "version": self.version,
         }
+        if self.category:
+            result["category"] = self.category
         if self.date:
             result["date"] = self.date
         if self.grade:

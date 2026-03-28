@@ -1,14 +1,13 @@
 """
-DocsAgent — Parallelle documentatie-generatie volgens Diátaxis framework.
+DocsAgent — Parallelle documentatie-generatie volgens Diátaxis+ framework.
 
 Ontvangt DocGenRequests van de DevOrchestrator en genereert/updatet
 documentatie parallel aan development werk. Raakt nooit code, alleen docs.
 
-Diátaxis categorieën:
-- Tutorial: leren door doen (stap-voor-stap)
-- How-to: specifiek probleem oplossen
-- Reference: technische informatie opzoeken
-- Explanation: achtergrond en context begrijpen
+Diátaxis+ categorieën in drie lagen:
+- Laag 1 (Product): Tutorial, How-to, Reference, Explanation
+- Laag 2 (Proces): Pattern, Analysis, Decision, Retrospective
+- Laag 3 (Kennisbank): Methodology, Best Practice, SOTA Review, Playbook
 """
 
 from __future__ import annotations
@@ -126,6 +125,238 @@ DIATAXIS_TEMPLATES: dict[str, str] = {
 
 <!-- Links naar gerelateerde docs -->
 """,
+    # --- Laag 2: Proces ---
+    "pattern": """# {title}
+
+> **Type:** Pattern (gevonden patroon)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Context
+
+<!-- In welke situatie doet dit patroon zich voor -->
+
+## Probleem
+
+<!-- Welk terugkerend probleem lost dit patroon op -->
+
+## Oplossing
+
+<!-- Beschrijving van het patroon -->
+
+## Krachten en afwegingen
+
+<!-- Welke krachten spelen mee, welke trade-offs -->
+
+## Consequenties
+
+<!-- Wat zijn de gevolgen van dit patroon -->
+
+## Gerelateerde patronen
+
+<!-- Vergelijking met alternatieve patronen -->
+""",
+    "analysis": """# {title}
+
+> **Type:** Analysis (onderzoek en bevindingen)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Onderzoeksvraag
+
+<!-- Wat willen we weten -->
+
+## Methode
+
+<!-- Hoe is dit onderzocht -->
+
+## Bevindingen
+
+<!-- Wat is gevonden -->
+
+## Conclusie
+
+<!-- Wat betekent dit -->
+
+## Aanbevelingen
+
+<!-- Wat adviseren we op basis van de bevindingen -->
+""",
+    "decision": """# {title}
+
+> **Type:** Decision (architectuur/ontwerp-beslissing)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Context
+
+<!-- Welke situatie leidde tot deze beslissing -->
+
+## Beslissing
+
+<!-- Wat is besloten -->
+
+## Argumenten voor
+
+<!-- Waarom deze keuze -->
+
+## Argumenten tegen
+
+<!-- Welke nadelen zijn er -->
+
+## Consequenties
+
+<!-- Wat zijn de gevolgen -->
+
+## Status
+
+<!-- Voorstel / Geaccepteerd / Herzien / Vervangen -->
+""",
+    "retrospective": """# {title}
+
+> **Type:** Retrospective (terugblik)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Sprint / Periode
+
+<!-- Welke sprint of periode betreft dit -->
+
+## Wat ging goed
+
+<!-- Successen en positieve observaties -->
+
+## Wat kan beter
+
+<!-- Verbeterpunten en geleerde lessen -->
+
+## Actiepunten
+
+<!-- Concrete vervolgacties -->
+
+## Metrics
+
+<!-- Relevante cijfers: tests, velocity, cycle time -->
+""",
+    # --- Laag 3: Kennisbank ---
+    "methodology": """# {title}
+
+> **Type:** Methodology (werkwijze/methodiek)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Doel
+
+<!-- Wat bereik je met deze methodiek -->
+
+## Principes
+
+<!-- Kernprincipes van de methodiek -->
+
+## Proces / Stappen
+
+<!-- Hoe pas je de methodiek toe -->
+
+## Rollen
+
+<!-- Wie is betrokken en in welke rol -->
+
+## Wanneer toepassen
+
+<!-- In welke situatie is deze methodiek geschikt -->
+
+## Bronnen
+
+<!-- Referenties en verdere lezing -->
+""",
+    "best_practice": """# {title}
+
+> **Type:** Best Practice (bewezen werkwijze)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Principe
+
+<!-- Wat is de best practice -->
+
+## Waarom
+
+<!-- Waarom is dit een best practice, welk bewijs -->
+
+## Hoe toepassen
+
+<!-- Concrete stappen om toe te passen -->
+
+## Valkuilen
+
+<!-- Veelgemaakte fouten bij toepassing -->
+
+## Voorbeelden
+
+<!-- Concrete voorbeelden uit de praktijk -->
+""",
+    "sota_review": """# {title}
+
+> **Type:** SOTA Review (state of the art)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Onderwerp
+
+<!-- Welk vakgebied of technologie -->
+
+## Huidige stand
+
+<!-- Wat is de huidige state of the art -->
+
+## Belangrijke spelers
+
+<!-- Wie zijn de belangrijkste partijen/tools -->
+
+## Trends
+
+<!-- Welke ontwikkelingen tekenen zich af -->
+
+## Bronnen
+
+<!-- Primaire bronnen en referenties -->
+
+## Beoordeling
+
+<!-- Relevantie voor DevHub en projecten -->
+""",
+    "playbook": """# {title}
+
+> **Type:** Playbook (draaiboek)
+> **Doelgroep:** {audience}
+> **Gegenereerd:** {timestamp}
+
+## Situatie
+
+<!-- Wanneer gebruik je dit playbook -->
+
+## Voorbereidingschecklist
+
+<!-- Wat moet klaarstaan voordat je begint -->
+
+## Stappen
+
+### Stap 1
+
+<!-- Eerste actie -->
+
+### Stap 2
+
+<!-- Tweede actie -->
+
+## Escalatiepunten
+
+<!-- Wanneer en naar wie escaleren -->
+
+## Afronding
+
+<!-- Hoe sluit je het af en wat documenteer je -->
+""",
 }
 
 
@@ -211,6 +442,14 @@ class DocsAgent:
             "howto": [],
             "reference": [],
             "explanation": [],
+            "pattern": [],
+            "analysis": [],
+            "decision": [],
+            "retrospective": [],
+            "methodology": [],
+            "best_practice": [],
+            "sota_review": [],
+            "playbook": [],
             "uncategorized": [],
         }
 
@@ -301,6 +540,8 @@ class DocsAgent:
             return "uncategorized"
 
         content_lower = content.lower()
+
+        # Laag 1: Product (Diátaxis standaard)
         if "tutorial" in content_lower or "leren" in content_lower:
             return "tutorial"
         if "how-to" in content_lower or "howto" in content_lower or "stappen" in content_lower:
@@ -311,9 +552,46 @@ class DocsAgent:
         if explanation_kw or "context" in content_lower:
             return "explanation"
 
+        # Laag 2: Proces
+        if "pattern" in content_lower or "patroon" in content_lower:
+            return "pattern"
+        analysis_kw = "analysis" in content_lower or "analyse" in content_lower
+        if analysis_kw or "bevindingen" in content_lower:
+            return "analysis"
+        decision_kw = "decision" in content_lower or "beslissing" in content_lower
+        if decision_kw or "adr" in content_lower:
+            return "decision"
+        retro_kw = "retrospective" in content_lower or "retro" in content_lower
+        if retro_kw or "terugblik" in content_lower:
+            return "retrospective"
+
+        # Laag 3: Kennisbank
+        if "methodology" in content_lower or "methodiek" in content_lower:
+            return "methodology"
+        if "best practice" in content_lower or "best_practice" in content_lower:
+            return "best_practice"
+        if "sota" in content_lower or "state of the art" in content_lower:
+            return "sota_review"
+        if "playbook" in content_lower or "draaiboek" in content_lower:
+            return "playbook"
+
         # Check pad-gebaseerd
         path_str = str(md_file).lower()
-        for cat in ["tutorial", "howto", "reference", "explanation"]:
+        all_cats = [
+            "tutorial",
+            "howto",
+            "reference",
+            "explanation",
+            "pattern",
+            "analysis",
+            "decision",
+            "retrospective",
+            "methodology",
+            "best_practice",
+            "sota_review",
+            "playbook",
+        ]
+        for cat in all_cats:
             if cat in path_str:
                 return cat
 

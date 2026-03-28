@@ -1,108 +1,296 @@
 # DevHub Roadmap — Geconsolideerd
 
 ---
-laatst_bijgewerkt: 2026-03-26
+laatst_bijgewerkt: 2026-03-28
 gegenereerd_door: "Cowork Architect — alsdan-devhub"
 ---
 
 ## Huidige positie
 
 ```
-Fase 0 ✅  Fundament
-Fase 1 ✅  Kernagents + Infra
-Fase 2 ✅  Skills + Governance (incl. 2b red-team)
-Fase 3 🔄  Knowledge + Memory + Infrastructure
-           ↑ WE ZIJN HIER — 575 tests, 6 agents, 8 skills, Track A+B1+C1 ✅, Golf 2 READY
-Fase 4 🔲  BORIS-migratie (GATE: Niels-goedkeuring)
-Fase 5 🔲  Uitbreiding
+Fase 0 ✅  Fundament (2 sprints)
+Fase 1 ✅  Kernagents + Infra (2 sprints)
+Fase 2 ✅  Skills + Governance incl. 2b red-team (4 sprints)
+Fase 3 ✅  Knowledge + Memory + Infrastructure (22 sprints, 395→1191 tests)
+           Provider Pattern + Claude Research (2 sprints, 673 tests na adapter-migratie)
+           ↑ WE ZIJN HIER — 673 tests, 11 agents, 10 skills, alle tracks afgerond
+Fase 4 🔲  DevHub Production-Ready (4 golven)
+Fase 5 🔲  BORIS Upgrade + Uitbreiding
 ```
 
-## Fase 2 → Fase 3 overgangswerk (AFGEROND)
+---
 
-| Sprint | Wat | Status |
-|--------|-----|--------|
-| **n8n CI/CD Foundation** | Health Check + Governance Check + PR Quality Gate | ✅ 339 → 370 tests |
-| **Code Check Architectuur** | 5-layer code check, verdiept reviewer agent | ✅ 370 → 394 tests |
-| **Operationele Validatie** | Alle 3 lagen bewezen end-to-end (n8n, Python, Skills) | ✅ 394 → 395 tests |
+## Fase 0-3: Wat er al staat (AFGEROND)
 
-## Fase 3: Knowledge + Memory + Infrastructure
+31 sprints hebben het volgende opgeleverd:
 
-Drie parallelle tracks nadat bovenstaand overgangswerk af is.
+**4 Python packages** — allemaal volledig geïmplementeerd en getest:
+- devhub-core v0.2.0: 13 contracts, 11 agents, NodeRegistry
+- devhub-storage v0.3.0: Local, Google Drive, SharePoint adapters + reconciliation
+- devhub-vectorstore v0.3.0: ChromaDB, Weaviate, embedding providers
+- devhub-documents v0.1.0: Markdown, ODF adapters
 
-### Track A: uv Workspace transitie ✅ AFGEROND
+**Plugin-laag:**
+- 7 plugin agents (dev-lead, coder, reviewer, researcher, planner, red-team, knowledge-curator)
+- 10 skills (sprint, health, mentor, sprint-prep, review, research-loop, governance-check, redteam, growth, analyse)
 
-| Stap | Wat | Status |
-|------|-----|--------|
-| A1 | uv workspace config, `devhub/` → `packages/devhub-core/` | ✅ |
-| A2 | Imports updaten, 394 tests groen | ✅ |
-| A3 | Agents, skills, governance als aparte packages | Doorgeschoven |
-| A4 | PEX packaging valideren | Doorgeschoven |
+**Governance:** DEV_CONSTITUTION (8 artikelen), 3 ADRs, 6 golden paths, 3 runbooks
 
-Afgerond: 394 tests. Stap A3-A4 zijn niet-blokkerend en doorgeschoven naar later.
+**Integratie:** BorisAdapter (1.266 regels), NodeRegistry, config/nodes.yml
 
-### Track B: devhub-storage (bestandsopslag)
+**Tests:** 673 tests, 54 testbestanden, 12.319 regels testcode
 
-| Stap | Wat | Zonering | Status |
-|------|-----|----------|--------|
-| B1 | StorageInterface ABC + LocalAdapter | GROEN | ✅ v0.2.0 (575 tests) |
-| B2 | Google Drive adapter + auth | GEEL | 📋 KLAAR |
-| B3 | Organizable/Watchable mixins | GEEL | ⏳ na B2 |
-| B4 | Reconciliation (drift-rapportage) | GEEL | ⏳ na B3 |
-| B5 | Reconciliation (correctieve acties) | ROOD | ⏳ na B4 |
+Alle onderdelen zijn gebouwd. Wat mist zijn de **verbindingen** en **mechanismen** die DevHub van een verzameling tools naar een zelfstandig lerend ontwikkelsysteem tillen.
 
-Sprint 1 (B1) afgerond: +100 tests, frozen dataclasses, factory patroon.
+---
 
-### Track C: devhub-vectorstore (Weaviate)
-
-| Stap | Wat | Zonering | Status |
-|------|-----|----------|--------|
-| C1 | VectorStoreInterface ABC + contracts | GROEN | ✅ v0.2.0 (575 tests) |
-| C2 | ChromaDB adapter (dev/test) | GROEN | ✅ v0.2.0 |
-| C3 | Weaviate adapter (zones, CRUD) | GEEL | 📋 KLAAR |
-| C4 | Multi-tenancy (per_zone + per_kwp) | GEEL | ⏳ na C3 |
-| C5 | Embedding providers (MiniLM, later bge-m3) | GROEN | ⏳ na C3 |
-| C6 | DevHub eigen Weaviate-instantie (KWP DEV) | GEEL | ⏳ na C4+C5 |
-
-Sprint 1 (C1+C2) afgerond: +78 tests, frozen dataclasses, factory patroon. Parallel met Track B.
-
-### Fase 3 overig
-
-| Sprint | Wat | Afhankelijk van |
-|--------|-----|-----------------|
-| KWP DEV setup | Development knowledge domain inrichten | Track C (vectorstore) |
-| EVIDENCE-kopie | EVIDENCE-methodiek van BORIS → DevHub | Geen |
-| Retrospective learnings | Automatisch extraheren bij sprint-closure | KWP DEV |
-| Mentor Supervisor | Proactief groeisysteem (Vygotsky/Dreyfus) | KWP DEV |
-| Claude Optimalisatie | Prompt-optimalisatie research | Geen |
-
-## Fase 4: BORIS-migratie (GATE)
+## Fase 4: DevHub Production-Ready
 
 **Start NOOIT zonder expliciete Niels-goedkeuring.**
 
-- BORIS migreert van eigen `weaviate_store/` naar devhub-vectorstore package
-- BORIS dev-skills vervangen door DevHub plugin-skills
-- BORIS krijgt standalone Weaviate + MS365-koppeling
-- Na delivery: BORIS communiceert met DevHub alleen via Claude Code plugin
+DevHub heeft alle onderdelen, maar ze zijn nog niet verbonden tot een werkend geheel. Fase 4 maakt van losse componenten een samenhangend systeem dat zelfstandig kan draaien, leren en distribueerbaar is.
 
-## Fase 5: Uitbreiding
+### Golf 1: Fundament versterken
 
-- Agent Teams (multi-agent orchestratie)
-- Plugin marketplace-ready
-- 2e project proof-of-concept
-- Zelfverbeterend systeem (feedback loops)
-- Karpathy Experiment Loop
+> DevHub betrouwbaar en up-to-date maken. Voorwaarde voor alles wat volgt.
+
+#### 1A — Housekeeping & documentatie
+
+**Waarom:** CLAUDE.md bevat verouderde informatie (versienummers "v0.1.0" terwijl packages op v0.3.0 staan, "stub" labels die niet meer kloppen). De architectuur-documenten zijn net geschreven maar CLAUDE.md verwijst er nog niet naar.
+
+**Wat:**
+- CLAUDE.md bijwerken met correcte versienummers en status
+- Verwijzingen naar architectuur-documenten toevoegen
+- Verouderde referenties naar MIGRATION_PLAN verwijderen
+
+**Bestanden:** `.claude/CLAUDE.md`
+
+#### 1B — Agent unit tests
+
+**Waarom:** De 11 agents in devhub-core zijn gebouwd en werken (bewezen via integratie-tests), maar hebben geen eigen unit tests. Als er iets breekt in een agent, is het moeilijk te lokaliseren.
+
+**Wat:** Dedicated unit tests schrijven voor:
+- DevOrchestrator, QAAgent, DocsAgent
+- KnowledgeCurator, AnalysisPipeline, ResearchAdvisor
+- SecurityScanner, GrowthReportGenerator
+- ChallengeEngine, ScaffoldingManager
+
+**Bestanden:** `packages/devhub-core/tests/test_<agent>.py` (10 nieuwe testbestanden)
+
+#### 1C — Kennispipeline event-triggers
+
+**Waarom:** De kennispipeline is code-compleet (KnowledgeCurator, AnalysisPipeline, ResearchAdvisor), maar niet aangesloten op events. Als een sprint eindigt, moet kennis automatisch geëxtraheerd worden — dat gebeurt nu niet.
+
+**Wat:**
+- Sprint-closure trigger: bij sprint-afsluiting → kennisextractie starten
+- Retrospective-learnings automatisch opslaan in vectorstore
+- Kennis categoriseren (GOLD/SILVER/BRONZE/SPECULATIVE gradering)
+- Event-bus of hook-mechanisme voor triggers
+
+**Bestanden:** Nieuwe module in `packages/devhub-core/devhub_core/events/` of integratie in bestaande agents
+
+---
+
+### Golf 2: Intelligentie toevoegen
+
+> DevHub leert van wat het bouwt. Dit is de kern van het zelfverbeterend systeem.
+
+**Afhankelijk van:** Golf 1C (kennispipeline moet actief zijn)
+
+#### 2A — Feedback loop engine
+
+**Waarom:** DevHub bouwt projecten maar leert er niet van. Als BORIS een slim patroon gebruikt dat beter is dan wat DevHub zelf doet, merkt DevHub dat niet op. De feedback loop is het hart van de visie: kennis stroomt in twee richtingen.
+
+**Wat:**
+- Patroon-vergelijking: project-code analyseren tegen DevHub-patronen
+- Detectie: "dit project doet X beter dan DevHub"
+- Voorstel-generatie: concrete verbetervoorstellen voor DevHub zelf
+- Contracts bestaan al (`GrowthReport.strategic_insights`, `DevelopmentChallenge.feedback`) maar er is geen engine
+
+**Bestanden:** Nieuwe agent of module, bijv. `packages/devhub-core/devhub_core/agents/feedback_engine.py`
+
+#### 2B — Zelfverbeterend systeem (eerste versie)
+
+**Waarom:** Ontgrendeld door Fase 3. DevHub moet niet alleen detecteren dat iets beter kan, maar ook voorstellen om zichzelf aan te passen. Dit is de stap van "signaleren" naar "handelen".
+
+**Wat:**
+- Verbetervoorstellen vertalen naar concrete acties (skill-update, agent-aanpassing, patroon-adoptie)
+- Niels-goedkeuring voor elke zelfverbetering (Art. 1 DEV_CONSTITUTION)
+- Audit trail van alle zelfverbeteringen
+
+**Afhankelijk van:** 2A (feedback loop)
+
+#### 2C — Knowledge decay detectie
+
+**Waarom:** Kennis veroudert. Wat 3 maanden geleden GOLD-kennis was, kan nu achterhaald zijn. DevHub moet dit signaleren.
+
+**Wat:**
+- Periodieke scan van opgeslagen kennis
+- Vergelijking met actuele bronnen
+- Signalering van verouderde of tegenstrijdige kennis
+- Hergradering (GOLD → BRONZE als bewijs veroudert)
+
+**Triage-item:** `IDEA_N8N_KNOWLEDGE_DECAY_SCAN` (ontgrendeld)
+
+---
+
+### Golf 3: Automatisering
+
+> DevHub draait zelfstandig, niet alleen als iemand het aanroept.
+
+**Afhankelijk van:** Golf 1C (triggers), Golf 2 (feedback loop beschikbaar)
+
+#### 3A — n8n workflows voor DevHub
+
+**Waarom:** DevHub heeft runbooks die beschrijven HOE dingen moeten draaien, maar alles moet handmatig getriggerd worden. n8n kan dit automatiseren.
+
+**Wat:**
+- Prompt Evolution Loop — prompts automatisch verbeteren op basis van resultaten
+- Sprint Retrospective Loop — automatisch learnings extraheren na sprint-closure
+- Knowledge Decay Scan — periodiek kennis controleren op veroudering
+- Sprint Prep Synthese — voorbereiding automatiseren
+
+**Triage-items (alle ontgrendeld):**
+- `IDEA_N8N_PROMPT_EVOLUTION_LOOP`
+- `IDEA_N8N_SPRINT_RETROSPECTIVE_LOOP`
+- `IDEA_N8N_KNOWLEDGE_DECAY_SCAN`
+- `IDEA_N8N_SPRINT_PREP_SYNTHESE`
+
+**Bestanden:** n8n workflow JSONs + setup-configuratie
+
+#### 3B — Event-driven sprint lifecycle
+
+**Waarom:** Nu is sprint-closure een handmatig proces. Met event-triggers kan sprint-closure automatisch kennisextractie, retrospective en HERALD-sync triggeren.
+
+**Wat:**
+- Sprint-closure → kennisextractie (Golf 1C)
+- Sprint-closure → retrospective-loop (3A)
+- Sprint-start → prep-synthese (3A)
+- Health check op schema (wekelijks/dagelijks)
+
+---
+
+### Golf 4: Distributie
+
+> DevHub wordt installeerbaar voor elk project, niet alleen vanuit de monorepo.
+
+#### 4A — Plugin bundling
+
+**Waarom:** DevHub werkt nu alleen als je in de monorepo zit. Zonder installeerbare plugin kan DevHub alleen BORIS bedienen.
+
+**Wat:**
+- `.claude-plugin/plugin.json` uitbreiden (nu minimale metadata)
+- Plugin bundling: agents + skills + configuratie als één installeerbaar pakket
+- Versioning strategie (semver)
+- Installatie-instructies
+
+**Bestanden:** `.claude-plugin/plugin.json`, nieuwe build-configuratie
+
+#### 4B — Package distributie (Track A3-A4)
+
+**Waarom:** Doorgeschoven uit Fase 3. Als projecten DevHub-contracts willen implementeren (NodeInterface), moeten ze `devhub-core` kunnen installeren via pip.
+
+**Wat:**
+- `devhub-core[contracts]` als pip-installeerbaar micro-package
+- Agents en skills als aparte packages (optioneel)
+- PEX packaging valideren
+
+**Bestanden:** `packages/devhub-core/pyproject.toml`, packaging configuratie
+
+#### 4C — Multi-project validatie
+
+**Waarom:** DevHub is gebouwd voor meerdere projecten maar heeft alleen BORIS als referentie. Een tweede project (proof-of-concept) valideert dat het systeem echt node-agnostisch werkt.
+
+**Wat:**
+- Tweede project registreren in `config/nodes.yml`
+- Minimale NodeInterface adapter schrijven
+- DevHub skills testen met tweede project
+- Multi-project data laag activeren
+
+**Triage-item:** `RESEARCH_DEVHUB_MULTI_PROJECT_DATA_LAAG` (ontgrendeld)
+
+---
+
+## Fase 5: BORIS Upgrade + Uitbreiding
+
+DevHub is production-ready. Nu kan het doen waarvoor het gebouwd is: BORIS upgraden met SOTA-kennis, zonder de ziel van de Gems te verliezen.
+
+### 5A — BORIS bekijken met DevHub-bril
+
+**Wat:** DevHub analyseert BORIS volledig — code-kwaliteit, architectuur, test coverage, patronen, security. Niet om te slopen, maar om te begrijpen waar verbetering mogelijk is.
+
+**Resultaat:** Upgrade-rapport met concrete voorstellen, geprioriteerd op impact.
+
+### 5B — Gem-identiteit bewaren, code upgraden
+
+**Wat:** Per Gem (VERA, LUMEN, CLAIR, SCOUT, HERALD, CURATOR, ATLAS, SCRIPTOR):
+- Essentie documenteren (wat maakt deze Gem uniek?)
+- Code-kwaliteit verbeteren (tests, typing, error handling)
+- Patronen upgraden naar DevHub SOTA-niveau
+- Identiteit behouden — de Gem blijft herkenbaar
+
+### 5C — BORIS skills upgraden
+
+**Wat:** De bestaande BORIS skills (buurts-sprint, buurts-health, buurts-review, mentor-dev, boris-sprint-prep) upgraden met kennis uit DevHub:
+- Betere workflows
+- DevHub-integratie waar zinvol
+- Behoud van BORIS-specifieke context en domeinkennis
+
+### 5D — Agent Teams
+
+**Wat:** Multi-agent orchestratie — agents die samenwerken aan complexe taken. DevHub's plugin agents coördineren met BORIS runtime agents.
+
+### 5E — Karpathy Experiment Loop
+
+**Wat:** Geautomatiseerde experiment-loop voor continue verbetering. DevHub stelt hypotheses op, test ze, en leert van de resultaten.
+
+**Triage-item:** `IDEA_N8N_EXPERIMENT_LOOP_KARPATHY`
+
+---
+
+## Afhankelijkheden-diagram
+
+```
+Golf 1: Fundament
+├── 1A Housekeeping ──────────────────────── (geen deps)
+├── 1B Agent tests ───────────────────────── (geen deps)
+└── 1C Kennispipeline triggers ───────────── (geen deps)
+         │
+Golf 2: Intelligentie
+├── 2A Feedback loop engine ──────────────── (vereist 1C)
+├── 2B Zelfverbeterend systeem ───────────── (vereist 2A)
+└── 2C Knowledge decay ──────────────────── (vereist 1C)
+         │
+Golf 3: Automatisering
+├── 3A n8n workflows ─────────────────────── (vereist 1C, profiteert van 2A)
+└── 3B Event-driven lifecycle ────────────── (vereist 1C + 3A)
+         │
+Golf 4: Distributie
+├── 4A Plugin bundling ───────────────────── (geen deps)
+├── 4B Package distributie ───────────────── (geen deps)
+└── 4C Multi-project validatie ───────────── (vereist 4A of 4B)
+         │
+Fase 5: BORIS Upgrade
+├── 5A Analyse met DevHub-bril ───────────── (vereist Fase 4 af)
+├── 5B Gem-code upgraden ─────────────────── (vereist 5A)
+├── 5C Skills upgraden ───────────────────── (vereist 5A)
+├── 5D Agent Teams ───────────────────────── (vereist 5B)
+└── 5E Karpathy Loop ────────────────────── (vereist 2B + 3A)
+```
+
+---
 
 ## Volgorde-samenvatting
 
 ```
-DONE:   n8n CI/CD Foundation ✅
-DONE:   Code Check Architectuur ✅
-DONE:   Track A — uv Workspace ✅ (394 tests)
-DONE:   Operationele Validatie ✅ (395 tests)
-DONE:   Track B S1 — Storage Interface + LocalAdapter ✅ (497 tests)
-DONE:   Track C S1 — Vectorstore Interface + ChromaDB ✅ (575 tests)
-NU:     Golf 1 restant (Mentor S1, Governance S1) + Planning & Tracking 🔄
-DAN:    Golf 2 (Track B S2 + Track C S2) → KWP DEV + Mentor Supervisor
-GATE:   Fase 4 — BORIS-migratie (Niels-goedkeuring)
-LATER:  Fase 5 — Uitbreiding
+DONE:    Fase 0-3 — Alle onderdelen gebouwd (31 sprints, 673 tests)
+GATE:    Fase 4 Golf 1 — Fundament versterken (housekeeping, tests, triggers)
+DAN:     Fase 4 Golf 2 — Intelligentie (feedback loop, zelfverbetering)
+DAN:     Fase 4 Golf 3 — Automatisering (n8n, event-driven)
+DAN:     Fase 4 Golf 4 — Distributie (plugin, packaging, multi-project)
+LATER:   Fase 5 — BORIS Upgrade + Uitbreiding
 ```
+
+**Architectuurmodel:** `docs/architecture/OVERVIEW.md`
+**Upgrade-model:** `docs/architecture/UPGRADE_MODEL.md`
+**Fase 3 retrospective:** `knowledge/retrospectives/RETRO_FASE3_KNOWLEDGE_MEMORY.md`

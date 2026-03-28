@@ -106,6 +106,32 @@ class TestMarkdownAdapter:
         with pytest.raises(NotImplementedError):
             adapter.from_template("/tmp/template.md", {"key": "value"})
 
+    def test_create_markdown_with_category_in_frontmatter(self, adapter: MarkdownAdapter) -> None:
+        meta = DocumentMetadata(category="explanation", grade="SILVER")
+        section = DocumentSection(heading="Test", content="Body")
+        request = DocumentRequest(title="Category Doc", sections=(section,), metadata=meta)
+        result = adapter.create(request)
+
+        content = Path(result.path).read_text(encoding="utf-8")
+        assert "category: explanation" in content
+        assert "grade: SILVER" in content
+
+    def test_create_markdown_without_category_in_frontmatter(
+        self,
+        adapter: MarkdownAdapter,
+    ) -> None:
+        meta = DocumentMetadata()
+        section = DocumentSection(heading="Test", content="Body")
+        request = DocumentRequest(
+            title="No Category",
+            sections=(section,),
+            metadata=meta,
+        )
+        result = adapter.create(request)
+
+        content = Path(result.path).read_text(encoding="utf-8")
+        assert "category:" not in content
+
     def test_create_markdown_frontmatter_delimiters(self, adapter: MarkdownAdapter) -> None:
         section = DocumentSection(heading="Test", content="Body")
         request = DocumentRequest(title="Frontmatter Check", sections=(section,))
