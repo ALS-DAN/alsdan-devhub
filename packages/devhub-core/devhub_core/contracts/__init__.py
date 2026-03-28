@@ -47,6 +47,13 @@ from devhub_core.contracts.curator_contracts import (
     Observation,
     ObservationType,
 )
+from devhub_core.contracts.pipeline_contracts import (
+    DocumentProductionRequest,
+    DocumentProductionResult,
+    FolderRoute,
+    KnowledgeContext,
+    PublishStatus,
+)
 
 __all__ = [
     "CoachingResponse",
@@ -86,4 +93,9 @@ __all__ = [
     "KnowledgeHealthReport",
     "Observation",
     "ObservationType",
+    "DocumentProductionRequest",
+    "DocumentProductionResult",
+    "FolderRoute",
+    "KnowledgeContext",
+    "PublishStatus",
 ]

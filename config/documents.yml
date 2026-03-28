@@ -19,3 +19,37 @@ taxonomy:
     knowledge:
       categories: [methodology, best_practice, sota_review, playbook]
       description: "Kennisbank — expert knowledge base"
+
+nodes:
+  devhub:
+    taxonomy:
+      - tutorial
+      - howto
+      - reference
+      - explanation
+      - pattern
+      - analysis
+      - decision
+      - retrospective
+      - methodology
+      - best_practice
+      - sota_review
+      - playbook
+    drive_root: "DevHub"
+    folder_map:
+      product: "product"
+      process: "process"
+      knowledge: "knowledge"
+  boris-buurts:
+    taxonomy:
+      - tutorial
+      - howto
+      - reference
+      - explanation
+      - pattern
+      - decision
+    drive_root: "BORIS"
+    folder_map:
+      product: "product"
+      process: "process"
+      knowledge: "knowledge"

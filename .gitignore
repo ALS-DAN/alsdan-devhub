@@ -14,6 +14,10 @@ docker/.env
 docker/n8n-local-files/dev_os.db
 .secrets.baseline
 
+# Credentials (Art. 8 DEV_CONSTITUTION)
+.google_token.json
+google_client_secrets.json
+
 # Ephemeral / lokaal
 .hypothesis/
 .mcp.json
