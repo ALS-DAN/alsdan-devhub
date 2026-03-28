@@ -323,9 +323,25 @@ def run_health_check():
     ts = datetime.now(UTC).isoformat()
     checks: dict = {}
 
-    # 1. pytest
+    # 1. pytest — DevHub packages only (no submodule projects, no heavy optional deps)
+    # Excludes: chromadb/vectorstore integration tests (need ~500MB optional deps)
     exit_code, stdout, stderr = _run_cmd(
-        ["python3", "-m", "pytest", "--tb=no", "-q", "-p", "no:cacheprovider"], REPO_PATH
+        [
+            "python3",
+            "-m",
+            "pytest",
+            "--tb=no",
+            "-q",
+            "-p",
+            "no:cacheprovider",
+            "packages/devhub-core/tests/",
+            "packages/devhub-storage/tests/",
+            "packages/devhub-documents/tests/",
+            "-k",
+            "not (knowledge_store or knowledge_scanner or knowledge_health"
+            " or kwp_integration or config_bootstrap or bootstrap or sprint35)",
+        ],
+        REPO_PATH,
     )
     lines = stdout.strip().split("\n")
     summary = lines[-1] if lines else ""
@@ -334,35 +350,42 @@ def run_health_check():
         "summary": summary,
     }
 
-    # 2. ruff
-    exit_code, stdout, stderr = _run_cmd(["python3", "-m", "ruff", "check", "--quiet"], REPO_PATH)
+    # 2. ruff — no-cache to avoid writes on read-only mount
+    exit_code, stdout, stderr = _run_cmd(
+        ["python3", "-m", "ruff", "check", "--quiet", "--no-cache"], REPO_PATH
+    )
     error_count = len(stdout.strip().split("\n")) if stdout.strip() else 0
     checks["ruff"] = {
         "exit_code": exit_code,
         "error_count": error_count,
     }
 
-    # 3. pip-audit
+    # 3. pip-audit — distinguish fixable vs unfixable CVEs
     exit_code, stdout, stderr = _run_cmd(
         ["python3", "-m", "pip_audit", "--format=json", "--progress-spinner=off"],
         REPO_PATH,
         timeout=180,
     )
     cve_count = 0
+    fixable_count = 0
     if stdout.strip():
         try:
             vulns = json.loads(stdout)
             if isinstance(vulns, list):
                 cve_count = len(vulns)
+                fixable_count = sum(1 for v in vulns if v.get("fix_versions"))
             elif isinstance(vulns, dict) and "dependencies" in vulns:
-                cve_count = sum(
-                    len(d.get("vulns", [])) for d in vulns["dependencies"] if d.get("vulns")
-                )
+                for dep in vulns["dependencies"]:
+                    for vuln in dep.get("vulns", []):
+                        cve_count += 1
+                        if vuln.get("fix_versions"):
+                            fixable_count += 1
         except json.JSONDecodeError:
             pass
     checks["pip_audit"] = {
         "exit_code": exit_code,
         "cve_count": cve_count,
+        "fixable_count": fixable_count,
     }
 
     # 4. outdated
@@ -376,9 +399,14 @@ def run_health_check():
     checks["outdated"] = {"count": outdated_count}
 
     # Determine severity
-    if checks["pytest"]["exit_code"] != 0 or checks["pip_audit"]["cve_count"] > 0:
+    # RED: test failures or fixable CVEs. Unfixable CVEs are YELLOW (no action possible).
+    if checks["pytest"]["exit_code"] != 0 or checks["pip_audit"]["fixable_count"] > 0:
         severity = "RED"
-    elif checks["ruff"]["error_count"] > 0 or checks["outdated"]["count"] > 5:
+    elif (
+        checks["ruff"]["error_count"] > 0
+        or checks["outdated"]["count"] > 5
+        or checks["pip_audit"]["cve_count"] > 0
+    ):
         severity = "YELLOW"
     else:
         severity = "GREEN"

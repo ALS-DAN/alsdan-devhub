@@ -61,6 +61,23 @@ from devhub_core.contracts.scanner_contracts import (
     KnowledgeScanResult,
     grade_gte,
 )
+from devhub_core.contracts.event_contracts import (
+    DocGenRequested,
+    Event,
+    EventBusInterface,
+    EventFilter,
+    EventHandler,
+    EventLoopError,
+    HealthDegraded,
+    KnowledgeGapDetected,
+    ObservationEmitted,
+    QACompleted,
+    SprintClosed,
+    SprintStarted,
+    TaskAssigned,
+    TaskCompleted,
+    TaskFailed,
+)
 
 __all__ = [
     "CoachingResponse",
@@ -110,4 +127,19 @@ __all__ = [
     "DomainScanStatus",
     "KnowledgeScanResult",
     "grade_gte",
+    "DocGenRequested",
+    "Event",
+    "EventBusInterface",
+    "EventFilter",
+    "EventHandler",
+    "EventLoopError",
+    "HealthDegraded",
+    "KnowledgeGapDetected",
+    "ObservationEmitted",
+    "QACompleted",
+    "SprintClosed",
+    "SprintStarted",
+    "TaskAssigned",
+    "TaskCompleted",
+    "TaskFailed",
 ]

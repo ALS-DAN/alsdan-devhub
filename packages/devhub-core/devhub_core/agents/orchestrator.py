@@ -14,7 +14,7 @@ import logging
 from dataclasses import asdict
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 from devhub_core.contracts.analysis_contracts import AnalysisRequest, AnalysisType
 from devhub_core.contracts.dev_contracts import (
@@ -53,10 +53,12 @@ class DevOrchestrator:
         self,
         registry: NodeRegistry,
         scratchpad_path: Path | None = None,
+        event_bus: Any | None = None,  # EventBusInterface — optioneel
     ) -> None:
         self._registry = registry
         self._scratchpad = scratchpad_path or Path(".claude/scratchpad/tasks")
         self._scratchpad.mkdir(parents=True, exist_ok=True)
+        self._event_bus = event_bus
 
     def create_task(
         self,
@@ -91,6 +93,17 @@ class DevOrchestrator:
 
         self._write_task(task)
         logger.info("DevOrchestrator: taak %s aangemaakt voor node %s", task_id, node_id)
+        if self._event_bus is not None:
+            from devhub_core.contracts.event_contracts import TaskAssigned
+
+            self._event_bus.publish(
+                TaskAssigned(
+                    source_agent="orchestrator",
+                    task_id=task_id,
+                    agent_id="",
+                    description=description,
+                )
+            )
         return task
 
     def get_node_context(self, node_id: str) -> NodeReport:
@@ -127,6 +140,15 @@ class DevOrchestrator:
             diataxis_category,
             audience,
         )
+        if self._event_bus is not None:
+            from devhub_core.contracts.event_contracts import DocGenRequested
+
+            self._event_bus.publish(
+                DocGenRequested(
+                    source_agent="orchestrator",
+                    request=doc_request,
+                )
+            )
         return doc_request
 
     def record_task_result(
@@ -150,6 +172,17 @@ class DevOrchestrator:
         result_path.parent.mkdir(parents=True, exist_ok=True)
         result_path.write_text(json.dumps(asdict(result), indent=2))
         logger.info("DevOrchestrator: resultaat voor %s opgeslagen", task_id)
+        if self._event_bus is not None:
+            from devhub_core.contracts.event_contracts import TaskCompleted
+
+            self._event_bus.publish(
+                TaskCompleted(
+                    source_agent="orchestrator",
+                    task_id=task_id,
+                    agent_id="",
+                    result=result,
+                )
+            )
         return result
 
     def get_current_task(self) -> DevTaskRequest | None:

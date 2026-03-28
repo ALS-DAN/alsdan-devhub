@@ -55,6 +55,7 @@ class AnalysisPipeline:
         remote_storage: Any | None = None,
         curator: Any | None = None,  # KnowledgeCurator — voor toekomstige observatie-integratie
         template_dir: Path | None = None,
+        event_bus: Any | None = None,  # EventBusInterface — optioneel
     ) -> None:
         self._knowledge_store = knowledge_store
         self._research_queue = research_queue
@@ -63,6 +64,7 @@ class AnalysisPipeline:
         self._remote_storage = remote_storage
         self._curator = curator
         self._template_loader = TemplateLoader(template_dir)
+        self._event_bus = event_bus
 
     def run(self, request: AnalysisRequest) -> AnalysisResult:
         """Voer de volledige analyse-pipeline synchroon uit.
@@ -495,11 +497,11 @@ class AnalysisPipeline:
         return min_grade
 
     def _emit_observation(self, obs_type: ObservationType, payload: str, severity: str) -> None:
-        """Log een observatie.
+        """Log een observatie en publiceer naar event bus (indien beschikbaar).
 
-        Observaties worden momenteel via het Python logging-systeem bijgehouden.
-        De ObservationType waarden in curator_contracts.py (AP-05) zijn het contract
-        voor toekomstige Weaviate-opslag.
+        Observaties worden via het Python logging-systeem bijgehouden.
+        Daarnaast worden ze gepubliceerd als ObservationEmitted events
+        op de event bus, zodat andere agents reactief kunnen reageren.
         """
         logger.info(
             "OBSERVATION type=%s severity=%s payload=%s",
@@ -507,3 +509,14 @@ class AnalysisPipeline:
             severity,
             payload,
         )
+        if self._event_bus is not None:
+            from devhub_core.contracts.event_contracts import ObservationEmitted
+
+            self._event_bus.publish(
+                ObservationEmitted(
+                    source_agent="analysis-pipeline",
+                    obs_type=obs_type,
+                    payload=payload,
+                    severity=severity,
+                )
+            )
