@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub Dashboard — Bestaande Panelen Upgrade</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #1d1d1d;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3a3a3a;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: #b0b0b0;
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            border-bottom-color: #00bfff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: #4a4a4a;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .card-meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .badge-success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .badge-warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        .badge-danger {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .badge-info {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .status-dot.success {
+            background-color: #4caf50;
+        }
+
+        .status-dot.warning {
+            background-color: #ffc107;
+        }
+
+        .status-dot.danger {
+            background-color: #f44336;
+        }
+
+        .status-dot.info {
+            background-color: #2196f3;
+        }
+
+        .kpi-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-item {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .kpi-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .kpi-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .kpi-note {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            background-color: #00bfff;
+            border-radius: 50%;
+            border: 2px solid #1d1d1d;
+        }
+
+        .timeline-content {
+            flex: 1;
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+
+        .timeline-text {
+            font-size: 13px;
+            color: #e0e0e0;
+        }
+
+        .domain-card {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .domain-info {
+            flex: 1;
+        }
+
+        .domain-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .domain-metric {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 12px;
+        }
+
+        .domain-action {
+            display: inline-block;
+            color: #00bfff;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .domain-action:hover {
+            text-decoration: underline;
+        }
+
+        .expandable {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .expandable-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .expandable-header:hover {
+            border-color: #4a4a4a;
+        }
+
+        .expandable-icon {
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .expandable-icon.open {
+            transform: rotate(180deg);
+        }
+
+        .expandable-content {
+            display: none;
+            padding: 15px;
+            background-color: rgba(45, 45, 45, 0.5);
+            border-left: 2px solid #00bfff;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 10px;
+        }
+
+        .expandable-content.open {
+            display: block;
+        }
+
+        .content-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 13px;
+        }
+
+        .content-label {
+            color: #888;
+            min-width: 120px;
+        }
+
+        .content-value {
+            color: #e0e0e0;
+            flex: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #3a3a3a;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #00bfff;
+            transition: width 0.3s ease;
+        }
+
+        .chart-container {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .sparkline {
+            height: 30px;
+            margin-top: 8px;
+        }
+
+        .mini-chart {
+            height: 50px;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background-color: #2d2d2d;
+            color: #888;
+            padding: 12px;
+            text-align: left;
+            font-weight: 500;
+            border-bottom: 1px solid #3a3a3a;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        tr:hover {
+            background-color: #2d2d2d;
+        }
+
+        .tab-group {
+            margin-bottom: 20px;
+        }
+
+        .inner-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .inner-tab-btn {
+            padding: 10px 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: all 0.3s ease;
+        }
+
+        .inner-tab-btn:hover {
+            color: #b0b0b0;
+        }
+
+        .inner-tab-btn.active {
+            color: #fff;
+            border-bottom-color: #00bfff;
+        }
+
+        .inner-content {
+            display: none;
+        }
+
+        .inner-content.active {
+            display: block;
+        }
+
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .kanban-column {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .kanban-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .kanban-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .kanban-count {
+            background-color: #3a3a3a;
+            color: #888;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .kanban-item {
+            background-color: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #e0e0e0;
+        }
+
+        .phase-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .phase-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            background-color: #3a3a3a;
+            color: #888;
+        }
+
+        .phase-circle.done {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        .phase-circle.active {
+            background-color: #00bfff;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
+        }
+
+        .phase-connector {
+            flex: 1;
+            height: 2px;
+            background-color: #3a3a3a;
+            margin: 0 8px;
+        }
+
+        .phase-connector.done {
+            background-color: #4caf50;
+        }
+
+        .compliance-gauge {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .gauge-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(#4caf50 0deg 324deg, #3a3a3a 324deg);
+            border: 3px solid #3a3a3a;
+            position: relative;
+        }
+
+        .gauge-inner {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background-color: #2d2d2d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gauge-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #4caf50;
+        }
+
+        .gauge-label {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+        }
+
+        .audit-trail {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .audit-item {
+            padding: 12px;
+            border-bottom: 1px solid #3a3a3a;
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+        }
+
+        .audit-item:last-child {
+            border-bottom: none;
+        }
+
+        .audit-time {
+            color: #888;
+            min-width: 80px;
+        }
+
+        .audit-event {
+            color: #e0e0e0;
+            flex: 1;
+        }
+
+        .skill-radar-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .radar-chart {
+            flex: 1;
+            min-height: 400px;
+        }
+
+        .radar-legend {
+            flex: 0 0 200px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+        .legend-color.current {
+            background-color: #00bfff;
+        }
+
+        .legend-color.target {
+            background-color: #ff9800;
+        }
+
+        .skill-card {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .skill-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .dreyfus-badge {
+            background-color: #00bfff;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .skill-progress {
+            margin-bottom: 10px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .evidence-section {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: rgba(0, 191, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .t-shape-profile {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .t-section {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .t-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 15px;
+        }
+
+        .breadth-bars {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .breadth-block {
+            flex: 1;
+            min-width: 50px;
+            height: 40px;
+            background-color: #00bfff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .depth-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #3a3a3a;
+        }
+
+        .depth-item:last-child {
+            border-bottom: none;
+        }
+
+        .depth-label {
+            font-size: 12px;
+            color: #e0e0e0;
+        }
+
+        .depth-indicator {
+            font-size: 18px;
+            color: #ff9800;
+        }
+
+        .challenge-card {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .challenge-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .challenge-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+        }
+
+        .challenge-type {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 3px;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        .challenge-type.stretch {
+            background-color: rgba(255, 152, 0, 0.2);
+            color: #ff9800;
+        }
+
+        .challenge-type.explain {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .challenge-type.reverse {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+        }
+
+        .challenge-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .challenge-desc {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .challenge-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+        }
+
+        .recommendation-card {
+            background-color: #2d2d2d;
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #fff;
+            flex: 1;
+        }
+
+        .resource-type {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 3px;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        .resource-type.paper {
+            background-color: rgba(33, 150, 243, 0.2);
+            color: #2196f3;
+        }
+
+        .resource-type.docs {
+            background-color: rgba(0, 191, 255, 0.2);
+            color: #00bfff;
+        }
+
+        .resource-type.tutorial {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .recommendation-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-alignment {
+            font-size: 12px;
+            color: #666;
+            padding: 8px;
+            background-color: rgba(255, 193, 7, 0.1);
+            border-radius: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .owasp-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .owasp-label {
+            min-width: 100px;
+            font-size: 11px;
+            color: #888;
+        }
+
+        .owasp-progress {
+            flex: 1;
+            height: 6px;
+            background-color: #3a3a3a;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .owasp-fill {
+            height: 100%;
+            background-color: #4caf50;
+        }
+
+        .owasp-percent {
+            min-width: 40px;
+            text-align: right;
+            font-size: 11px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DevHub Dashboard</h1>
+            <div style="color: #666; font-size: 12px;">Bestaande Panelen Upgrade 2026-03-29</div>
+        </header>
+
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
+            <button class="tab-btn" onclick="switchTab('health')">Health</button>
+            <button class="tab-btn" onclick="switchTab('planning')">Planning</button>
+            <button class="tab-btn" onclick="switchTab('governance')">Governance</button>
+            <button class="tab-btn" onclick="switchTab('growth')">Growth</button>
+        </div>
+
+        <!-- SCREEN 1: OVERVIEW -->
+        <div id="overview" class="tab-content active">
+            <h2 style="margin-bottom: 20px; font-size: 20px;">Executive Summary</h2>
+
+            <!-- Smart KPI Strip -->
+            <div class="kpi-strip">
+                <div class="kpi-item">
+                    <div class="kpi-label">Tests</div>
+                    <div class="kpi-number">1489</div>
+                    <div class="kpi-note">↑ Baseline aktief</div>
+                    <div class="mini-chart" id="tests-sparkline"></div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Huidige Sprint</div>
+                    <div class="kpi-number">#43</div>
+                    <div class="kpi-note"><span class="status-dot success"></span>100% on-time</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Packages</div>
+                    <div class="kpi-number">4</div>
+                    <div class="kpi-note">Alle actief</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Knowledge</div>
+                    <div class="kpi-number">10</div>
+                    <div class="kpi-note">7 fresh, 2 aging, 1 stale</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Research</div>
+                    <div class="kpi-number">1 <span class="badge badge-warning">Pending</span></div>
+                    <div class="kpi-note">In processing</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Health</div>
+                    <div class="kpi-number"><span class="status-dot success"></span>Healthy</div>
+                    <div class="kpi-note">Alle systemen OK</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Fase</div>
+                    <div class="kpi-number">4</div>
+                    <div class="kpi-note">Verbindingen</div>
+                </div>
+            </div>
+
+            <!-- System Pulse Section -->
+            <div class="chart-container">
+                <div class="chart-title">System Pulse — Recente Activiteit</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2026-03-29 14:32</div>
+                            <div class="timeline-text">Sprint #43 afgerond — 65 tests toegevoegd</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2026-03-28 10:15</div>
+                            <div class="timeline-text">Knowledge artikel ingevoegd: "Provider Pattern"</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2026-03-27 16:42</div>
+                            <div class="timeline-text">Research Compas goedgekeurd — kennispipeline gestart</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2026-03-26 09:20</div>
+                            <div class="timeline-text">Fase 4 gate approved — Event Bus FEAT gestart</div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">2026-03-24 13:45</div>
+                            <div class="timeline-text">Security audit OWASP ASI voltooid — Risk: LOW</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Domain Status Grid -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Domein Status</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot success"></span>Health</div>
+                        <div class="domain-metric">7 dimensies monitored</div>
+                        <div class="domain-metric" style="color: #4caf50;">Status: Healthy</div>
+                        <div class="domain-action" onclick="switchTab('health'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot success"></span>Sprint & Planning</div>
+                        <div class="domain-metric">43 sprints completed</div>
+                        <div class="domain-metric" style="color: #4caf50;">Velocity: 100%</div>
+                        <div class="domain-action" onclick="switchTab('planning'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot success"></span>Knowledge</div>
+                        <div class="domain-metric">10 items, Freshness: 72%</div>
+                        <div class="domain-metric" style="color: #4caf50;">Track K Golf 3 done</div>
+                        <div class="domain-action" onclick="switchTab('governance'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot success"></span>Governance</div>
+                        <div class="domain-metric">9/9 artikelen actief</div>
+                        <div class="domain-metric" style="color: #4caf50;">Compliance: 100%</div>
+                        <div class="domain-action" onclick="switchTab('governance'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot warning"></span>Research</div>
+                        <div class="domain-metric">1 pending, Knowledge dashboard due</div>
+                        <div class="domain-metric" style="color: #ffc107;">Actie vereist</div>
+                        <div class="domain-action" onclick="switchTab('growth'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+
+                <div class="domain-card">
+                    <div class="domain-info">
+                        <div class="domain-name"><span class="status-dot info"></span>Growth</div>
+                        <div class="domain-metric">Dreyfus avg: 1.6/5</div>
+                        <div class="domain-metric" style="color: #2196f3;">ZPD: Testing (L2→3)</div>
+                        <div class="domain-action" onclick="switchTab('growth'); document.querySelector('.tab-btn').click();">→ Details</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hill Chart for Current Sprint -->
+            <div class="chart-container">
+                <div class="chart-title">Sprint #43 Phase Progress</div>
+                <div style="height: 80px; margin-top: 15px; display: flex; align-items: center; gap: 15px;">
+                    <div style="flex: 0 0 60px; text-align: center;">
+                        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Shaping</div>
+                        <div style="width: 50px; height: 8px; background-color: #4caf50; border-radius: 4px; margin: 0 auto;"></div>
+                    </div>
+                    <div style="flex: 0 0 60px; text-align: center;">
+                        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Building</div>
+                        <div style="width: 50px; height: 8px; background-color: #4caf50; border-radius: 4px; margin: 0 auto;"></div>
+                    </div>
+                    <div style="flex: 0 0 60px; text-align: center;">
+                        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Betting</div>
+                        <div style="width: 50px; height: 8px; background-color: #4caf50; border-radius: 4px; margin: 0 auto;"></div>
+                    </div>
+                    <div style="flex: 1; text-align: center;">
+                        <div style="font-size: 11px; color: #888; margin-bottom: 5px;">Done</div>
+                        <div style="height: 8px; background-color: #4caf50; border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 2: HEALTH -->
+        <div id="health" class="tab-content">
+            <h2 style="margin-bottom: 20px; font-size: 20px;">Health Dashboard</h2>
+
+            <!-- Top KPI Cards -->
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+                <div class="card">
+                    <div class="card-title">Overall Status</div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="status-dot success"></span>
+                        <span class="badge badge-success">Healthy</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Dimensies</div>
+                    <div class="card-value">7</div>
+                    <div class="card-meta">Monitored</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">P1 Alerts</div>
+                    <div class="card-value">0</div>
+                    <div class="card-meta">Critical issues</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">P2 Alerts</div>
+                    <div class="card-value">0</div>
+                    <div class="card-meta">Warnings</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Uptime</div>
+                    <div class="card-value">43/43</div>
+                    <div class="card-meta">100% sprints on-time</div>
+                </div>
+            </div>
+
+            <!-- 7 Health Dimensions -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Health Dimensies</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+                <!-- Tests -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">1. Tests</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Total:</div>
+                            <div class="content-value">1489 tests</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">All passing</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Coverage:</div>
+                            <div class="content-value">85%+ estimated</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Findings:</div>
+                            <div class="content-value">None</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Packages -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">2. Packages</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Total:</div>
+                            <div class="content-value">4 packages active</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">devhub-core:</div>
+                            <div class="content-value">v0.2.0 ✅</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">devhub-storage:</div>
+                            <div class="content-value">v0.3.0 ✅</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Pyproject validatie:</div>
+                            <div class="content-value">All valid</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dependencies -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">3. Dependencies</div>
+                            <span class="badge badge-warning">Attention</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Total:</div>
+                            <div class="content-value">28 direct deps</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Outdated:</div>
+                            <div class="content-value">2 minor versions</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Action:</div>
+                            <div class="content-value">Schedule update sprint</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Architecture -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">4. Architecture</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">NodeInterface:</div>
+                            <div class="content-value">13 dataclasses ✅</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Adapter Pattern:</div>
+                            <div class="content-value">BorisAdapter (38 methods)</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Compliance:</div>
+                            <div class="content-value">100% intact</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Knowledge Health -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">5. Knowledge Health</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Total:</div>
+                            <div class="content-value">10 articles</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Freshness Score:</div>
+                            <div class="content-value">72%</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Fresh:</div>
+                            <div class="content-value">7 (< 14 days old)</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Stale:</div>
+                            <div class="content-value">1 (> 30 days old)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">6. Security</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Last Audit:</div>
+                            <div class="content-value">Sprint 43</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Risk Level:</div>
+                            <div class="content-value"><span class="badge badge-success">LOW</span></div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">OWASP ASI:</div>
+                            <div class="content-value">10/10 checkpoints</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sprint Hygiene -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">7. Sprint Hygiene</div>
+                            <span class="badge badge-success">Healthy</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Velocity:</div>
+                            <div class="content-value">100% accuracy</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Stale Inbox:</div>
+                            <div class="content-value">0 items</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Phase Tracking:</div>
+                            <div class="content-value">SPRINT_TRACKER updated</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trend Chart -->
+            <div class="chart-container">
+                <div class="chart-title">Health Trends (Last 20 Sprints)</div>
+                <div id="health-chart" style="height: 300px; margin-top: 15px;"></div>
+            </div>
+
+            <!-- Health History Table -->
+            <div class="chart-container">
+                <div class="chart-title">Health History Snapshots</div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sprint</th>
+                                <th>Tests</th>
+                                <th>Packages</th>
+                                <th>Knowledge</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>43</td>
+                                <td>1489</td>
+                                <td>4</td>
+                                <td>10 (72%)</td>
+                                <td><span class="badge badge-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>42</td>
+                                <td>1424</td>
+                                <td>4</td>
+                                <td>9 (68%)</td>
+                                <td><span class="badge badge-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>41</td>
+                                <td>1350</td>
+                                <td>4</td>
+                                <td>8 (65%)</td>
+                                <td><span class="badge badge-success">Healthy</span></td>
+                            </tr>
+                            <tr>
+                                <td>40</td>
+                                <td>1280</td>
+                                <td>4</td>
+                                <td>7 (60%)</td>
+                                <td><span class="badge badge-success">Healthy</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 3: PLANNING -->
+        <div id="planning" class="tab-content">
+            <h2 style="margin-bottom: 20px; font-size: 20px;">Planning & Velocity</h2>
+
+            <!-- Sprint KPIs -->
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+                <div class="card">
+                    <div class="card-title">Huidige Sprint</div>
+                    <div class="card-value">#43</div>
+                    <div class="card-meta">DevHub Dashboard NiceGUI</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Status</div>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
+                        <span class="status-dot success"></span>
+                        <span class="badge badge-success">DONE</span>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Test Delta</div>
+                    <div class="card-value">+65</div>
+                    <div class="card-meta">Tests toegevoegd</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Fase</div>
+                    <div class="card-value">4</div>
+                    <div class="card-meta">Verbindingen</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Velocity</div>
+                    <div class="card-value">100%</div>
+                    <div class="card-meta">43/43 on-time</div>
+                </div>
+            </div>
+
+            <!-- Sprint Analytics Tabs -->
+            <div class="tab-group" style="margin-top: 30px;">
+                <div class="inner-tabs">
+                    <button class="inner-tab-btn active" onclick="switchInnerTab(event, 'velocity')">Velocity & Cycle Time</button>
+                    <button class="inner-tab-btn" onclick="switchInnerTab(event, 'history')">Sprint Historie</button>
+                </div>
+
+                <!-- Velocity Tab -->
+                <div id="velocity" class="inner-content active">
+                    <div class="chart-container">
+                        <div class="chart-title">Test Additions per Sprint (Last 15)</div>
+                        <div id="tests-chart" style="height: 300px;"></div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Cycle Time Trend (Inbox → Done)</div>
+                        <div id="cycle-chart" style="height: 250px;"></div>
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-top: 20px;">
+                        <div class="card">
+                            <div class="card-title">Avg Cycle Time</div>
+                            <div class="card-value">< 1 dag</div>
+                            <div class="card-meta">Intake to done</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Avg Test Delta</div>
+                            <div class="card-value">+45</div>
+                            <div class="card-meta">Per sprint</div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Estimation Accuracy</div>
+                            <div class="card-value">100%</div>
+                            <div class="card-meta">Tests forecast vs actual</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div id="history" class="inner-content">
+                    <div class="chart-container">
+                        <div class="chart-title">Recent 20 Sprints</div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Naam</th>
+                                        <th>Type</th>
+                                        <th>Size</th>
+                                        <th>Tests Δ</th>
+                                        <th>Cycle</th>
+                                        <th>Phase</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>43</td>
+                                        <td>DevHub Dashboard NiceGUI</td>
+                                        <td><span class="badge badge-info">FEAT</span></td>
+                                        <td>M</td>
+                                        <td>+65</td>
+                                        <td>0.8d</td>
+                                        <td>Fase 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>42</td>
+                                        <td>Event Bus Lifecycle Hooks</td>
+                                        <td><span class="badge badge-info">FEAT</span></td>
+                                        <td>M</td>
+                                        <td>+52</td>
+                                        <td>0.9d</td>
+                                        <td>Fase 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>41</td>
+                                        <td>Challenge Engine</td>
+                                        <td><span class="badge badge-info">FEAT</span></td>
+                                        <td>S</td>
+                                        <td>+40</td>
+                                        <td>0.7d</td>
+                                        <td>Fase 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>40</td>
+                                        <td>Skill Radar Visualization</td>
+                                        <td><span class="badge badge-info">FEAT</span></td>
+                                        <td>S</td>
+                                        <td>+38</td>
+                                        <td>0.6d</td>
+                                        <td>Fase 4</td>
+                                    </tr>
+                                    <tr>
+                                        <td>39</td>
+                                        <td>Agent Teams SPIKE</td>
+                                        <td><span class="badge badge-danger">SPIKE</span></td>
+                                        <td>M</td>
+                                        <td>+35</td>
+                                        <td>1.2d</td>
+                                        <td>Fase 4</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Planning Pipeline Kanban -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Planning Pipeline</h3>
+            <div class="kanban-board">
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <div class="kanban-title">INBOX</div>
+                        <div class="kanban-count">3</div>
+                    </div>
+                    <div class="kanban-item">SPRINT_INTAKE_DIATAXIS_PLUS_TAXONOMIE_POC</div>
+                    <div class="kanban-item">SPRINT_INTAKE_DOCUMENTATIE_PIPELINE_BORIS_BLAUWDRUK</div>
+                    <div class="kanban-item">SPRINT_INTAKE_N8N_EVENT_SCHEDULER</div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <div class="kanban-title">KLAAR (Shaped)</div>
+                        <div class="kanban-count">2</div>
+                    </div>
+                    <div class="kanban-item">SPRINT_INTAKE_KENNISKETEN_END_TO_END</div>
+                    <div class="kanban-item">SPRINT_INTAKE_DEVHUB_DASHBOARD_NICEGUI</div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <div class="kanban-title">ACTIEF (Running)</div>
+                        <div class="kanban-count">1</div>
+                    </div>
+                    <div class="kanban-item">Sprint #43 (Dashboard)</div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <div class="kanban-title">DONE (Recent)</div>
+                        <div class="kanban-count">3</div>
+                    </div>
+                    <div class="kanban-item">Sprint #42 — Event Bus</div>
+                    <div class="kanban-item">Sprint #41 — Challenge Engine</div>
+                    <div class="kanban-item">Sprint #40 — Skill Radar</div>
+                </div>
+
+                <div class="kanban-column">
+                    <div class="kanban-header">
+                        <div class="kanban-title">PARKED</div>
+                        <div class="kanban-count">14</div>
+                    </div>
+                    <div class="kanban-item">14 items (archived)</div>
+                </div>
+            </div>
+
+            <!-- Fase Progress -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Fase Voortgang</h3>
+            <div class="phase-progress">
+                <div class="phase-circle done">0</div>
+                <div class="phase-connector done"></div>
+                <div class="phase-circle done">1</div>
+                <div class="phase-connector done"></div>
+                <div class="phase-circle done">2</div>
+                <div class="phase-connector done"></div>
+                <div class="phase-circle done">3</div>
+                <div class="phase-connector done"></div>
+                <div class="phase-circle active">4</div>
+                <div class="phase-connector"></div>
+                <div class="phase-circle">5</div>
+            </div>
+        </div>
+
+        <!-- SCREEN 4: GOVERNANCE -->
+        <div id="governance" class="tab-content">
+            <h2 style="margin-bottom: 20px; font-size: 20px;">Governance & Compliance</h2>
+
+            <!-- Compliance Gauge -->
+            <div class="compliance-gauge">
+                <div class="gauge-circle">
+                    <div class="gauge-inner">
+                        <div class="gauge-number">9/9</div>
+                        <div class="gauge-label">Artikelen Actief</div>
+                    </div>
+                </div>
+                <div style="text-align: center; color: #888; font-size: 12px;">
+                    <div>Last audit: 2026-03-29</div>
+                    <div style="color: #4caf50; margin-top: 5px; font-weight: 600;">100% Compliance</div>
+                </div>
+            </div>
+
+            <!-- DEV_CONSTITUTION Cards -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">DEV_CONSTITUTION Artikelen</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+                <!-- Article 1 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 1 — Identiteit & Missie</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Last verified:</div>
+                            <div class="content-value">2026-03-29</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Verification:</div>
+                            <div class="content-value">Code review + audit trail</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 2 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 2 — Autonomie & Besluitvorming</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Last verified:</div>
+                            <div class="content-value">2026-03-28</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Sprint decisions:</div>
+                            <div class="content-value">43 fully autonomous</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 3 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 3 — Codebase Integriteit</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully compliant</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Tests:</div>
+                            <div class="content-value">1489 passing</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Last verified:</div>
+                            <div class="content-value">2026-03-29 (every sprint)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 4 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 4 — Transparantie</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Sprints tracked:</div>
+                            <div class="content-value">43/43 with audit trail</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Documentation:</div>
+                            <div class="content-value">SPRINT_TRACKER + ADRs</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 5 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 5 — Kennisintegriteit</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Grading system:</div>
+                            <div class="content-value">GOLD/SILVER/BRONZE/SPECULATIVE</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Knowledge items:</div>
+                            <div class="content-value">10 verified</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 6 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 6 — Project-soevereiniteit</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Registered projects:</div>
+                            <div class="content-value">BORIS (nodes.yml)</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Rule compliance:</div>
+                            <div class="content-value">100%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 7 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 7 — Impact-zonering</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully operational</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Zones:</div>
+                            <div class="content-value">GREEN/YELLOW/RED</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Last audit:</div>
+                            <div class="content-value">Sprint 43</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 8 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 8 — Security</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully audited</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Framework:</div>
+                            <div class="content-value">OWASP ASI 2026</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Risk level:</div>
+                            <div class="content-value"><span class="badge badge-success">LOW</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Article 9 -->
+                <div class="card expandable">
+                    <div class="expandable-header" onclick="toggleExpand(this)">
+                        <div>
+                            <div class="card-title">Art. 9 — Planning & Tracking</div>
+                            <span class="badge badge-success">✅ Actief</span>
+                        </div>
+                        <span class="expandable-icon">▼</span>
+                    </div>
+                    <div class="expandable-content">
+                        <div class="content-row">
+                            <div class="content-label">Status:</div>
+                            <div class="content-value">Fully implemented</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">SSOT:</div>
+                            <div class="content-value">SPRINT_TRACKER.md</div>
+                        </div>
+                        <div class="content-row">
+                            <div class="content-label">Last update:</div>
+                            <div class="content-value">2026-03-29</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Audit Section -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">OWASP ASI Coverage</h3>
+            <div class="chart-container">
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI01: Prompt Injection</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 85%;"></div></div>
+                    <div class="owasp-percent">85%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI02: Insecure Output</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 90%;"></div></div>
+                    <div class="owasp-percent">90%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI03: Training Data Poisoning</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 70%;"></div></div>
+                    <div class="owasp-percent">70%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI04: Model Denial</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 80%;"></div></div>
+                    <div class="owasp-percent">80%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI05: Supply Chain</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 88%;"></div></div>
+                    <div class="owasp-percent">88%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI06: Sensitive Disclosure</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 95%;"></div></div>
+                    <div class="owasp-percent">95%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI07: Transfer Learning</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 82%;"></div></div>
+                    <div class="owasp-percent">82%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI08: Model Evasion</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 78%;"></div></div>
+                    <div class="owasp-percent">78%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI09: Excessive Agency</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 92%;"></div></div>
+                    <div class="owasp-percent">92%</div>
+                </div>
+                <div class="owasp-bar">
+                    <div class="owasp-label">AI10: Model Theft</div>
+                    <div class="owasp-progress"><div class="owasp-fill" style="width: 89%;"></div></div>
+                    <div class="owasp-percent">89%</div>
+                </div>
+            </div>
+
+            <!-- Audit Trail -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Audit Trail (Last 10 Events)</h3>
+            <div class="audit-trail">
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-29 14:32</div>
+                    <div class="audit-event">Sprint #43 completed — All tests passing ✅</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-28 10:15</div>
+                    <div class="audit-event">Knowledge article verified — Provider Pattern (GOLD)</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-27 16:42</div>
+                    <div class="audit-event">Compliance audit: DEV_CONSTITUTION 9/9 articles compliant</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-26 13:20</div>
+                    <div class="audit-event">Impact zone distribution updated — GREEN: 38/43 sprints</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-25 09:45</div>
+                    <div class="audit-event">Security audit OWASP ASI completed — Risk: LOW</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-24 15:30</div>
+                    <div class="audit-event">Governance check passed — Art. 6 (Project-soevereiniteit)</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-23 11:05</div>
+                    <div class="audit-event">Sprint #42 completed — Event Bus FEAT merged</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-22 14:50</div>
+                    <div class="audit-event">Transparency report generated — 43 sprints fully tracked</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-21 10:20</div>
+                    <div class="audit-event">Autonomy decision log: 4 major decisions (100% autonomous)</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-time">2026-03-20 16:15</div>
+                    <div class="audit-event">Codebase integrity check — 1489 tests, all passing</div>
+                </div>
+            </div>
+
+            <!-- Impact Zone Distribution -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Impact Zone Distribution</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                <div class="card">
+                    <div class="card-title">GREEN Zone</div>
+                    <div class="card-value" style="color: #4caf50;">38</div>
+                    <div class="card-meta">88% of sprints</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">YELLOW Zone</div>
+                    <div class="card-value" style="color: #ffc107;">4</div>
+                    <div class="card-meta">9% of sprints (review)</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">RED Zone</div>
+                    <div class="card-value" style="color: #f44336;">1</div>
+                    <div class="card-meta">2% of sprints (approval)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SCREEN 5: GROWTH -->
+        <div id="growth" class="tab-content">
+            <h2 style="margin-bottom: 20px; font-size: 20px;">Growth & Skills Development</h2>
+
+            <!-- Top Growth KPIs -->
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div class="card">
+                    <div class="card-title">Fase</div>
+                    <div class="card-value" style="font-size: 20px;">BOUWEN</div>
+                    <div class="card-meta">O-B-B model</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Sprints Afgerond</div>
+                    <div class="card-value">43</div>
+                    <div class="card-meta">Deliberate practice</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Primary Gap</div>
+                    <div class="card-value" style="font-size: 18px;">Architecture</div>
+                    <div class="card-meta">Level 1 (Novice)</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">ZPD Focus</div>
+                    <div class="card-value" style="font-size: 16px;">Testing</div>
+                    <div class="card-meta">Level 2 → 3</div>
+                </div>
+            </div>
+
+            <!-- Skill Radar with Legend -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Skill Radar Profile</h3>
+            <div class="skill-radar-container">
+                <div class="radar-chart" id="skill-radar"></div>
+                <div class="radar-legend">
+                    <div style="font-size: 12px; font-weight: 600; margin-bottom: 15px; color: #fff;">Legend</div>
+                    <div class="legend-item">
+                        <div class="legend-color current"></div>
+                        <span>Current Level</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color target"></div>
+                        <span>Target Level (+1)</span>
+                    </div>
+                    <div style="font-size: 11px; color: #888; margin-top: 20px; line-height: 1.6;">
+                        <strong>Levels:</strong><br>
+                        1 = Novice<br>
+                        2 = Beginner<br>
+                        3 = Competent<br>
+                        4 = Proficient<br>
+                        5 = Expert
+                    </div>
+                </div>
+            </div>
+
+            <!-- Domain Detail Cards -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Domein Details</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Python</div>
+                        <div class="dreyfus-badge">Beginner (2)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 3</span>
+                            <span>50%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> Sprint 43 (Dashboard), Sprint 42 (Event Bus), Packages: devhub-core, devhub-storage
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Advanced async patterns, testing frameworks</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">AI Engineering</div>
+                        <div class="dreyfus-badge">Beginner (2)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 3</span>
+                            <span>40%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 40%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> Research Compas design, Knowledge pipeline, Agent Teams SPIKE
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: RAG architectures, agent orchestration</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Architecture</div>
+                        <div class="dreyfus-badge">Novice (1)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 2</span>
+                            <span>30%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> Three-layer architecture design, Provider Pattern adaptation
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: SOLID principles, system design patterns</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Testing</div>
+                        <div class="dreyfus-badge">Beginner (2)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 3</span>
+                            <span>65%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 65%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> 1489 tests written, 100% on-time velocity, QA Agent implementation
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Property-based testing, integration testing</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Security</div>
+                        <div class="dreyfus-badge">Novice (1)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 2</span>
+                            <span>25%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 25%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> OWASP ASI audit, Red Team skill, security contracts
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Threat modeling, security automation</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">DevOps</div>
+                        <div class="dreyfus-badge">Novice (1)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 2</span>
+                            <span>20%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 20%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> n8n integration planning, Event Bus lifecycle, package management
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Container orchestration, CI/CD automation</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Documentation</div>
+                        <div class="dreyfus-badge">Beginner (2)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 3</span>
+                            <span>55%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 55%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> Diátaxis+ taxonomie, DocsAgent, ROADMAP, ADRs (9 articles)
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Advanced Diátaxis, documentation tooling</div>
+                </div>
+
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <div class="skill-name">Product Management</div>
+                        <div class="dreyfus-badge">Beginner (2)</div>
+                    </div>
+                    <div class="skill-progress">
+                        <div class="progress-info">
+                            <span>Progress to Level 3</span>
+                            <span>45%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 45%;"></div>
+                        </div>
+                    </div>
+                    <div class="evidence-section">
+                        <strong>Evidence:</strong> Shape Up methodology (43 sprints), appetite/scoping, phase planning
+                    </div>
+                    <div style="font-size: 11px; color: #888;">ZPD: Roadmapping, stakeholder management</div>
+                </div>
+            </div>
+
+            <!-- T-Shape Profile -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">T-Shape Profile</h3>
+            <div class="t-shape-profile">
+                <div class="t-section">
+                    <div class="t-title">Breadth (Level 2+)</div>
+                    <div class="breadth-bars">
+                        <div class="breadth-block">Python</div>
+                        <div class="breadth-block">AI Eng</div>
+                        <div class="breadth-block">Testing</div>
+                        <div class="breadth-block">Docs</div>
+                        <div class="breadth-block">PM</div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 12px; color: #888;">5 domains at beginner or higher</div>
+                </div>
+
+                <div class="t-section">
+                    <div class="t-title">Depth (Specialization)</div>
+                    <div class="depth-item">
+                        <div class="depth-label">Python (Primary)</div>
+                        <div class="depth-indicator">↑↑</div>
+                    </div>
+                    <div class="depth-item">
+                        <div class="depth-label">Testing (Emerging)</div>
+                        <div class="depth-indicator">↑</div>
+                    </div>
+                    <div class="depth-item">
+                        <div class="depth-label">AI Engineering</div>
+                        <div class="depth-indicator">→</div>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 12px; color: #888;">2 specialization candidates: Testing, Python</div>
+                </div>
+            </div>
+
+            <!-- Challenge Engine -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Challenge Engine</h3>
+
+            <div style="margin-bottom: 30px;">
+                <h4 style="font-size: 14px; margin-bottom: 15px;">Active Challenges</h4>
+                <div class="empty-state" style="padding: 30px; background-color: #2d2d2d; border: 1px solid #3a3a3a; border-radius: 8px;">
+                    <div style="color: #888;">No active challenges yet</div>
+                    <div style="font-size: 12px; color: #666; margin-top: 8px;">Start with suggested challenges below</div>
+                </div>
+            </div>
+
+            <h4 style="font-size: 14px; margin-bottom: 15px;">Suggested Challenges</h4>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Implement Property-Based Testing</div>
+                        <div class="challenge-type stretch">Stretch</div>
+                    </div>
+                    <div class="challenge-meta">
+                        <span>Testing</span>
+                        <span>•</span>
+                        <span>ZPD Aligned</span>
+                    </div>
+                    <div class="challenge-desc">Use Hypothesis library to add property-based tests to devhub-core, improving test coverage from 85% → 95%</div>
+                    <div class="challenge-footer">
+                        <span>Scaffolding: High</span>
+                        <span>~4-6 hours</span>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Explain: SOLID Principles in Provider Pattern</div>
+                        <div class="challenge-type explain">Explain It</div>
+                    </div>
+                    <div class="challenge-meta">
+                        <span>Architecture</span>
+                        <span>•</span>
+                        <span>ZPD Aligned</span>
+                    </div>
+                    <div class="challenge-desc">Write documentation post explaining how the Provider Pattern in BorisAdapter demonstrates SOLID principles</div>
+                    <div class="challenge-footer">
+                        <span>Scaffolding: Medium</span>
+                        <span>~2-3 hours</span>
+                    </div>
+                </div>
+
+                <div class="challenge-card">
+                    <div class="challenge-header">
+                        <div class="challenge-title">Reverse Engineer: Vector Database Design</div>
+                        <div class="challenge-type reverse">Reverse Engineer</div>
+                    </div>
+                    <div class="challenge-meta">
+                        <span>AI Engineering</span>
+                        <span>•</span>
+                        <span>ZPD Aligned</span>
+                    </div>
+                    <div class="challenge-desc">Analyze devhub-vectorstore implementation; document the chunking strategy, embeddings approach, and query patterns</div>
+                    <div class="challenge-footer">
+                        <span>Scaffolding: Low</span>
+                        <span>~3-4 hours</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Recommendations -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Learning Recommendations</h3>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">System Design: Designing Data-Intensive Applications</div>
+                        <div class="resource-type docs">Docs</div>
+                    </div>
+                    <div class="recommendation-meta">
+                        <span>Architecture</span>
+                        <span>•</span>
+                        <span>~20 hours</span>
+                    </div>
+                    <div class="recommendation-alignment">
+                        <strong>ZPD Alignment:</strong> Addresses primary gap (Architecture L1→2). Builds foundation for system design understanding needed for future phases.
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">Testing Strategies for Microservices</div>
+                        <div class="resource-type tutorial">Tutorial</div>
+                    </div>
+                    <div class="recommendation-meta">
+                        <span>Testing</span>
+                        <span>•</span>
+                        <span>~6 hours</span>
+                    </div>
+                    <div class="recommendation-alignment">
+                        <strong>ZPD Alignment:</strong> High priority. Accelerates L2→3 progression in Testing domain. Directly applicable to agent testing.
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">Advanced RAG Patterns & Optimization</div>
+                        <div class="resource-type paper">Paper</div>
+                    </div>
+                    <div class="recommendation-meta">
+                        <span>AI Engineering</span>
+                        <span>•</span>
+                        <span>~8 hours</span>
+                    </div>
+                    <div class="recommendation-alignment">
+                        <strong>ZPD Alignment:</strong> Supports Knowledge pipeline research (Track K Golf 4). Critical for next-phase RAG optimization.
+                    </div>
+                </div>
+
+                <div class="recommendation-card">
+                    <div class="recommendation-header">
+                        <div class="recommendation-title">Threat Modeling for AI Systems</div>
+                        <div class="resource-type docs">Docs</div>
+                    </div>
+                    <div class="recommendation-meta">
+                        <span>Security</span>
+                        <span>•</span>
+                        <span>~12 hours</span>
+                    </div>
+                    <div class="recommendation-alignment">
+                        <strong>ZPD Alignment:</strong> Foundation for Security domain L1→2. Essential for OWASP ASI audit enhancements.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed Challenges (placeholder) -->
+            <h3 style="margin: 30px 0 20px; font-size: 16px;">Completed Challenges</h3>
+            <div class="empty-state" style="padding: 30px; background-color: #2d2d2d; border: 1px solid #3a3a3a; border-radius: 8px;">
+                <div style="color: #888;">0 challenges completed</div>
+                <div style="font-size: 12px; color: #666; margin-top: 8px;">Start with suggested challenges to begin tracking</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function switchInnerTab(event, tabName) {
+            const parent = event.target.closest('.tab-group');
+            const contents = parent.querySelectorAll('.inner-content');
+            const buttons = parent.querySelectorAll('.inner-tab-btn');
+
+            contents.forEach(c => c.classList.remove('active'));
+            buttons.forEach(b => b.classList.remove('active'));
+
+            parent.querySelector('#' + tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function toggleExpand(element) {
+            const header = element.querySelector('.expandable-header');
+            const content = element.querySelector('.expandable-content');
+            const icon = header.querySelector('.expandable-icon');
+
+            content.classList.toggle('open');
+            icon.classList.toggle('open');
+        }
+
+        // Initialize charts when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+        });
+
+        function initCharts() {
+            // Tests sparkline
+            const testsTrace = {
+                y: [0, 150, 300, 450, 600, 800, 950, 1100, 1250, 1350, 1424, 1489],
+                mode: 'lines',
+                fill: 'tozeroy',
+                line: { color: '#00bfff', width: 2 },
+                fillcolor: 'rgba(0, 191, 255, 0.2)',
+                hovertemplate: '<b>Tests</b><br>%{y}<extra></extra>'
+            };
+
+            const testsLayout = {
+                margin: { l: 0, r: 0, t: 0, b: 0 },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                xaxis: { visible: false },
+                yaxis: { visible: false },
+                hovermode: 'closest'
+            };
+
+            Plotly.newPlot('tests-sparkline', [testsTrace], testsLayout, { responsive: true, displayModeBar: false });
+
+            // Health chart with 3 metrics
+            const healthData = [
+                { x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                  y: [1250, 1260, 1280, 1300, 1310, 1335, 1350, 1365, 1380, 1395, 1410, 1424, 1440, 1455, 1470, 1480, 1489, 1489, 1489, 1489],
+                  name: 'Tests', mode: 'lines', line: { color: '#4caf50', width: 2 } },
+                { x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                  y: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+                  name: 'Packages', mode: 'lines', line: { color: '#2196f3', width: 2 }, yaxis: 'y2' },
+                { x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+                  y: [3, 3, 3, 3, 3, 4, 5, 5, 6, 6, 7, 8, 8, 9, 9, 10, 10, 10, 10, 10],
+                  name: 'Knowledge', mode: 'lines', line: { color: '#9c27b0', width: 2 }, yaxis: 'y3' }
+            ];
+
+            const healthLayout = {
+                title: '',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#aaa', size: 11 },
+                hovermode: 'x unified',
+                yaxis: { title: 'Tests', gridcolor: '#3a3a3a', zeroline: false },
+                yaxis2: { title: 'Packages', overlaying: 'y', side: 'right', gridcolor: 'rgba(0,0,0,0)', zeroline: false },
+                yaxis3: { title: 'Knowledge', overlaying: 'y', side: 'right', anchor: 'free', position: 0.95, gridcolor: 'rgba(0,0,0,0)', zeroline: false },
+                xaxis: { gridcolor: '#3a3a3a', zeroline: false },
+                margin: { l: 50, r: 100, t: 20, b: 40 },
+                legend: { x: 0, y: 1, bgcolor: 'rgba(0,0,0,0.5)', bordercolor: '#3a3a3a', borderwidth: 1 }
+            };
+
+            Plotly.newPlot('health-chart', healthData, healthLayout, { responsive: true, displayModeBar: false });
+
+            // Tests per sprint chart
+            const sprintLabels = ['29', '30', '31', '32', '33', '34', '35', '36', '37', '38', '39', '40', '41', '42', '43'];
+            const testDeltas = [42, 38, 45, 52, 48, 40, 42, 50, 55, 48, 35, 50, 45, 52, 65];
+
+            const testsChart = {
+                x: sprintLabels,
+                y: testDeltas,
+                type: 'bar',
+                marker: { color: '#00bfff' },
+                hovertemplate: 'Sprint %{x}<br>Tests: +%{y}<extra></extra>'
+            };
+
+            const testsLayout = {
+                title: '',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#aaa', size: 11 },
+                xaxis: { title: 'Sprint', gridcolor: '#3a3a3a', zeroline: false },
+                yaxis: { title: 'Test Count', gridcolor: '#3a3a3a', zeroline: false },
+                margin: { l: 50, r: 20, t: 20, b: 40 },
+                hovermode: 'x'
+            };
+
+            Plotly.newPlot('tests-chart', [testsChart], testsLayout, { responsive: true, displayModeBar: false });
+
+            // Cycle time trend
+            const cycleData = {
+                x: sprintLabels,
+                y: [1.2, 1.1, 0.9, 0.8, 0.85, 0.9, 0.7, 0.8, 0.75, 0.85, 1.2, 0.8, 0.75, 0.9, 0.8],
+                mode: 'lines+markers',
+                line: { color: '#ff9800', width: 2 },
+                marker: { size: 6, color: '#ff9800' },
+                fill: 'tozeroy',
+                fillcolor: 'rgba(255, 152, 0, 0.1)',
+                hovertemplate: 'Sprint %{x}<br>Cycle: %{y}d<extra></extra>'
+            };
+
+            const cycleLayout = {
+                title: '',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#aaa', size: 11 },
+                xaxis: { title: 'Sprint', gridcolor: '#3a3a3a', zeroline: false },
+                yaxis: { title: 'Days', gridcolor: '#3a3a3a', zeroline: false },
+                margin: { l: 50, r: 20, t: 20, b: 40 },
+                hovermode: 'x'
+            };
+
+            Plotly.newPlot('cycle-chart', [cycleData], cycleLayout, { responsive: true, displayModeBar: false });
+
+            // Skill Radar
+            const radarData = [{
+                type: 'scatterpolar',
+                r: [2, 2, 1, 2, 1, 1, 2, 2],
+                theta: ['Python', 'AI Eng', 'Architecture', 'Testing', 'Security', 'DevOps', 'Documentation', 'PM'],
+                fill: 'toself',
+                name: 'Current',
+                line: { color: '#00bfff' },
+                fillcolor: 'rgba(0, 191, 255, 0.3)'
+            }, {
+                type: 'scatterpolar',
+                r: [3, 3, 2, 3, 2, 2, 3, 3],
+                theta: ['Python', 'AI Eng', 'Architecture', 'Testing', 'Security', 'DevOps', 'Documentation', 'PM'],
+                fill: 'toself',
+                name: 'Target (+1)',
+                line: { color: '#ff9800', dash: 'dash' },
+                fillcolor: 'rgba(255, 152, 0, 0.1)'
+            }];
+
+            const radarLayout = {
+                title: '',
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                font: { color: '#aaa', size: 11 },
+                margin: { l: 40, r: 40, t: 40, b: 40 },
+                polar: {
+                    bgcolor: 'rgba(0,0,0,0)',
+                    gridcolor: '#3a3a3a',
+                    radialaxis: { visible: true, range: [0, 5] }
+                }
+            };
+
+            Plotly.newPlot('skill-radar', radarData, radarLayout, { responsive: true, displayModeBar: false });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2321 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub Dashboard — Bestaande Panelen Upgrade v2</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        /* Header */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; background: #16213e; border-bottom: 2px solid #0f3460;
+            position: sticky; top: 0; z-index: 100;
+        }
+        header h1 { font-size: 20px; color: #4ecca3; font-weight: 700; }
+        .header-links { display: flex; gap: 6px; flex-wrap: wrap; }
+        .header-links a {
+            color: #8892b0; text-decoration: none; padding: 6px 12px;
+            border-radius: 6px; font-size: 13px; transition: all 0.2s;
+        }
+        .header-links a:hover, .header-links a.active {
+            color: #4ecca3; background: rgba(78,204,163,0.1);
+        }
+
+        /* Tab navigation */
+        .tab-nav {
+            display: flex; gap: 4px; margin-bottom: 24px;
+            border-bottom: 2px solid #2a2a4a; padding-bottom: 0;
+        }
+        .tab-btn {
+            padding: 10px 20px; background: transparent; border: none;
+            color: #8892b0; cursor: pointer; font-size: 14px; font-weight: 500;
+            border-bottom: 3px solid transparent; transition: all 0.2s;
+        }
+        .tab-btn:hover { color: #ccd6f6; }
+        .tab-btn.active { color: #4ecca3; border-bottom-color: #4ecca3; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Page navigation */
+        .page-nav { display: flex; gap: 4px; margin-bottom: 24px; }
+        .page-btn {
+            padding: 12px 24px; background: #16213e; border: 2px solid transparent;
+            color: #8892b0; cursor: pointer; font-size: 14px; font-weight: 600;
+            border-radius: 8px; transition: all 0.2s;
+        }
+        .page-btn:hover { border-color: #0f3460; color: #ccd6f6; }
+        .page-btn.active { background: #0f3460; color: #4ecca3; border-color: #4ecca3; }
+
+        /* KPI Cards */
+        .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+        .kpi-card {
+            background: #16213e; border-radius: 12px; padding: 16px 20px;
+            min-width: 140px; flex: 1; border: 1px solid #2a2a4a;
+            display: flex; flex-direction: column; gap: 4px;
+        }
+        .kpi-card .kpi-label { font-size: 12px; color: #8892b0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-card .kpi-value { font-size: 28px; font-weight: 700; }
+        .kpi-card .kpi-sub { font-size: 11px; color: #666; }
+        .kpi-card .sparkline-container { margin-top: 4px; }
+
+        /* Cards */
+        .card {
+            background: #16213e; border-radius: 12px; padding: 20px;
+            border: 1px solid #2a2a4a; margin-bottom: 16px;
+        }
+        .card h3 { font-size: 16px; margin-bottom: 12px; color: #ccd6f6; }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+        .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; }
+
+        /* Badges */
+        .badge {
+            display: inline-block; padding: 2px 10px; border-radius: 12px;
+            font-size: 11px; font-weight: 600; text-transform: uppercase;
+        }
+        .badge-green { background: rgba(78,204,163,0.2); color: #4ecca3; }
+        .badge-yellow { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .badge-red { background: rgba(244,67,54,0.2); color: #f44336; }
+        .badge-blue { background: rgba(33,150,243,0.2); color: #2196f3; }
+        .badge-grey { background: rgba(158,158,158,0.2); color: #9e9e9e; }
+        .badge-purple { background: rgba(156,39,176,0.2); color: #ce93d8; }
+
+        /* Section headers */
+        .section-title {
+            font-size: 18px; font-weight: 600; margin: 24px 0 16px;
+            color: #ccd6f6; display: flex; align-items: center; gap: 8px;
+        }
+        .section-title .icon { font-size: 20px; }
+
+        /* Kanban */
+        .kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 8px; }
+        .kanban-col {
+            min-width: 240px; flex: 1; background: #0e1628; border-radius: 12px;
+            padding: 16px; border: 1px solid #2a2a4a;
+        }
+        .kanban-col h4 {
+            font-size: 13px; text-transform: uppercase; letter-spacing: 1px;
+            margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+        }
+        .kanban-item {
+            background: #16213e; border-radius: 8px; padding: 10px 12px;
+            margin-bottom: 8px; border-left: 3px solid; font-size: 13px;
+        }
+        .kanban-item .ki-title { font-weight: 500; margin-bottom: 4px; }
+        .kanban-item .ki-meta { font-size: 11px; color: #666; display: flex; gap: 6px; }
+
+        /* Pipeline (fase) */
+        .pipeline { display: flex; align-items: center; gap: 0; justify-content: center; margin: 24px 0; flex-wrap: wrap; }
+        .pipeline-node {
+            display: flex; flex-direction: column; align-items: center; min-width: 100px; position: relative;
+        }
+        .pipeline-circle {
+            width: 48px; height: 48px; border-radius: 50%; display: flex;
+            align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+        }
+        .pipeline-label { font-size: 12px; margin-top: 6px; font-weight: 600; }
+        .pipeline-sub { font-size: 10px; color: #666; }
+        .pipeline-line { width: 40px; height: 3px; margin-top: -24px; }
+
+        /* Compliance gauge */
+        .gauge-container { display: flex; align-items: center; gap: 24px; }
+        .gauge {
+            width: 140px; height: 140px; border-radius: 50%; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .gauge-inner {
+            width: 100px; height: 100px; border-radius: 50%; background: #1a1a2e;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .gauge-pct { font-size: 28px; font-weight: 700; }
+        .gauge-label { font-size: 11px; color: #888; }
+        .gauge-legend { display: flex; flex-direction: column; gap: 8px; }
+        .gauge-legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+        .gauge-legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+
+        /* ASI bars */
+        .asi-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .asi-label { font-family: monospace; font-size: 12px; width: 50px; color: #8892b0; }
+        .asi-bar-bg {
+            flex: 1; height: 20px; background: #2a2a4a; border-radius: 4px; overflow: hidden;
+        }
+        .asi-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+        .asi-status { font-size: 11px; width: 100px; text-align: right; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 10px 12px; font-size: 12px; color: #8892b0; border-bottom: 2px solid #2a2a4a; text-transform: uppercase; letter-spacing: 0.5px; }
+        td { padding: 10px 12px; border-bottom: 1px solid #1a1a2e; font-size: 13px; }
+        tr:hover td { background: rgba(78,204,163,0.03); }
+
+        /* Skill Radar placeholder */
+        .radar-container { display: flex; gap: 24px; align-items: flex-start; }
+        .radar-chart { flex: 1; min-height: 350px; }
+        .radar-legend { flex: 0 0 300px; }
+
+        /* Domain detail cards */
+        .domain-card {
+            background: #16213e; border-radius: 10px; padding: 16px;
+            margin-bottom: 12px; border: 1px solid #2a2a4a;
+        }
+        .domain-header { display: flex; align-items: center; justify-content: space-between; }
+        .domain-name { font-weight: 600; font-size: 15px; }
+        .domain-level {
+            width: 36px; height: 36px; border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+        }
+        .progress-bar { height: 6px; background: #2a2a4a; border-radius: 3px; margin: 8px 0; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+        .domain-details { margin-top: 8px; font-size: 12px; color: #8892b0; }
+        .zpd-tag { color: #2196f3; font-size: 12px; margin-top: 4px; }
+
+        /* T-Shape */
+        .tshape { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .tshape-broad {
+            display: flex; gap: 4px; padding: 8px 16px; background: #0f3460;
+            border-radius: 8px 8px 0 0; flex-wrap: wrap; justify-content: center;
+        }
+        .tshape-deep {
+            width: 80px; padding: 12px 16px; background: #0f3460;
+            border-radius: 0 0 8px 8px; text-align: center; min-height: 60px;
+        }
+        .tshape-label { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+
+        /* Challenge card */
+        .challenge-card {
+            background: #0e1628; border-radius: 10px; padding: 14px 16px;
+            border-left: 4px solid; margin-bottom: 10px;
+        }
+        .challenge-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+        .challenge-meta { font-size: 12px; color: #666; display: flex; gap: 8px; flex-wrap: wrap; }
+
+        /* Activity feed */
+        .activity-item {
+            display: flex; gap: 12px; padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .activity-text { font-size: 13px; }
+        .activity-time { font-size: 11px; color: #666; }
+
+        /* Dimension cards */
+        .dim-card {
+            background: #16213e; border-radius: 10px; padding: 14px 16px;
+            border: 1px solid #2a2a4a; display: flex; flex-direction: column; gap: 6px;
+        }
+        .dim-header { display: flex; justify-content: space-between; align-items: center; }
+        .dim-name { font-weight: 600; font-size: 14px; }
+        .dim-summary { font-size: 12px; color: #8892b0; }
+        .dim-finding {
+            font-size: 12px; padding: 6px 10px; background: rgba(0,0,0,0.2);
+            border-radius: 6px; margin-top: 4px;
+        }
+
+        /* Article compliance row */
+        .article-row {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            background: #16213e; border-radius: 10px; margin-bottom: 8px;
+            border: 1px solid #2a2a4a; cursor: pointer; transition: all 0.2s;
+        }
+        .article-row:hover { border-color: #4ecca3; }
+        .article-id { font-weight: 700; font-size: 13px; color: #4ecca3; min-width: 50px; }
+        .article-title { flex: 1; font-weight: 500; }
+        .article-desc { font-size: 12px; color: #8892b0; flex: 1; }
+        .article-check { font-size: 11px; color: #666; flex: 0 0 180px; }
+        .article-status { flex: 0 0 80px; text-align: right; }
+
+        /* Audit trail */
+        .audit-item {
+            display: flex; align-items: center; gap: 12px; padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px;
+        }
+        .audit-icon { width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+            .kpi-row { flex-direction: column; }
+            .kanban { flex-direction: column; }
+            .radar-container { flex-direction: column; }
+        }
+
+        /* Quick Actions Bar */
+        .quick-actions {
+            display: flex; gap: 8px; margin-bottom: 16px; padding: 12px 16px;
+            background: rgba(15, 52, 96, 0.4); border-radius: 10px;
+            border: 1px solid #2a2a4a; align-items: center; flex-wrap: wrap;
+        }
+        .qa-btn {
+            padding: 8px 16px; background: #16213e; border: 1px solid #2a2a4a;
+            color: #ccd6f6; border-radius: 8px; cursor: pointer; font-size: 13px;
+            transition: all 0.2s; white-space: nowrap;
+        }
+        .qa-btn:hover { background: #0f3460; border-color: #4ecca3; color: #4ecca3; }
+        .qa-btn:active { transform: scale(0.97); }
+        .qa-btn.qa-cmd {
+            margin-left: auto; padding: 8px 12px; font-family: monospace;
+            font-size: 12px; color: #666; border-color: #333;
+        }
+        .qa-btn.qa-cmd:hover { color: #4ecca3; border-color: #4ecca3; }
+
+        /* Activity Stream */
+        .activity-stream { position: fixed; bottom: 0; left: 0; right: 0; background: #0e1628; border-top: 2px solid #2a2a4a; z-index: 99; transition: height 0.3s ease; }
+        .activity-stream.collapsed { height: 40px; overflow: hidden; }
+        .activity-stream.expanded { height: 240px; }
+        .stream-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 24px; cursor: pointer; user-select: none; }
+        .stream-header h4 { font-size: 13px; color: #8892b0; display: flex; align-items: center; gap: 8px; margin: 0; }
+        .stream-toggle { background: none; border: none; color: #666; cursor: pointer; font-size: 16px; }
+        .stream-messages { max-height: 190px; overflow-y: auto; padding: 0 24px 12px; }
+        .stream-msg { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(42,42,74,0.5); }
+        .stream-msg .msg-icon { font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+        .stream-msg .msg-text { flex: 1; color: #ccd6f6; }
+        .stream-msg .msg-time { font-size: 11px; color: #555; flex-shrink: 0; }
+        .stream-msg.msg-success .msg-text { color: #4ecca3; }
+        .stream-msg.msg-warning .msg-text { color: #ffc107; }
+        .stream-msg.msg-error .msg-text { color: #f44336; }
+        body { padding-bottom: 50px; }
+
+        /* Command Palette Overlay */
+        .cmd-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; display: none; align-items: flex-start; justify-content: center; padding-top: 120px; }
+        .cmd-overlay.visible { display: flex; }
+        .cmd-box { width: 520px; background: #16213e; border-radius: 12px; border: 2px solid #4ecca3; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+        .cmd-input { width: 100%; padding: 16px 20px; background: transparent; border: none; border-bottom: 1px solid #2a2a4a; color: #e0e0e0; font-size: 16px; outline: none; }
+        .cmd-input::placeholder { color: #555; }
+        .cmd-results { max-height: 320px; overflow-y: auto; }
+        .cmd-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; transition: background 0.1s; }
+        .cmd-item:hover { background: rgba(78,204,163,0.1); }
+        .cmd-item .ci-icon { font-size: 16px; }
+        .cmd-item .ci-label { font-size: 14px; font-weight: 500; color: #ccd6f6; }
+        .cmd-item .ci-page { font-size: 11px; color: #666; margin-left: auto; }
+
+        /* Integration Meter */
+        .integration-meter { display: flex; align-items: center; gap: 0; margin: 12px 0; }
+        .meter-step { display: flex; flex-direction: column; align-items: center; }
+        .meter-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; border: 2px solid #2a2a4a; background: #1a1a2e; }
+        .meter-dot.active { border-color: #4ecca3; background: rgba(78,204,163,0.2); }
+        .meter-dot.done { border-color: #4ecca3; background: #4ecca3; color: #1a1a2e; }
+        .meter-label { font-size: 10px; color: #666; margin-top: 4px; }
+        .meter-line { width: 40px; height: 2px; background: #2a2a4a; margin-bottom: 18px; }
+        .meter-line.done { background: #4ecca3; }
+
+        /* Project card */
+        .project-card { background: #16213e; border-radius: 12px; padding: 24px; border: 1px solid #2a2a4a; margin-bottom: 16px; }
+        .project-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .project-header h3 { font-size: 18px; color: #ccd6f6; margin: 0; }
+        .project-tags { display: flex; gap: 6px; }
+        .project-mini-kpis { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+        .mini-kpi { background: #0e1628; border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; gap: 2px; min-width: 100px; }
+        .mini-kpi .mk-label { font-size: 11px; color: #666; text-transform: uppercase; }
+        .mini-kpi .mk-value { font-size: 20px; font-weight: 700; }
+        .pkg-table { width: 100%; border-collapse: collapse; }
+        .pkg-table th { text-align: left; padding: 8px 12px; font-size: 11px; color: #8892b0; border-bottom: 2px solid #2a2a4a; text-transform: uppercase; }
+        .pkg-table td { padding: 8px 12px; border-bottom: 1px solid #1a1a2e; font-size: 13px; }
+
+        /* Info Tooltips */
+        .info { position: relative; display: inline-flex; align-items: center; cursor: help; margin-left: 4px; vertical-align: middle; }
+        .info::before { content: 'ⓘ'; font-size: 13px; color: #555; transition: color 0.2s; }
+        .info:hover::before { color: #4ecca3; }
+        .info .tip {
+            display: none; position: absolute; bottom: calc(100% + 10px); left: 50%;
+            transform: translateX(-50%); background: #0e1628; border: 1px solid #4ecca3;
+            border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #ccd6f6;
+            line-height: 1.5; z-index: 150; box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+            pointer-events: none; white-space: normal; width: 280px; font-weight: 400;
+            text-transform: none; letter-spacing: normal;
+        }
+        .tip::after {
+            content: ''; position: absolute; top: 100%; left: 50%;
+            transform: translateX(-50%); border: 6px solid transparent; border-top-color: #4ecca3;
+        }
+        .info:hover .tip { display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>⚡ DevHub Dashboard</h1>
+        <div class="header-links">
+            <a href="#" class="active" onclick="showPage('overview')">Overview</a>
+            <a href="#" onclick="showPage('health')">Health</a>
+            <a href="#" onclick="showPage('planning')">Planning</a>
+            <a href="#" onclick="showPage('knowledge')">Knowledge</a>
+            <a href="#" onclick="showPage('governance')">Governance</a>
+            <a href="#" onclick="showPage('profile')">Profile</a>
+            <a href="#" onclick="showPage('research')">Research</a>
+            <a href="#" onclick="showPage('projects')">Projects</a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- ============================================ -->
+        <!-- PAGE 1: OVERVIEW                             -->
+        <!-- ============================================ -->
+        <div id="page-overview" class="page active">
+            <!-- Quick Actions Bar -->
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Full System Pulse', 'overview')">🔍 Full System Pulse</button>
+                <button class="qa-btn" onclick="executeAction('Generate Status Report', 'overview')">📋 Status Report</button>
+                <button class="qa-btn" onclick="executeAction('Decay Scan', 'overview')">⏳ Decay Scan</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">📊 Executive Summary</div>
+
+            <!-- Smart KPI Strip with sparklines -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Tests <span class="info"><span class="tip">Totaal testbestanden in de monorepo. Bron: pytest discovery over alle packages. Sparkline toont groei over laatste 10 sprints.</span></span></div>
+                    <div class="kpi-value" style="color:#4ecca3">1489</div>
+                    <div class="kpi-sub">baseline</div>
+                    <div class="sparkline-container">
+                        <svg width="100" height="24" viewBox="0 0 100 24">
+                            <polyline points="0,22 10,20 20,18 30,16 40,14 50,10 60,8 65,9 70,6 80,4 90,3 100,2" fill="none" stroke="#4ecca3" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Packages <span class="info"><span class="tip">Actieve uv workspace packages. Bron: packages/*/pyproject.toml scanning. Elke package heeft eigen tests en versie.</span></span></div>
+                    <div class="kpi-value" style="color:#2196f3">4</div>
+                    <div class="kpi-sub">workspace</div>
+                    <div class="sparkline-container">
+                        <svg width="100" height="24" viewBox="0 0 100 24">
+                            <polyline points="0,18 30,18 40,14 60,14 80,8 100,8" fill="none" stroke="#2196f3" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Sprint <span class="info"><span class="tip">Huidige actieve sprint. Bron: SPRINT_TRACKER.md. Badge toont estimation accuracy over alle sprints.</span></span></div>
+                    <div class="kpi-value" style="color:#64ffda">#43</div>
+                    <div class="kpi-sub">Dashboard NiceGUI</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Inbox <span class="info"><span class="tip">Sprint intakes in docs/planning/inbox/ met status INBOX. Dit zijn kandidaten voor de volgende sprint.</span></span></div>
+                    <div class="kpi-value" style="color:#ffc107">8</div>
+                    <div class="kpi-sub">intake items</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Health <span class="info"><span class="tip">Overall systeemgezondheid. Samengesteld uit 7 dimensies: tests, packages, deps, architectuur, kennis, security, sprint hygiene.</span></span></div>
+                    <div class="kpi-value" style="color:#4ecca3">Healthy</div>
+                    <div class="kpi-sub">7/7 dimensies ✓</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Fase <span class="info"><span class="tip">Huidige roadmap-fase (0-5). Fase 0-3 afgerond, Fase 4 actief. Bron: SPRINT_TRACKER.md fase-markers.</span></span></div>
+                    <div class="kpi-value" style="color:#ce93d8">4</div>
+                    <div class="kpi-sub">Verbindingen</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Compliance <span class="info"><span class="tip">DEV_CONSTITUTION compliance score. Percentage van 9 artikelen met actieve verificatie. 100% = alle artikelen gecontroleerd en compliant.</span></span></div>
+                    <div class="kpi-value" style="color:#4ecca3">89%</div>
+                    <div class="kpi-sub">8/9 actief</div>
+                </div>
+            </div>
+
+            <!-- System Pulse — mini domain status -->
+            <div class="section-title">🫀 System Pulse <span class="info"><span class="tip">Samenvatting per domein met key metrics. Klik "→ Details" op elke kaart voor de volledige pagina.</span></span></div>
+            <div class="grid-3" style="margin-bottom:24px">
+                <div class="card" style="border-left:3px solid #4ecca3">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Health</strong> <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">7 dimensies, 0 P1 alerts</div>
+                </div>
+                <div class="card" style="border-left:3px solid #2196f3">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Sprint & Planning</strong> <span class="badge badge-blue">Sprint #43</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">Fase 4, 100% accuracy</div>
+                </div>
+                <div class="card" style="border-left:3px solid #ffc107">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Knowledge</strong> <span class="badge badge-yellow">Aandacht</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">10 artikelen, 70% fresh</div>
+                </div>
+                <div class="card" style="border-left:3px solid #4ecca3">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Governance</strong> <span class="badge badge-green">Actief</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">8/9 artikelen geverifieerd</div>
+                </div>
+                <div class="card" style="border-left:3px solid #ce93d8">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Profile</strong> <span class="badge badge-purple">Level 2.1</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">Identity · Evidence · Growth Analytics · Trajectory</div>
+                </div>
+                <div class="card" style="border-left:3px solid #2196f3">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <strong>Research</strong> <span class="badge badge-blue">1 pending</span>
+                    </div>
+                    <div style="font-size:12px;color:#888;margin-top:4px">1 user request wacht op goedkeuring</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Feed -->
+            <div class="section-title">📋 Recente Activiteit</div>
+            <div class="card">
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#4ecca3"></div>
+                    <div>
+                        <div class="activity-text"><strong>Sprint #43</strong> — DevHub Dashboard NiceGUI afgerond</div>
+                        <div class="activity-time">28 maart 2026 · +65 tests</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#2196f3"></div>
+                    <div>
+                        <div class="activity-text"><strong>Event Bus</strong> — 10 typed events, InMemoryEventBus</div>
+                        <div class="activity-time">28 maart 2026 · Sprint #42 · +67 tests</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#ffc107"></div>
+                    <div>
+                        <div class="activity-text"><strong>Research request</strong> — "Claude Desktop/Cowork/Code + NotebookLM" ingediend</div>
+                        <div class="activity-time">29 maart 2026 · status: pending</div>
+                    </div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#ce93d8"></div>
+                    <div>
+                        <div class="activity-text"><strong>Fase 4 goedgekeurd</strong> — Verbindingen track gestart</div>
+                        <div class="activity-time">28 maart 2026 · Niels-goedkeuring</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 2: HEALTH                               -->
+        <!-- ============================================ -->
+        <div id="page-health" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Run Dimension Check', 'health')">🩺 Dimension Check</button>
+                <button class="qa-btn" onclick="executeAction('Dependency Audit', 'health')">📦 Dependency Audit</button>
+                <button class="qa-btn" onclick="executeAction('Test Regression Check', 'health')">🧪 Test Regression</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">🏥 System Health — 7 Dimensies <span class="info"><span class="tip">Elke dimensie checkt een ander aspect van systeemgezondheid. Groen = OK, Geel = aandacht, Rood = actie vereist. Data wordt gecached met 30s TTL.</span></span></div>
+
+            <!-- Health KPI Strip -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Overall</div>
+                    <div class="kpi-value" style="color:#4ecca3">Healthy</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Dimensies</div>
+                    <div class="kpi-value" style="color:#2196f3">7</div>
+                    <div class="kpi-sub">gecontroleerd</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">P1 Alerts</div>
+                    <div class="kpi-value" style="color:#4ecca3">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">P2 Alerts</div>
+                    <div class="kpi-value" style="color:#ffc107">2</div>
+                </div>
+            </div>
+
+            <!-- 7 Dimension Cards -->
+            <div class="section-title">Dimensie Details</div>
+            <div class="grid-2">
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">🧪 Tests <span class="info"><span class="tip">Controleert: testbestanden gevonden, pass rate 100%, geen regressie t.o.v. baseline. Bron: pytest discovery.</span></span></span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="dim-summary">142 test-bestanden gevonden in packages/</div>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">📦 Packages <span class="info"><span class="tip">Controleert: alle workspace packages hebben pyproject.toml, versie ≥ 0.1.0. Bron: packages/ scan.</span></span></span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="dim-summary">4 workspace packages actief</div>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">🔗 Dependencies <span class="info"><span class="tip">Controleert: geen outdated of kwetsbare dependencies. Scant pyproject.toml bestanden op pinning issues.</span></span></span>
+                        <span class="badge badge-yellow">Aandacht</span>
+                    </div>
+                    <div class="dim-summary">2 dependency-issues gevonden</div>
+                    <div class="dim-finding">⚠️ devhub-core: 3 ongepinde dependencies → pin versies</div>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">🏗️ Architecture <span class="info"><span class="tip">Controleert: NodeInterface contract intact, adapter pattern correct, geen circulaire imports tussen packages.</span></span></span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="dim-summary">NodeInterface ABC intact, nodes.yml aanwezig</div>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">📚 Knowledge Health <span class="info"><span class="tip">Controleert: freshness score, EVIDENCE-grading verdeling, stale artikelen. Bron: kennisbank metadata.</span></span></span>
+                        <span class="badge badge-yellow">Aandacht</span>
+                    </div>
+                    <div class="dim-summary">10 artikelen, freshness 70%</div>
+                    <div class="dim-finding">⚠️ 3 artikelen zonder EVIDENCE-grading</div>
+                </div>
+                <div class="dim-card">
+                    <div class="dim-header">
+                        <span class="dim-name">🔒 Security <span class="info"><span class="tip">Controleert: laatste OWASP ASI audit resultaat, geen secrets in git. Bron: SecurityAuditReport.</span></span></span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="dim-summary">1 audit rapport beschikbaar, geen secrets</div>
+                </div>
+                <div class="dim-card" style="grid-column: span 2">
+                    <div class="dim-header">
+                        <span class="dim-name">🏃 Sprint Hygiene <span class="info"><span class="tip">Controleert: velocity accuracy, stale inbox items, actieve sprint aanwezig. Bron: SPRINT_TRACKER.md.</span></span></span>
+                        <span class="badge badge-green">Healthy</span>
+                    </div>
+                    <div class="dim-summary">Estimation accuracy 100%, tracker actueel (28 maart 2026)</div>
+                </div>
+            </div>
+
+            <!-- Multi-metric Trend Chart -->
+            <div class="section-title">📈 Trend — Multi-metric <span class="info"><span class="tip">Multi-metric trend over tijd. Drie lijnen: tests (groen), packages (blauw), knowledge items (paars). Bron: HistoryStore snapshots.</span></span></div>
+            <div class="card">
+                <div id="health-trend-chart" style="height:300px"></div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 3: PLANNING                             -->
+        <!-- ============================================ -->
+        <div id="page-planning" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Start Sprint Prep', 'planning')">🚀 Sprint Prep</button>
+                <button class="qa-btn" onclick="executeAction('Close Sprint', 'planning')">✅ Close Sprint</button>
+                <button class="qa-btn" onclick="executeAction('New Intake', 'planning')">📝 New Intake</button>
+                <button class="qa-btn" onclick="executeAction('Recalculate Velocity', 'planning')">📊 Velocity</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">📅 Sprint & Planning <span class="info"><span class="tip">Sprint analytics, velocity tracking en planning pipeline. Alle data uit SPRINT_TRACKER.md (505 regels, 43 sprints).</span></span></div>
+
+            <!-- Planning KPI Strip -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Sprints</div>
+                    <div class="kpi-value" style="color:#64ffda">43</div>
+                    <div class="kpi-sub">afgerond</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Accuracy</div>
+                    <div class="kpi-value" style="color:#4ecca3">100%</div>
+                    <div class="kpi-sub">schattingen</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg Test Δ</div>
+                    <div class="kpi-value" style="color:#2196f3">+45</div>
+                    <div class="kpi-sub">per sprint</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Inbox</div>
+                    <div class="kpi-value" style="color:#ffc107">8</div>
+                    <div class="kpi-sub">items</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Fase</div>
+                    <div class="kpi-value" style="color:#ce93d8">4</div>
+                    <div class="kpi-sub">Verbindingen</div>
+                </div>
+            </div>
+
+            <!-- Fase Pipeline -->
+            <div class="section-title">🚀 Fase Pipeline</div>
+            <div class="pipeline">
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#4ecca3;color:#1a1a2e">0</div>
+                    <div class="pipeline-label" style="color:#4ecca3">Fase 0</div>
+                    <div class="pipeline-sub">Fundament · 2 sprints</div>
+                </div>
+                <div class="pipeline-line" style="background:#4ecca3"></div>
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#4ecca3;color:#1a1a2e">1</div>
+                    <div class="pipeline-label" style="color:#4ecca3">Fase 1</div>
+                    <div class="pipeline-sub">Kernagents · 2 sprints</div>
+                </div>
+                <div class="pipeline-line" style="background:#4ecca3"></div>
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#4ecca3;color:#1a1a2e">2</div>
+                    <div class="pipeline-label" style="color:#4ecca3">Fase 2</div>
+                    <div class="pipeline-sub">Skills · 4 sprints</div>
+                </div>
+                <div class="pipeline-line" style="background:#4ecca3"></div>
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#4ecca3;color:#1a1a2e">3</div>
+                    <div class="pipeline-label" style="color:#4ecca3">Fase 3</div>
+                    <div class="pipeline-sub">Knowledge · 22 sprints</div>
+                </div>
+                <div class="pipeline-line" style="background:#4ecca3"></div>
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#2196f3;color:#fff;box-shadow:0 0 12px rgba(33,150,243,0.5)">4</div>
+                    <div class="pipeline-label" style="color:#2196f3">Fase 4</div>
+                    <div class="pipeline-sub">Verbindingen · actief</div>
+                </div>
+                <div class="pipeline-line" style="background:#2a2a4a"></div>
+                <div class="pipeline-node">
+                    <div class="pipeline-circle" style="background:#2a2a4a;color:#666">5</div>
+                    <div class="pipeline-label" style="color:#666">Fase 5</div>
+                    <div class="pipeline-sub">Uitbreiding</div>
+                </div>
+            </div>
+
+            <!-- Kanban -->
+            <div class="section-title">📋 Planning Kanban</div>
+            <div class="kanban">
+                <div class="kanban-col">
+                    <h4><span style="color:#ffc107">●</span> INBOX <span class="badge badge-yellow">8</span></h4>
+                    <div class="kanban-item" style="border-color:#2196f3">
+                        <div class="ki-title">Dashboard Kennisbibliotheek</div>
+                        <div class="ki-meta"><span class="badge badge-blue">FEAT</span> <span>devhub</span></div>
+                    </div>
+                    <div class="kanban-item" style="border-color:#2196f3">
+                        <div class="ki-title">Dashboard Panelen Upgrade</div>
+                        <div class="ki-meta"><span class="badge badge-blue">FEAT</span> <span>devhub</span></div>
+                    </div>
+                    <div class="kanban-item" style="border-color:#2196f3">
+                        <div class="ki-title">Kennisketen End-to-End</div>
+                        <div class="ki-meta"><span class="badge badge-blue">FEAT</span> <span>devhub</span></div>
+                    </div>
+                    <div class="kanban-item" style="border-color:#ce93d8">
+                        <div class="ki-title">n8n Event Scheduler</div>
+                        <div class="ki-meta"><span class="badge badge-purple">SPIKE</span> <span>devhub</span></div>
+                    </div>
+                    <div style="font-size:12px;color:#666;padding:8px;text-align:center">+4 meer...</div>
+                </div>
+                <div class="kanban-col">
+                    <h4><span style="color:#2196f3">●</span> ACTIEF <span class="badge badge-blue">0</span></h4>
+                    <div style="font-size:12px;color:#666;padding:20px;text-align:center;font-style:italic">Geen actieve sprint</div>
+                </div>
+                <div class="kanban-col">
+                    <h4><span style="color:#4ecca3">●</span> DONE <span class="badge badge-green">43</span></h4>
+                    <div class="kanban-item" style="border-color:#4ecca3">
+                        <div class="ki-title">#43 DevHub Dashboard NiceGUI</div>
+                        <div class="ki-meta"><span class="badge badge-green">FEAT</span> <span>+65 tests</span></div>
+                    </div>
+                    <div class="kanban-item" style="border-color:#4ecca3">
+                        <div class="ki-title">#42 Event Bus Lifecycle Hooks</div>
+                        <div class="ki-meta"><span class="badge badge-green">FEAT</span> <span>+67 tests</span></div>
+                    </div>
+                    <div class="kanban-item" style="border-color:#4ecca3">
+                        <div class="ki-title">#41 n8n Docker Setup</div>
+                        <div class="ki-meta"><span class="badge badge-green">CHORE</span> <span>+0 tests</span></div>
+                    </div>
+                    <div style="font-size:12px;color:#666;padding:8px;text-align:center">+40 meer...</div>
+                </div>
+                <div class="kanban-col">
+                    <h4><span style="color:#666">●</span> PARKED <span class="badge badge-grey">14</span></h4>
+                    <div style="font-size:12px;color:#666;padding:20px;text-align:center">14 geparkeerde items<br><span style="font-size:11px">n8n IDEAs, research, monorepo</span></div>
+                </div>
+            </div>
+
+            <!-- Velocity Chart -->
+            <div class="section-title">📊 Velocity — Test Delta per Sprint</div>
+            <div class="card">
+                <div id="velocity-chart" style="height:280px"></div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 4: GOVERNANCE                           -->
+        <!-- ============================================ -->
+        <div id="page-governance" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Compliance Audit', 'governance')">🛡️ Compliance Audit</button>
+                <button class="qa-btn" onclick="executeAction('Security Scan', 'governance')">🔒 Security Scan</button>
+                <button class="qa-btn" onclick="executeAction('Impact Check', 'governance')">⚖️ Impact Check</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">⚖️ Governance & Compliance <span class="info"><span class="tip">DEV_CONSTITUTION compliance verificatie per artikel, OWASP ASI security coverage, en impact-zonering. Bron: filesystem checks + security_contracts.</span></span></div>
+
+            <!-- Governance KPI row -->
+            <div style="display:flex;gap:24px;margin-bottom:24px;align-items:flex-start;flex-wrap:wrap">
+                <!-- Compliance Gauge -->
+                <div class="card" style="flex:0 0 auto">
+                    <h3>Compliance Score <span class="info"><span class="tip">Percentage artikelen met actieve verificatie. 100% = alle 9 DEV_CONSTITUTION artikelen gecontroleerd en compliant.</span></span></h3>
+                    <div class="gauge-container">
+                        <div class="gauge" style="background:conic-gradient(#4ecca3 0deg 320deg, rgba(255,255,255,0.08) 320deg 360deg)">
+                            <div class="gauge-inner">
+                                <div class="gauge-pct" style="color:#4ecca3">89%</div>
+                                <div class="gauge-label">compliance</div>
+                            </div>
+                        </div>
+                        <div class="gauge-legend">
+                            <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#4ecca3"></div> 8 Actief</div>
+                            <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#ffc107"></div> 1 Aandacht</div>
+                            <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#f44336"></div> 0 Overtreding</div>
+                            <div class="gauge-legend-item"><div class="gauge-legend-dot" style="background:#666"></div> 0 Niet geverifieerd</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Security Summary -->
+                <div class="card" style="flex:1;min-width:300px">
+                    <h3>Security Status</h3>
+                    <div style="display:flex;gap:16px;flex-wrap:wrap">
+                        <div style="text-align:center">
+                            <div style="font-size:32px;font-weight:700;color:#4ecca3">LOW</div>
+                            <div style="font-size:11px;color:#888">Overall Risk</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div style="font-size:32px;font-weight:700;color:#2196f3">1</div>
+                            <div style="font-size:11px;color:#888">Audit rapport</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div style="font-size:32px;font-weight:700;color:#ffc107">3</div>
+                            <div style="font-size:11px;color:#888">Findings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DEV_CONSTITUTION Articles -->
+            <div class="section-title">📜 DEV_CONSTITUTION — 9 Artikelen</div>
+            <div class="article-row">
+                <div class="article-id">Art. 1</div>
+                <div class="article-title">Identiteit & Missie</div>
+                <div class="article-desc">DevHub is de ontwikkelaar</div>
+                <div class="article-check">CLAUDE.md ✅ plugin.json ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 2</div>
+                <div class="article-title">Autonomie & Besluitvorming</div>
+                <div class="article-desc">Developer beslist</div>
+                <div class="article-check">Cowork workflow ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 3</div>
+                <div class="article-title">Codebase Integriteit</div>
+                <div class="article-desc">Tests moeten groen blijven</div>
+                <div class="article-check">142 test-bestanden ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 4</div>
+                <div class="article-title">Transparantie</div>
+                <div class="article-desc">Alle beslissingen traceerbaar</div>
+                <div class="article-check">SPRINT_TRACKER ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 5</div>
+                <div class="article-title">Kennisintegriteit</div>
+                <div class="article-desc">EVIDENCE-grading verplicht</div>
+                <div class="article-check">7/10 met grading ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 6</div>
+                <div class="article-title">Project-soevereiniteit</div>
+                <div class="article-desc">Projecten behouden eigen identiteit</div>
+                <div class="article-check">nodes.yml ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 7</div>
+                <div class="article-title">Impact-zonering</div>
+                <div class="article-desc">GREEN/YELLOW/RED classificatie</div>
+                <div class="article-check">golden-paths/ ❌</div>
+                <div class="article-status"><span class="badge badge-yellow">Aandacht</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 8</div>
+                <div class="article-title">Security</div>
+                <div class="article-desc">Geen secrets/PII in commits</div>
+                <div class="article-check">Clean ✅ Audit ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+            <div class="article-row">
+                <div class="article-id">Art. 9</div>
+                <div class="article-title">Planning</div>
+                <div class="article-desc">SPRINT_TRACKER is single source of truth</div>
+                <div class="article-check">Tracker actueel ✅</div>
+                <div class="article-status"><span class="badge badge-green">Actief</span></div>
+            </div>
+
+            <!-- OWASP ASI Coverage -->
+            <div class="section-title">🛡️ OWASP ASI 2026 Coverage <span class="info"><span class="tip">10 AI Security Initiative checkpoints. Mitigated = volledig afgedekt, Partial = deels, Open = nog te implementeren. Bron: SecurityAuditReport.</span></span></div>
+            <div class="card">
+                <div class="asi-row">
+                    <div class="asi-label">ASI01</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI02</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI03</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:50%;background:#ffc107"></div></div>
+                    <div class="asi-status"><span class="badge badge-yellow">PARTIAL</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI04</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI05</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:50%;background:#ffc107"></div></div>
+                    <div class="asi-status"><span class="badge badge-yellow">PARTIAL</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI06</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI07</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:0%;background:#666"></div></div>
+                    <div class="asi-status"><span class="badge badge-grey">NOT ASSESSED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI08</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI09</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:10%;background:#f44336"></div></div>
+                    <div class="asi-status"><span class="badge badge-red">VULNERABLE</span></div>
+                </div>
+                <div class="asi-row">
+                    <div class="asi-label">ASI10</div>
+                    <div class="asi-bar-bg"><div class="asi-bar-fill" style="width:100%;background:#4ecca3"></div></div>
+                    <div class="asi-status"><span class="badge badge-green">MITIGATED</span></div>
+                </div>
+            </div>
+
+            <!-- Impact Zonering -->
+            <div class="section-title">🚦 Impact-zonering</div>
+            <div class="grid-3">
+                <div class="card" style="border-left:4px solid #4ecca3">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                        <div style="width:14px;height:14px;border-radius:50%;background:#4ecca3"></div>
+                        <strong>GREEN</strong>
+                    </div>
+                    <div style="font-size:13px;color:#888">Veilig — tests draaien, geen review nodig</div>
+                </div>
+                <div class="card" style="border-left:4px solid #ffc107">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                        <div style="width:14px;height:14px;border-radius:50%;background:#ffc107"></div>
+                        <strong>YELLOW</strong>
+                    </div>
+                    <div style="font-size:13px;color:#888">Review vereist — significante wijzigingen</div>
+                </div>
+                <div class="card" style="border-left:4px solid #f44336">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                        <div style="width:14px;height:14px;border-radius:50%;background:#f44336"></div>
+                        <strong>RED</strong>
+                    </div>
+                    <div style="font-size:13px;color:#888">Menselijke goedkeuring — breaking changes</div>
+                </div>
+            </div>
+
+            <!-- Audit Trail -->
+            <div class="section-title">📝 Audit Trail <span class="info"><span class="tip">Chronologisch logboek van governance-relevante wijzigingen. Wie, wanneer, wat, welk artikel geraakt.</span></span></div>
+            <div class="card">
+                <div class="audit-item">
+                    <div class="audit-icon" style="background:rgba(78,204,163,0.2)">✅</div>
+                    <div style="flex:1">Sprint #43 afgerond — DevHub Dashboard NiceGUI</div>
+                    <div style="font-size:11px;color:#666">28 maart 2026</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-icon" style="background:rgba(78,204,163,0.2)">✅</div>
+                    <div style="flex:1">Sprint #42 afgerond — Event Bus Lifecycle Hooks</div>
+                    <div style="font-size:11px;color:#666">28 maart 2026</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-icon" style="background:rgba(156,39,176,0.2)">🔒</div>
+                    <div style="flex:1">Security audit rapport toegevoegd</div>
+                    <div style="font-size:11px;color:#666">27 maart 2026</div>
+                </div>
+                <div class="audit-item">
+                    <div class="audit-icon" style="background:rgba(33,150,243,0.2)">📋</div>
+                    <div style="flex:1">Fase 4 gate goedgekeurd door Niels</div>
+                    <div style="font-size:11px;color:#666">28 maart 2026</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 5: GROWTH                               -->
+        <!-- ============================================ -->
+        <div id="page-profile" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Update Skill Radar', 'profile')">📡 Update Radar</button>
+                <button class="qa-btn" onclick="executeAction('Next Challenge', 'profile')">🎯 Next Challenge</button>
+                <button class="qa-btn" onclick="executeAction('Learning Scan', 'profile')">📚 Learning Scan</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">👤 Developer Profile — Niels Postma <span class="info"><span class="tip">Evidence-based developer identity, skill verification, growth trajectory, and reflection journal. Bron: sprints, tests, governance, skills en research.</span></span></div>
+
+            <!-- LAAG 1: Identity Card KPI Strip -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Overall Dreyfus</div>
+                    <div class="kpi-value" style="color:#4ecca3">2.1</div>
+                    <div class="kpi-sub">weighted avg</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Primary Expertise</div>
+                    <div class="kpi-value" style="color:#ffc107;font-size:16px">AI-Engineering</div>
+                    <div class="kpi-sub">+ Architecture</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Sprints</div>
+                    <div class="kpi-value" style="color:#2196f3">43</div>
+                    <div class="kpi-sub">afgerond</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Tests Contributed</div>
+                    <div class="kpi-value" style="color:#ce93d8">1424+</div>
+                    <div class="kpi-sub">proof of work</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Domeinen</div>
+                    <div class="kpi-value" style="color:#64ffda">8</div>
+                    <div class="kpi-sub">T-shaped</div>
+                </div>
+            </div>
+
+            <!-- Identity Card Hero -->
+            <div class="card" style="background: linear-gradient(135deg, rgba(78,204,163,0.1) 0%, rgba(33,150,243,0.05) 100%); padding: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+                    <div>
+                        <div style="font-size: 28px; font-weight: 700; color: #ccd6f6;">Niels Postma</div>
+                        <div style="font-size: 14px; color: #8892b0; margin-top: 4px;">Solo Developer & System Architect</div>
+                        <div style="font-size: 13px; color: #4ecca3; font-style: italic; margin-top: 8px;">⚡ Visie, sturing, kwaliteitsbewustzijn</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 48px; font-weight: 700; color: #4ecca3;">2.1</div>
+                        <div style="font-size: 11px; color: #8892b0; text-transform: uppercase; margin-top: 4px;">Dreyfus Level</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px;">
+                    <div><strong>Expertise Signature:</strong> <span style="color: #8892b0;">System thinking + AI execution + Quality governance</span></div>
+                    <div><strong>Active:</strong> <span style="color: #4ecca3;">Feb 2026 — 43 sprints</span></div>
+                </div>
+            </div>
+
+            <!-- LAAG 2: Evidence Portfolio -->
+            <div class="section-title">🎖️ Evidence Portfolio — 8 Domeinen <span class="info"><span class="tip">Expertise-claims onderbouwd met artifacts. Grade: GOLD (extern) / SILVER (intern) / BRONZE (ervaring) / SPECULATIVE (zelf-gerapporteerd). Automatisch afgeleid uit sprints, tests en governance.</span></span></div>
+            <div class="grid-4" style="margin-bottom: 24px;">
+                <!-- Domain: AI-Engineering -->
+                <div class="card" style="cursor: pointer; transition: all 0.2s; border-top: 3px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">AI-Engineering</div>
+                        <span class="badge" style="background: rgba(192,192,192,0.2); color: #C0C0C0; font-size: 9px;">SILVER</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ffc107; margin-bottom: 4px;">2.2</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">8 artifacts · ↗ accelerating</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Agents, Prompt Eng, RAG</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 1d ago</div>
+                </div>
+
+                <!-- Domain: Architecture -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Architecture</div>
+                        <span class="badge" style="background: rgba(192,192,192,0.2); color: #C0C0C0; font-size: 9px;">SILVER</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ffc107; margin-bottom: 4px;">2.0</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">6 artifacts · → stable</div>
+                    <div style="font-size: 12px; color: #888;">Skills: 3-layer design, ADRs</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 2d ago</div>
+                </div>
+
+                <!-- Domain: Governance -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Governance</div>
+                        <span class="badge" style="background: rgba(192,192,192,0.2); color: #C0C0C0; font-size: 9px;">SILVER</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ffc107; margin-bottom: 4px;">2.0</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">4 artifacts · ↗ accelerating</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Constitution, Impact</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 3d ago</div>
+                </div>
+
+                <!-- Domain: Methodology -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #ffc107;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Methodology</div>
+                        <span class="badge" style="background: rgba(206,147,216,0.2); color: #ce93d8; font-size: 9px;">BRONZE</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ce93d8; margin-bottom: 4px;">1.9</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">3 artifacts · → stable</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Shape Up, Planning</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 5d ago</div>
+                </div>
+
+                <!-- Domain: Python -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #f44336;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Python</div>
+                        <span class="badge" style="background: rgba(206,147,216,0.2); color: #ce93d8; font-size: 9px;">BRONZE</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #f44336; margin-bottom: 4px;">1.0</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">2 artifacts · → stable</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Read code, basics</div>
+                    <div style="font-size: 10px; color: #f44336; margin-top: 8px;">⚠️ Primary gap — ZPD focus</div>
+                </div>
+
+                <!-- Domain: Testing -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #f44336;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Testing</div>
+                        <span class="badge" style="background: rgba(206,147,216,0.2); color: #ce93d8; font-size: 9px;">BRONZE</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ce93d8; margin-bottom: 4px;">1.5</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">5 artifacts · ↗ accelerating</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Test structure, QA</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 1d ago</div>
+                </div>
+
+                <!-- Domain: Security -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #f44336;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">Security</div>
+                        <span class="badge" style="background: rgba(206,147,216,0.2); color: #ce93d8; font-size: 9px;">BRONZE</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #ce93d8; margin-bottom: 4px;">1.3</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">2 artifacts · → stable</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Red-teaming basics</div>
+                    <div style="font-size: 10px; color: #f44336; margin-top: 8px;">Gap — Stretch area</div>
+                </div>
+
+                <!-- Domain: DevOps/Tooling -->
+                <div class="card" style="cursor: pointer; border-top: 3px solid #2196f3;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <div style="font-weight: 600;">DevOps/Tooling</div>
+                        <span class="badge" style="background: rgba(192,192,192,0.2); color: #C0C0C0; font-size: 9px;">SILVER</span>
+                    </div>
+                    <div style="font-size: 24px; font-weight: 700; color: #2196f3; margin-bottom: 4px;">1.8</div>
+                    <div style="font-size: 11px; color: #8892b0; margin-bottom: 8px;">3 artifacts · ↗ accelerating</div>
+                    <div style="font-size: 12px; color: #888;">Skills: Git, Docker, CI/CD</div>
+                    <div style="font-size: 10px; color: #4ecca3; margin-top: 8px;">● Última: 4d ago</div>
+                </div>
+            </div>
+
+            <!-- LAAG 3 & 4: Growth Analytics + Expertise Graph (side by side) -->
+            <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px;">
+                <!-- LAAG 3: Growth Analytics -->
+                <div style="flex: 1; min-width: 320px;">
+                    <div class="section-title">📈 Growth Analytics <span class="info"><span class="tip">Velocity sparklines per domein, ZPD heatmap, learning curves, SFIA benchmarks. Toon trends over afgelopen 12 weken.</span></span></div>
+
+                    <div class="card">
+                        <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 12px;">Domein Velocity</div>
+                        <table style="width: 100%; font-size: 12px;">
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">AI-Eng</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,15 15,12 25,10 35,8 45,5 55,3" fill="none" stroke="#4ecca3" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #4ecca3;">↗ 0.85</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">Architecture</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,10 15,10 25,10 35,11 45,11 55,12" fill="none" stroke="#2196f3" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #2196f3;">→ 0.12</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">Governance</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,12 15,11 25,10 35,8 45,7 55,6" fill="none" stroke="#4ecca3" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #4ecca3;">↗ 0.63</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">Python</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,18 15,18 25,17 35,16 45,15 55,14" fill="none" stroke="#ffc107" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #ffc107;">↗ 0.28</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">Testing</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,15 15,14 25,12 35,10 45,8 55,6" fill="none" stroke="#4ecca3" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #4ecca3;">↗ 0.71</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px 0; color: #8892b0;">Security</td>
+                                <td><svg width="60" height="20" style="vertical-align: middle;"><polyline points="5,16 15,16 25,16 35,16 45,16 55,15" fill="none" stroke="#666" stroke-width="2"/></svg></td>
+                                <td style="text-align: right; color: #666;">→ 0.05</td>
+                            </tr>
+                        </table>
+
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #2a2a4a;">
+                            <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 8px;">ZPD Heatmap (Focus Areas)</div>
+                            <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                                <span class="badge badge-red">Python (URGENT)</span>
+                                <span class="badge badge-yellow">Testing (IMPORTANT)</span>
+                                <span class="badge badge-blue">AI-Engineering (GROWTH)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LAAG 4: Expertise Graph (Network) -->
+                <div style="flex: 1; min-width: 320px;">
+                    <div class="section-title">🕸️ Expertise Graph <span class="info"><span class="tip">Force-directed network van domein-verbindingen. 3 clusters: System Builder, Quality Guardian, Delivery Engine.</span></span></div>
+                    <div class="card">
+                        <div id="expertise-graph" style="height: 280px; background: #0e1628; border-radius: 8px; position: relative;">
+                            <!-- Plotly graph will be rendered here -->
+                            <svg width="100%" height="280" style="display: block;">
+                                <!-- Cluster 1: System Builder (top-left) -->
+                                <circle cx="80" cy="70" r="8" fill="#4ecca3" opacity="0.8"/>
+                                <text x="80" y="95" text-anchor="middle" font-size="10" fill="#8892b0">Architecture</text>
+
+                                <circle cx="50" cy="140" r="7" fill="#4ecca3" opacity="0.6"/>
+                                <text x="50" y="165" text-anchor="middle" font-size="9" fill="#666">AI-Eng</text>
+
+                                <circle cx="130" cy="130" r="6" fill="#4ecca3" opacity="0.5"/>
+                                <text x="130" y="155" text-anchor="middle" font-size="9" fill="#666">DevOps</text>
+
+                                <!-- Connections within cluster -->
+                                <line x1="80" y1="70" x2="50" y2="140" stroke="#4ecca3" stroke-width="1" opacity="0.3"/>
+                                <line x1="80" y1="70" x2="130" y2="130" stroke="#4ecca3" stroke-width="1" opacity="0.3"/>
+                                <line x1="50" y1="140" x2="130" y2="130" stroke="#4ecca3" stroke-width="1" opacity="0.2"/>
+
+                                <!-- Cluster 2: Quality Guardian (center-right) -->
+                                <circle cx="200" cy="100" r="8" fill="#2196f3" opacity="0.8"/>
+                                <text x="200" y="125" text-anchor="middle" font-size="10" fill="#8892b0">Governance</text>
+
+                                <circle cx="220" cy="160" r="7" fill="#2196f3" opacity="0.6"/>
+                                <text x="220" y="185" text-anchor="middle" font-size="9" fill="#666">Testing</text>
+
+                                <circle cx="250" cy="120" r="6" fill="#2196f3" opacity="0.5"/>
+                                <text x="250" y="145" text-anchor="middle" font-size="9" fill="#666">Security</text>
+
+                                <!-- Connections within cluster -->
+                                <line x1="200" y1="100" x2="220" y2="160" stroke="#2196f3" stroke-width="1" opacity="0.3"/>
+                                <line x1="200" y1="100" x2="250" y2="120" stroke="#2196f3" stroke-width="1" opacity="0.3"/>
+
+                                <!-- Cluster 3: Delivery Engine (bottom) -->
+                                <circle cx="140" cy="220" r="8" fill="#ce93d8" opacity="0.8"/>
+                                <text x="140" y="245" text-anchor="middle" font-size="10" fill="#8892b0">Methodology</text>
+
+                                <circle cx="100" cy="200" r="6" fill="#ce93d8" opacity="0.5"/>
+                                <text x="100" y="220" text-anchor="middle" font-size="9" fill="#666">Python</text>
+
+                                <!-- Inter-cluster connections -->
+                                <line x1="80" y1="70" x2="200" y2="100" stroke="#4ecca3" stroke-width="1" opacity="0.15" stroke-dasharray="2,2"/>
+                                <line x1="130" y1="130" x2="140" y2="220" stroke="#ce93d8" stroke-width="1" opacity="0.15" stroke-dasharray="2,2"/>
+                                <line x1="220" y1="160" x2="140" y2="220" stroke="#2196f3" stroke-width="1" opacity="0.15" stroke-dasharray="2,2"/>
+                            </svg>
+                        </div>
+                        <div style="font-size: 11px; color: #666; text-align: center; margin-top: 12px;">
+                            ● System Builder  ● Quality Guardian  ● Delivery Engine — 8 nodes, 9 edges
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAAG 5: Growth Trajectory -->
+            <div class="section-title">🎯 Growth Trajectory — 6 Maanden Plan <span class="info"><span class="tip">Goal-profiel overlay, milestone timeline, project alignment, challenges. Dreyfus model met bounded ambition.</span></span></div>
+
+            <div style="display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px;">
+                <!-- Goal Profile (Radar) -->
+                <div style="flex: 0 0 350px;">
+                    <div class="card">
+                        <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 12px;">Doel-Profiel (6 Maanden)</div>
+                        <div id="goal-radar" style="height: 240px;">
+                            <svg width="100%" height="240" style="display: block;">
+                                <!-- Huidig (solid) vs. Doel (dashed) -->
+                                <!-- Background circles -->
+                                <circle cx="175" cy="120" r="30" fill="none" stroke="#2a2a4a" stroke-width="1"/>
+                                <circle cx="175" cy="120" r="60" fill="none" stroke="#2a2a4a" stroke-width="1"/>
+
+                                <!-- Huidig polygon (solid, groen) -->
+                                <polygon points="175,60 195,85 210,110 195,130 175,145 155,130 140,110 155,85" fill="rgba(78,204,163,0.15)" stroke="#4ecca3" stroke-width="2"/>
+
+                                <!-- Doel polygon (dashed, blauw) -->
+                                <polygon points="175,45 205,75 225,110 205,145 175,165 145,145 125,110 145,75" fill="none" stroke="#2196f3" stroke-width="2" stroke-dasharray="3,3"/>
+
+                                <!-- Labels -->
+                                <text x="175" y="35" text-anchor="middle" font-size="10" fill="#8892b0">Architecture</text>
+                                <text x="220" y="85" text-anchor="middle" font-size="10" fill="#8892b0">Python</text>
+                                <text x="220" y="150" text-anchor="middle" font-size="10" fill="#8892b0">Testing</text>
+                                <text x="130" y="150" text-anchor="middle" font-size="10" fill="#8892b0">Security</text>
+                                <text x="130" y="85" text-anchor="middle" font-size="10" fill="#8892b0">AI-Eng</text>
+                            </svg>
+                        </div>
+                        <div style="font-size: 11px; color: #666; margin-top: 8px;">
+                            ─ Huidig · · · Doel (+0.5-1.0 per domein)
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Milestone Timeline -->
+                <div style="flex: 1; min-width: 300px;">
+                    <div class="card">
+                        <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 12px;">Milestone Timeline</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 0 0 80px; text-align: right; font-size: 11px; color: #4ecca3; font-weight: 600;">Apr 2026</div>
+                                <div style="flex: 1; font-size: 12px; color: #ccd6f6;">Python bootcamp: Error reading, dataclasses, basic unit tests</div>
+                            </div>
+                            <div style="border-left: 2px solid #2a2a4a; margin-left: 40px; padding-left: 12px;"></div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 0 0 80px; text-align: right; font-size: 11px; color: #2196f3; font-weight: 600;">May 2026</div>
+                                <div style="flex: 1; font-size: 12px; color: #ccd6f6;">Architecture review: Design patterns, system thinking deepening</div>
+                            </div>
+                            <div style="border-left: 2px solid #2a2a4a; margin-left: 40px; padding-left: 12px;"></div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 0 0 80px; text-align: right; font-size: 11px; color: #ffc107; font-weight: 600;">Jun 2026</div>
+                                <div style="flex: 1; font-size: 12px; color: #ccd6f6;">Security fundamentals: OWASP basics, threat modeling intro</div>
+                            </div>
+                            <div style="border-left: 2px solid #2a2a4a; margin-left: 40px; padding-left: 12px;"></div>
+                            <div style="display: flex; gap: 12px;">
+                                <div style="flex: 0 0 80px; text-align: right; font-size: 11px; color: #ce93d8; font-weight: 600;">Jul 2026</div>
+                                <div style="flex: 1; font-size: 12px; color: #ccd6f6;">Integration sprint: Python + Testing + Architecture project</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LAAG 6: Reflection Journal -->
+            <div class="section-title">🗓️ Reflection Journal — Sprint Retrospectives <span class="info"><span class="tip">Sprint reflections, maandrapport, growth narrative. Deliberate practice tracking: groei met reflectie = expertise.</span></span></div>
+
+            <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+                <!-- Monthly Summary -->
+                <div style="flex: 1; min-width: 300px;">
+                    <div class="card">
+                        <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 12px;">📅 March 2026 Retrospective</div>
+                        <div style="font-size: 13px; color: #8892b0; line-height: 1.8;">
+                            <strong style="color: #ccd6f6;">Highlights:</strong> Fase 3 afgerond (22 sprints, 1424+ tests). Kennispipeline end-to-end operationeel. 43 sprints totaal. <br><br>
+                            <strong style="color: #ccd6f6;">Groei gebieden:</strong> AI-Engineering (agents, RAG) en Governance (constitution, impact zonering) versnellen. Testing en Python blijven gap-gebieden. <br><br>
+                            <strong style="color: #ccd6f6;">Learnings:</strong> Deliberate practice (reflectie na sprints) versnelt expertise-opbouw meer dan pure ervaring. System thinking evolueert parallel met code output. <br><br>
+                            <strong style="color: #ccd6f6;">Next focus:</strong> Python lezen ➜ tracer execution; Testing-automatie bouwen (niet alleen lezen).
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reflection Form (mockup) -->
+                <div style="flex: 1; min-width: 300px;">
+                    <div class="card">
+                        <div style="font-size: 12px; font-weight: 600; color: #ccd6f6; margin-bottom: 12px;">✍️ Sprint Reflection (Template)</div>
+                        <div style="display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+                            <div>
+                                <label style="color: #8892b0; display: block; margin-bottom: 4px;">1. Wat leerde je deze sprint?</label>
+                                <input type="text" style="width: 100%; padding: 8px; background: #0e1628; border: 1px solid #2a2a4a; border-radius: 4px; color: #e0e0e0; font-size: 12px;" placeholder="Bijv. Agent-loops in Claude Code, RAG flow...">
+                            </div>
+                            <div>
+                                <label style="color: #8892b0; display: block; margin-bottom: 4px;">2. Welk domein werd sterker?</label>
+                                <select style="width: 100%; padding: 8px; background: #0e1628; border: 1px solid #2a2a4a; border-radius: 4px; color: #e0e0e0; font-size: 12px;">
+                                    <option>-- Selecteer --</option>
+                                    <option selected>AI-Engineering</option>
+                                    <option>Architecture</option>
+                                    <option>Python</option>
+                                    <option>Testing</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="color: #8892b0; display: block; margin-bottom: 4px;">3. Welk domein vroeg nog aandacht?</label>
+                                <select style="width: 100%; padding: 8px; background: #0e1628; border: 1px solid #2a2a4a; border-radius: 4px; color: #e0e0e0; font-size: 12px;">
+                                    <option>-- Selecteer --</option>
+                                    <option>Python</option>
+                                    <option selected>Testing</option>
+                                    <option>Security</option>
+                                </select>
+                            </div>
+                            <button style="padding: 8px; background: #0f3460; border: 1px solid #4ecca3; border-radius: 4px; color: #4ecca3; cursor: pointer; font-weight: 600; font-size: 12px; transition: all 0.2s;" onclick="this.style.background='#16213e'; this.textContent='✓ Opgeslagen';">💾 Opslaan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 6: KNOWLEDGE                            -->
+        <!-- ============================================ -->
+        <div id="page-knowledge" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Freshness Scan', 'knowledge')">🔄 Freshness Scan</button>
+                <button class="qa-btn" onclick="executeAction('Ingest Document', 'knowledge')">📥 Ingest Document</button>
+                <button class="qa-btn" onclick="executeAction('Coverage Check', 'knowledge')">🗺️ Coverage Check</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">📚 Knowledge & Kennisbank <span class="info"><span class="tip">Kennisartikelen catalogus, dekkingsmatrix (drie-ringen model), en versheidsoverzicht. Bron: kennisbank + vectorstore metadata.</span></span></div>
+
+            <!-- Knowledge KPI Strip -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Artikelen</div>
+                    <div class="kpi-value" style="color:#ce93d8">10</div>
+                    <div class="kpi-sub">in kennisbank</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">GOLD</div>
+                    <div class="kpi-value" style="color:#FFD700">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">SILVER</div>
+                    <div class="kpi-value" style="color:#C0C0C0">7</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">BRONZE</div>
+                    <div class="kpi-value" style="color:#CD7F32">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Freshness</div>
+                    <div class="kpi-value" style="color:#4ecca3">70%</div>
+                    <div class="kpi-sub">&lt;30 dagen</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Domeinen</div>
+                    <div class="kpi-value" style="color:#2196f3">16</div>
+                    <div class="kpi-sub">3 ringen</div>
+                </div>
+            </div>
+
+            <!-- Tabs: Catalogus / Dekking / Versheid -->
+            <div class="tab-nav" id="knowledge-tabs">
+                <button class="tab-btn active" onclick="showKTab('catalogus')">📖 Catalogus</button>
+                <button class="tab-btn" onclick="showKTab('dekking')">🗺️ Dekking</button>
+                <button class="tab-btn" onclick="showKTab('versheid')">⏰ Versheid</button>
+            </div>
+
+            <!-- Catalogus tab -->
+            <div id="ktab-catalogus" class="tab-content active">
+                <!-- Search bar -->
+                <div style="margin-bottom:16px">
+                    <input type="text" placeholder="Zoeken in kennisbank..." style="width:100%;max-width:400px;padding:10px 14px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:14px">
+                </div>
+
+                <!-- Article cards -->
+                <div class="grid-2">
+                    <div class="card" style="cursor:pointer;border-left:3px solid #C0C0C0" onclick="alert('→ /knowledge/RETRO_DEVHUB_DASHBOARD_NICEGUI')">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <strong>Retrospective — DevHub Dashboard NiceGUI</strong>
+                            <span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                            <span class="badge badge-purple">retrospectives</span>
+                            <span class="badge badge-green">Ring 3</span>
+                            <span style="font-size:11px;color:#4ecca3">● 1d</span>
+                        </div>
+                        <div style="font-size:12px;color:#888;margin-top:8px">NiceGUI dashboard met 7 panelen, ResearchQueueManager, EventBus integratie. Sprint 43 leverbaar.</div>
+                        <div style="font-size:11px;color:#666;margin-top:6px">📅 2026-03-28 · ✍️ devhub-sprint</div>
+                    </div>
+
+                    <div class="card" style="cursor:pointer;border-left:3px solid #C0C0C0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <strong>Research: Agent Teams Activatie SPIKE</strong>
+                            <span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                            <span class="badge badge-blue">ai_engineering</span>
+                            <span class="badge badge-green">Ring 1</span>
+                            <span style="font-size:11px;color:#ffc107">● 2d</span>
+                        </div>
+                        <div style="font-size:12px;color:#888;margin-top:8px">Claude Code Agent Teams kan custom agents niet als teammates registreren. Conclusie: GEPARKEERD.</div>
+                        <div style="font-size:11px;color:#666;margin-top:6px">📅 2026-03-28 · ✍️ researcher · 🏷️ RQ2</div>
+                    </div>
+
+                    <div class="card" style="cursor:pointer;border-left:3px solid #C0C0C0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <strong>Retrospective — Fase 3 Knowledge & Memory</strong>
+                            <span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                            <span class="badge badge-purple">retrospectives</span>
+                            <span class="badge badge-green">Ring 3</span>
+                            <span style="font-size:11px;color:#4ecca3">● 2d</span>
+                        </div>
+                        <div style="font-size:12px;color:#888;margin-top:8px">22 sprints, 5 tracks, 796 tests. Kennispipeline end-to-end operationeel.</div>
+                        <div style="font-size:11px;color:#666;margin-top:6px">📅 2026-03-27 · ✍️ devhub-sprint</div>
+                    </div>
+
+                    <div class="card" style="cursor:pointer;border-left:3px solid #C0C0C0">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <strong>Research: n8n Event Scheduler SPIKE</strong>
+                            <span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span>
+                        </div>
+                        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+                            <span class="badge badge-blue">devops_tooling</span>
+                            <span class="badge badge-green">Ring 2</span>
+                            <span style="font-size:11px;color:#4ecca3">● 2d</span>
+                        </div>
+                        <div style="font-size:12px;color:#888;margin-top:8px">n8n als externe scheduler: GO. Docker lokaal, &lt;$5/maand, claude -p via Execute Command.</div>
+                        <div style="font-size:11px;color:#666;margin-top:6px">📅 2026-03-28 · ✍️ researcher</div>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:16px;font-size:13px;color:#666">+6 meer artikelen...</div>
+            </div>
+
+            <!-- Dekking tab -->
+            <div id="ktab-dekking" class="tab-content">
+                <div class="section-title">🎯 Domein Dekkingsmatrix — 3 Ringen</div>
+
+                <!-- Ring 1: Core -->
+                <div style="margin-bottom:20px">
+                    <div style="font-size:14px;font-weight:600;color:#4ecca3;margin-bottom:8px">Ring 1 — Core (5 domeinen)</div>
+                    <div class="grid-3">
+                        <div class="card" style="border-left:3px solid #f44336;padding:12px">
+                            <div style="font-size:13px;font-weight:600">AI Engineering</div>
+                            <div style="font-size:24px;font-weight:700;color:#ffc107">1</div>
+                            <div style="font-size:11px;color:#888">artikel · 100% SILVER</div>
+                        </div>
+                        <div class="card" style="border-left:3px solid #f44336;padding:12px">
+                            <div style="font-size:13px;font-weight:600">Python Runtime</div>
+                            <div style="font-size:24px;font-weight:700;color:#f44336">0</div>
+                            <div style="font-size:11px;color:#f44336">⚠️ CRITICAL GAP</div>
+                        </div>
+                        <div class="card" style="border-left:3px solid #f44336;padding:12px">
+                            <div style="font-size:13px;font-weight:600">Development Methodology</div>
+                            <div style="font-size:24px;font-weight:700;color:#f44336">0</div>
+                            <div style="font-size:11px;color:#f44336">⚠️ CRITICAL GAP</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ring 2: Agent -->
+                <div style="margin-bottom:20px">
+                    <div style="font-size:14px;font-weight:600;color:#2196f3;margin-bottom:8px">Ring 2 — Agent (8 domeinen)</div>
+                    <div class="grid-4">
+                        <div class="card" style="padding:10px;border-left:3px solid #4ecca3">
+                            <div style="font-size:12px;font-weight:600">DevOps/Tooling</div>
+                            <div style="font-size:20px;font-weight:700;color:#4ecca3">1</div>
+                        </div>
+                        <div class="card" style="padding:10px;border-left:3px solid #ffc107">
+                            <div style="font-size:12px;font-weight:600">Security</div>
+                            <div style="font-size:20px;font-weight:700;color:#ffc107">1</div>
+                        </div>
+                        <div class="card" style="padding:10px;border-left:3px solid #f44336">
+                            <div style="font-size:12px;font-weight:600">Testing</div>
+                            <div style="font-size:20px;font-weight:700;color:#f44336">0</div>
+                        </div>
+                        <div class="card" style="padding:10px;border-left:3px solid #f44336">
+                            <div style="font-size:12px;font-weight:600">Governance</div>
+                            <div style="font-size:20px;font-weight:700;color:#f44336">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ring 3: Project -->
+                <div>
+                    <div style="font-size:14px;font-weight:600;color:#ce93d8;margin-bottom:8px">Ring 3 — Project (3 domeinen)</div>
+                    <div class="grid-3">
+                        <div class="card" style="padding:10px;border-left:3px solid #4ecca3">
+                            <div style="font-size:12px;font-weight:600">Retrospectives</div>
+                            <div style="font-size:20px;font-weight:700;color:#4ecca3">7</div>
+                        </div>
+                        <div class="card" style="padding:10px;border-left:3px solid #f44336">
+                            <div style="font-size:12px;font-weight:600">Coaching/Learning</div>
+                            <div style="font-size:20px;font-weight:700;color:#ffc107">1</div>
+                        </div>
+                        <div class="card" style="padding:10px;border-left:3px solid #f44336">
+                            <div style="font-size:12px;font-weight:600">Project-specifiek</div>
+                            <div style="font-size:20px;font-weight:700;color:#f44336">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Versheid tab -->
+            <div id="ktab-versheid" class="tab-content">
+                <div class="section-title">⏰ Freshness Overzicht</div>
+                <div class="grid-3" style="margin-bottom:24px">
+                    <div class="card" style="text-align:center;border-left:3px solid #4ecca3">
+                        <div style="font-size:32px;font-weight:700;color:#4ecca3">7</div>
+                        <div style="font-size:12px;color:#888">Fresh (&lt;30 dagen)</div>
+                    </div>
+                    <div class="card" style="text-align:center;border-left:3px solid #ffc107">
+                        <div style="font-size:32px;font-weight:700;color:#ffc107">3</div>
+                        <div style="font-size:12px;color:#888">Aging (30-90 dagen)</div>
+                    </div>
+                    <div class="card" style="text-align:center;border-left:3px solid #f44336">
+                        <div style="font-size:32px;font-weight:700;color:#f44336">0</div>
+                        <div style="font-size:12px;color:#888">Stale (&gt;90 dagen)</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Artikel</th>
+                                <th>Domein</th>
+                                <th>Grade</th>
+                                <th>Datum</th>
+                                <th>Leeftijd</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Retro — Dashboard NiceGUI</td>
+                                <td>retrospectives</td>
+                                <td><span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span></td>
+                                <td>2026-03-28</td>
+                                <td>1d</td>
+                                <td><span style="color:#4ecca3">● Fresh</span></td>
+                            </tr>
+                            <tr>
+                                <td>Research: Agent Teams SPIKE</td>
+                                <td>ai_engineering</td>
+                                <td><span class="badge" style="background:rgba(192,192,192,0.2);color:#C0C0C0">SILVER</span></td>
+                                <td>2026-03-28</td>
+                                <td>1d</td>
+                                <td><span style="color:#4ecca3">● Fresh</span></td>
+                            </tr>
+                            <tr>
+                                <td>Skill Radar Profile</td>
+                                <td>coaching_learning</td>
+                                <td><span class="badge badge-grey">—</span></td>
+                                <td>2026-03-26</td>
+                                <td>3d</td>
+                                <td><span style="color:#4ecca3">● Fresh</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 7: RESEARCH                             -->
+        <!-- ============================================ -->
+        <div id="page-research" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Submit Research Question', 'research')">❓ Research Question</button>
+                <button class="qa-btn" onclick="executeAction('Run Research Loop', 'research')">🔬 Research Loop</button>
+                <button class="qa-btn" onclick="executeAction('Grade Evidence', 'research')">⭐ Grade Evidence</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+            <div class="section-title">🔬 Research & Kennisverzoeken <span class="info"><span class="tip">Drie-stromen research: auto-kennis (stroom 1), agent-voorstellen met goedkeuring (stroom 2), en eigen verzoeken (stroom 3). Bron: EventBus + inbox/.</span></span></div>
+
+            <!-- Research KPI Strip -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">Totaal</div>
+                    <div class="kpi-value" style="color:#2196f3">1</div>
+                    <div class="kpi-sub">verzoeken</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Pending</div>
+                    <div class="kpi-value" style="color:#ffc107">1</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">In Progress</div>
+                    <div class="kpi-value" style="color:#2196f3">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Completed</div>
+                    <div class="kpi-value" style="color:#4ecca3">0</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tab-nav" id="research-tabs">
+                <button class="tab-btn active" onclick="showRTab('form')">➕ Nieuw Voorstel</button>
+                <button class="tab-btn" onclick="showRTab('user')">👤 Mijn Verzoeken</button>
+                <button class="tab-btn" onclick="showRTab('agent')">🤖 Agent-voorstellen</button>
+                <button class="tab-btn" onclick="showRTab('auto')">⚡ Auto-kennis</button>
+            </div>
+
+            <!-- Nieuw Voorstel tab -->
+            <div id="rtab-form" class="tab-content active">
+                <div class="card">
+                    <h3>Uitgebreid Research Voorstel</h3>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+                        <div>
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Onderwerp *</label>
+                            <input type="text" value="De samenwerking tussen Claude Desktop/Cowork/Code en NotebookLM" style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Domein *</label>
+                            <select style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                                <option>development_methodology</option>
+                                <option>ai_engineering</option>
+                                <option>multi_agent_architecture</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Diepte *</label>
+                            <select style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                                <option>QUICK</option>
+                                <option>STANDARD</option>
+                                <option selected>DEEP</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Document Categorie</label>
+                            <select style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                                <option selected>SOTA_REVIEW</option>
+                                <option>TUTORIAL</option>
+                                <option>REFERENCE</option>
+                                <option>HOW_TO</option>
+                            </select>
+                        </div>
+                        <div style="grid-column:span 2">
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Achtergrond / Motivatie</label>
+                            <textarea rows="3" placeholder="Waarom is dit onderzoek waardevol? Wat is de aanleiding?" style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px;resize:vertical"></textarea>
+                        </div>
+                        <div style="grid-column:span 2">
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Scope — Wat valt erin</label>
+                            <textarea rows="2" placeholder="Welke aspecten moeten onderzocht worden?" style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px;resize:vertical"></textarea>
+                        </div>
+                        <div style="grid-column:span 2">
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Scope — Wat valt erbuiten</label>
+                            <textarea rows="2" placeholder="Expliciete afbakening" style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px;resize:vertical"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic RQs -->
+                    <div style="margin-top:16px">
+                        <label style="font-size:12px;color:#888;display:block;margin-bottom:8px">Onderzoeksvragen</label>
+                        <div style="display:flex;flex-direction:column;gap:8px">
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-weight:700;color:#2196f3;min-width:36px">RQ1</span>
+                                <input type="text" placeholder="Eerste onderzoeksvraag..." style="flex:1;padding:8px 12px;background:#0e1628;border:1px solid #2a2a4a;border-radius:6px;color:#e0e0e0;font-size:13px">
+                                <button style="background:transparent;border:1px solid #2a2a4a;border-radius:6px;color:#f44336;cursor:pointer;padding:4px 8px">✕</button>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:8px">
+                                <span style="font-weight:700;color:#2196f3;min-width:36px">RQ2</span>
+                                <input type="text" placeholder="Tweede onderzoeksvraag..." style="flex:1;padding:8px 12px;background:#0e1628;border:1px solid #2a2a4a;border-radius:6px;color:#e0e0e0;font-size:13px">
+                                <button style="background:transparent;border:1px solid #2a2a4a;border-radius:6px;color:#f44336;cursor:pointer;padding:4px 8px">✕</button>
+                            </div>
+                        </div>
+                        <button style="margin-top:8px;padding:6px 16px;background:rgba(33,150,243,0.15);border:1px solid #2196f3;border-radius:6px;color:#2196f3;cursor:pointer;font-size:13px">+ Onderzoeksvraag</button>
+                    </div>
+
+                    <div style="display:flex;gap:12px;margin-top:16px;align-items:center">
+                        <div style="flex:1">
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Verwacht EVIDENCE-niveau</label>
+                            <select style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                                <option>GOLD (peer-reviewed)</option>
+                                <option selected>SILVER (framework docs / trusted)</option>
+                                <option>BRONZE (ervaring / blog)</option>
+                            </select>
+                        </div>
+                        <div style="flex:1">
+                            <label style="font-size:12px;color:#888;display:block;margin-bottom:4px">Deadline (optioneel)</label>
+                            <input type="date" style="width:100%;padding:10px;background:#0e1628;border:1px solid #2a2a4a;border-radius:8px;color:#e0e0e0;font-size:13px">
+                        </div>
+                    </div>
+
+                    <div style="margin-top:20px;display:flex;gap:12px">
+                        <button style="padding:10px 24px;background:#4ecca3;border:none;border-radius:8px;color:#1a1a2e;font-weight:600;cursor:pointer;font-size:14px">Indienen</button>
+                        <button style="padding:10px 24px;background:transparent;border:1px solid #2a2a4a;border-radius:8px;color:#888;cursor:pointer;font-size:14px">Annuleren</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mijn Verzoeken tab -->
+            <div id="rtab-user" class="tab-content">
+                <div class="card" style="border-left:4px solid #ffc107">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div>
+                            <div style="font-weight:600;font-size:15px">De samenwerking tussen Claude Desktop/Cowork/Code en NotebookLM</div>
+                            <div style="font-size:12px;color:#888;margin-top:4px">
+                                <span class="badge badge-yellow">USER</span>
+                                <span style="margin-left:8px">development_methodology</span>
+                                <span style="margin-left:8px">DEEP</span>
+                                <span style="margin-left:8px">SOTA_REVIEW</span>
+                            </div>
+                        </div>
+                        <span class="badge badge-yellow" style="font-size:13px;padding:6px 14px">PENDING</span>
+                    </div>
+
+                    <!-- Status flow -->
+                    <div style="display:flex;align-items:center;gap:0;margin:16px 0;justify-content:center">
+                        <div style="display:flex;flex-direction:column;align-items:center;min-width:80px">
+                            <div style="width:32px;height:32px;border-radius:50%;background:#ffc107;display:flex;align-items:center;justify-content:center;font-size:16px">⏳</div>
+                            <div style="font-size:11px;color:#ffc107;margin-top:4px">Pending</div>
+                            <div style="font-size:10px;color:#666">29 maart</div>
+                        </div>
+                        <div style="width:40px;height:2px;background:#2a2a4a;margin-top:-20px"></div>
+                        <div style="display:flex;flex-direction:column;align-items:center;min-width:80px">
+                            <div style="width:32px;height:32px;border-radius:50%;background:#2a2a4a;display:flex;align-items:center;justify-content:center;font-size:16px;color:#666">✓</div>
+                            <div style="font-size:11px;color:#666;margin-top:4px">Goedgekeurd</div>
+                        </div>
+                        <div style="width:40px;height:2px;background:#2a2a4a;margin-top:-20px"></div>
+                        <div style="display:flex;flex-direction:column;align-items:center;min-width:80px">
+                            <div style="width:32px;height:32px;border-radius:50%;background:#2a2a4a;display:flex;align-items:center;justify-content:center;font-size:16px;color:#666">🔍</div>
+                            <div style="font-size:11px;color:#666;margin-top:4px">Onderzoek</div>
+                        </div>
+                        <div style="width:40px;height:2px;background:#2a2a4a;margin-top:-20px"></div>
+                        <div style="display:flex;flex-direction:column;align-items:center;min-width:80px">
+                            <div style="width:32px;height:32px;border-radius:50%;background:#2a2a4a;display:flex;align-items:center;justify-content:center;font-size:16px;color:#666">📋</div>
+                            <div style="font-size:11px;color:#666;margin-top:4px">Review</div>
+                        </div>
+                        <div style="width:40px;height:2px;background:#2a2a4a;margin-top:-20px"></div>
+                        <div style="display:flex;flex-direction:column;align-items:center;min-width:80px">
+                            <div style="width:32px;height:32px;border-radius:50%;background:#2a2a4a;display:flex;align-items:center;justify-content:center;font-size:16px;color:#666">✅</div>
+                            <div style="font-size:11px;color:#666;margin-top:4px">Afgerond</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:8px;margin-top:12px">
+                        <button style="padding:6px 16px;background:rgba(78,204,163,0.15);border:1px solid #4ecca3;border-radius:6px;color:#4ecca3;cursor:pointer;font-size:12px">✓ Goedkeuren</button>
+                        <button style="padding:6px 16px;background:rgba(244,67,54,0.15);border:1px solid #f44336;border-radius:6px;color:#f44336;cursor:pointer;font-size:12px">✕ Afwijzen</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent-voorstellen tab -->
+            <div id="rtab-agent" class="tab-content">
+                <div style="text-align:center;padding:40px;color:#666;font-style:italic">
+                    Geen agent-voorstellen op dit moment.<br>
+                    <span style="font-size:12px">Voorstellen verschijnen wanneer agents kennislacunes detecteren via de Event Bus.</span>
+                </div>
+            </div>
+
+            <!-- Auto-kennis tab -->
+            <div id="rtab-auto" class="tab-content">
+                <div style="text-align:center;padding:40px;color:#666;font-style:italic">
+                    Geen auto-kennis items.<br>
+                    <span style="font-size:12px">De ConfigDrivenBootstrap genereert automatisch basiskennis voor Ring 1 domeinen.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- PAGE 8: PROJECTS                             -->
+        <!-- ============================================ -->
+        <div id="page-projects" class="page" style="display:none">
+            <div class="quick-actions">
+                <button class="qa-btn" onclick="executeAction('Check Adapter', 'projects')">🔌 Check Adapter</button>
+                <button class="qa-btn" onclick="executeAction('Sync Submodule', 'projects')">🔄 Sync Submodule</button>
+                <button class="qa-btn" onclick="executeAction('Project Health', 'projects')">🏥 Project Health</button>
+                <button class="qa-btn" onclick="executeAction('Integration Scan', 'projects')">🧩 Integration Scan</button>
+                <button class="qa-btn qa-cmd" onclick="openCommandPalette()">⌘K</button>
+            </div>
+
+            <!-- Section A: Workspace Packages -->
+            <div class="section-title"><span class="icon">📦</span> Workspace Packages <span class="info"><span class="tip">Interne DevHub-bouwblokken in packages/. Leven in de monorepo, geen eigen adapter of node-registratie.</span></span></div>
+            <p style="color:#8892b0;font-size:13px;margin-bottom:16px">Interne DevHub-bouwblokken — leven in de <code style="color:#4ecca3">packages/</code> directory van de DevHub monorepo.</p>
+
+            <!-- Dependency Graph -->
+            <div class="card">
+                <h3>Package Dependency Graph <span class="info"><span class="tip">Visualiseert hoe workspace packages van elkaar afhangen. Pijlen = import-richting. devhub-core is het fundament waar alle anderen op bouwen.</span></span></h3>
+                <div style="display:flex;justify-content:center;padding:20px">
+                    <div style="position:relative;width:500px;height:280px">
+                        <!-- devhub-core (center) -->
+                        <div style="position:absolute;left:200px;top:10px;background:#0f3460;border:2px solid #4ecca3;border-radius:12px;padding:12px 20px;text-align:center">
+                            <div style="font-weight:700;color:#4ecca3">devhub-core</div>
+                            <div style="font-size:11px;color:#888">v0.2.0 · 847 tests</div>
+                        </div>
+                        <!-- Arrows down -->
+                        <div style="position:absolute;left:255px;top:70px;width:2px;height:40px;background:#4ecca3"></div>
+                        <div style="position:absolute;left:180px;top:80px;width:75px;height:2px;background:#4ecca3;transform:rotate(30deg);transform-origin:right"></div>
+                        <div style="position:absolute;left:260px;top:80px;width:75px;height:2px;background:#4ecca3;transform:rotate(-30deg);transform-origin:left"></div>
+                        <!-- devhub-storage -->
+                        <div style="position:absolute;left:30px;top:120px;background:#16213e;border:1px solid #2a2a4a;border-radius:12px;padding:12px 16px;text-align:center">
+                            <div style="font-weight:600;color:#ccd6f6">devhub-storage</div>
+                            <div style="font-size:11px;color:#888">v0.3.0 · 189 tests</div>
+                        </div>
+                        <!-- devhub-vectorstore -->
+                        <div style="position:absolute;left:180px;top:130px;background:#16213e;border:1px solid #2a2a4a;border-radius:12px;padding:12px 16px;text-align:center">
+                            <div style="font-weight:600;color:#ccd6f6">devhub-vectorstore</div>
+                            <div style="font-size:11px;color:#888">v0.3.0 · 234 tests</div>
+                        </div>
+                        <!-- devhub-documents -->
+                        <div style="position:absolute;left:360px;top:120px;background:#16213e;border:1px solid #2a2a4a;border-radius:12px;padding:12px 16px;text-align:center">
+                            <div style="font-weight:600;color:#ccd6f6">devhub-documents</div>
+                            <div style="font-size:11px;color:#888">v0.1.0 · 154 tests</div>
+                        </div>
+                        <!-- devhub-dashboard (nieuwe package) -->
+                        <div style="position:absolute;left:180px;top:220px;background:#16213e;border:1px dashed #2a2a4a;border-radius:12px;padding:10px 16px;text-align:center;opacity:0.7">
+                            <div style="font-weight:600;color:#8892b0">devhub-dashboard</div>
+                            <div style="font-size:11px;color:#555">v0.1.0 · in ontwikkeling</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Package Table -->
+            <div class="card">
+                <h3>Package Overzicht</h3>
+                <table class="pkg-table">
+                    <thead>
+                        <tr>
+                            <th>Package</th>
+                            <th>Versie</th>
+                            <th>Status</th>
+                            <th>Tests</th>
+                            <th>Interne Deps</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="font-weight:600;color:#4ecca3">devhub-core</td>
+                            <td>v0.2.0</td>
+                            <td><span class="badge badge-green">Actief</span></td>
+                            <td>847</td>
+                            <td>0</td>
+                            <td style="color:#8892b0">Core contracts, agents, registry</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;color:#ccd6f6">devhub-storage</td>
+                            <td>v0.3.0</td>
+                            <td><span class="badge badge-green">Actief</span></td>
+                            <td>189</td>
+                            <td>1 <span style="color:#555">(core)</span></td>
+                            <td style="color:#8892b0">Storage interface + LocalAdapter</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;color:#ccd6f6">devhub-vectorstore</td>
+                            <td>v0.3.0</td>
+                            <td><span class="badge badge-green">Actief</span></td>
+                            <td>234</td>
+                            <td>1 <span style="color:#555">(core)</span></td>
+                            <td style="color:#8892b0">ChromaDB vectorstore + embeddings</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:600;color:#ccd6f6">devhub-documents</td>
+                            <td>v0.1.0</td>
+                            <td><span class="badge badge-green">Actief</span></td>
+                            <td>154</td>
+                            <td>1 <span style="color:#555">(core)</span></td>
+                            <td style="color:#8892b0">Diátaxis documentatie-generatie</td>
+                        </tr>
+                        <tr style="opacity:0.6">
+                            <td style="font-weight:600;color:#8892b0">devhub-dashboard</td>
+                            <td>v0.1.0</td>
+                            <td><span class="badge badge-blue">Dev</span></td>
+                            <td>—</td>
+                            <td>alle</td>
+                            <td style="color:#555">NiceGUI web-dashboard (in ontwikkeling)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Section B: Managed Projects -->
+            <div class="section-title" style="margin-top:32px"><span class="icon">🌐</span> Managed Projects <span class="info"><span class="tip">Externe projecten met eigen repo, geregistreerd in config/nodes.yml. Aanwezig als git submodule in projects/. NodeRegistry beheert adapter-discovery.</span></span></div>
+            <p style="color:#8892b0;font-size:13px;margin-bottom:16px">Externe projecten met eigen repo, geregistreerd in <code style="color:#4ecca3">config/nodes.yml</code> en aanwezig als git submodule in <code style="color:#4ecca3">projects/</code>.</p>
+
+            <!-- BORIS Project Card -->
+            <div class="project-card">
+                <div class="project-header">
+                    <div>
+                        <h3>🏥 Buurts Ecosysteem (BORIS)</h3>
+                        <div style="font-size:12px;color:#666;margin-top:2px">node: <code style="color:#4ecca3">boris-buurts</code> · projects/buurts-ecosysteem/</div>
+                    </div>
+                    <div class="project-tags">
+                        <span class="badge badge-purple">zorgdomein</span>
+                        <span class="badge badge-blue">rag</span>
+                        <span class="badge badge-blue">multi-agent</span>
+                    </div>
+                </div>
+
+                <!-- Mini KPIs -->
+                <div class="project-mini-kpis">
+                    <div class="mini-kpi">
+                        <div class="mk-label">Status</div>
+                        <div class="mk-value" style="color:#4ecca3">UP</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mk-label">Tests</div>
+                        <div class="mk-value" style="color:#4ecca3">882+</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mk-label">Pass Rate</div>
+                        <div class="mk-value" style="color:#4ecca3">100%</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mk-label">Adapter</div>
+                        <div class="mk-value" style="color:#4ecca3;font-size:14px">✅ BorisAdapter</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mk-label">Doc Pages</div>
+                        <div class="mk-value">24</div>
+                    </div>
+                    <div class="mini-kpi">
+                        <div class="mk-label">Stale Docs</div>
+                        <div class="mk-value" style="color:#ffc107">3</div>
+                    </div>
+                </div>
+
+                <!-- DevHub Integration Section -->
+                <div style="border-top:1px solid #2a2a4a;padding-top:16px;margin-top:8px">
+                    <div style="font-size:14px;font-weight:600;color:#ccd6f6;margin-bottom:12px">🔌 DevHub Plugin Integratie</div>
+
+                    <!-- Integration checks -->
+                    <div class="grid-2" style="margin-bottom:16px">
+                        <div>
+                            <div style="font-size:12px;color:#888;margin-bottom:8px">Adapter Laag</div>
+                            <div style="font-size:13px">✅ <code style="color:#4ecca3">devhub_integration/</code> aanwezig</div>
+                            <div style="font-size:13px">✅ Geregistreerd in <code style="color:#4ecca3">nodes.yml</code></div>
+                            <div style="font-size:13px">✅ Adapter importeerbaar (BorisAdapter)</div>
+                            <div style="font-size:13px">✅ <code>devagents_enabled: true</code></div>
+                        </div>
+                        <div>
+                            <div style="font-size:12px;color:#888;margin-bottom:8px">Plugin Adoptie</div>
+                            <div style="font-size:13px">📋 <strong>7</strong> DevHub agents beschikbaar</div>
+                            <div style="font-size:13px">⚡ <strong>10</strong> DevHub skills beschikbaar</div>
+                            <div style="font-size:13px">🏠 <strong>4</strong> eigen project-agents</div>
+                            <div style="font-size:13px">❌ Geen eigen <code>plugin.json</code></div>
+                        </div>
+                    </div>
+
+                    <!-- Integration Meter -->
+                    <div style="font-size:12px;color:#888;margin-bottom:8px">Integratie-diepte <span class="info"><span class="tip">4 niveaus: Geen (geen adapter) → Basis (adapter + registratie) → Actief (devagents enabled) → Volledig (eigen plugin.json + alle skills).</span></span></div>
+                    <div class="integration-meter">
+                        <div class="meter-step">
+                            <div class="meter-dot done">✓</div>
+                            <div class="meter-label">Geen</div>
+                        </div>
+                        <div class="meter-line done"></div>
+                        <div class="meter-step">
+                            <div class="meter-dot done">✓</div>
+                            <div class="meter-label">Basis</div>
+                        </div>
+                        <div class="meter-line done"></div>
+                        <div class="meter-step">
+                            <div class="meter-dot active" style="font-size:11px;font-weight:700">◉</div>
+                            <div class="meter-label" style="color:#4ecca3;font-weight:600">Actief</div>
+                        </div>
+                        <div class="meter-line"></div>
+                        <div class="meter-step">
+                            <div class="meter-dot">4</div>
+                            <div class="meter-label">Volledig</div>
+                        </div>
+                    </div>
+                    <div style="font-size:11px;color:#666;margin-top:8px">
+                        Volgende stap naar <span class="badge badge-blue">Volledig</span>: BORIS heeft een eigen <code>plugin.json</code> nodig met gekoppelde skills.
+                    </div>
+                </div>
+
+                <!-- Sprint Activity -->
+                <div style="border-top:1px solid #2a2a4a;padding-top:16px;margin-top:16px">
+                    <div style="font-size:14px;font-weight:600;color:#ccd6f6;margin-bottom:12px">📅 Sprint Activiteit (BORIS-scope)</div>
+                    <div style="font-size:13px;color:#8892b0">
+                        Sprints gefilterd op <code>node: boris-buurts</code> uit SPRINT_TRACKER.md. BORIS-specifieke sprints worden hier getoond na implementatie van de SprintTrackerParser node-filter.
+                    </div>
+                    <div style="text-align:center;padding:20px;color:#555;font-style:italic;font-size:12px">
+                        Sprint tracking per project beschikbaar na SprintTrackerParser upgrade.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty state for future projects -->
+            <div style="text-align:center;padding:32px;color:#555;border:1px dashed #2a2a4a;border-radius:12px;margin-top:16px">
+                <div style="font-size:24px;margin-bottom:8px">+</div>
+                <div style="font-size:14px;font-weight:500;color:#8892b0">Nieuw project registreren</div>
+                <div style="font-size:12px;color:#555;margin-top:4px">Voeg een project toe via <code>config/nodes.yml</code> + git submodule</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ============================================ -->
+    <!-- ACTIVITY STREAM (global, fixed bottom)       -->
+    <!-- ============================================ -->
+    <div class="activity-stream expanded" id="activity-stream">
+        <div class="stream-header" onclick="toggleStream()">
+            <h4>⚡ Activity Stream <span class="badge badge-green" style="font-size:10px">LIVE</span> <span class="info"><span class="tip">Real-time events uit het EventBus-systeem. Toont Quick Action resultaten, health alerts, sprint events en kennislacunes.</span></span></h4>
+            <button class="stream-toggle" id="stream-toggle-btn">▼</button>
+        </div>
+        <div class="stream-messages" id="stream-messages">
+            <div class="stream-msg msg-success">
+                <span class="msg-icon">✅</span>
+                <span class="msg-text">Sprint 42 afgerond — Event Bus Lifecycle Hooks DONE (+47 tests)</span>
+                <span class="msg-time">14:32</span>
+            </div>
+            <div class="stream-msg">
+                <span class="msg-icon">📊</span>
+                <span class="msg-text">Health snapshot opgeslagen — 7/7 dimensies groen</span>
+                <span class="msg-time">14:30</span>
+            </div>
+            <div class="stream-msg">
+                <span class="msg-icon">🔍</span>
+                <span class="msg-text">Kennislacune gedetecteerd: Python Testing — coverage &lt; 60% in domain matrix</span>
+                <span class="msg-time">14:28</span>
+            </div>
+            <div class="stream-msg msg-warning">
+                <span class="msg-icon">⚠️</span>
+                <span class="msg-text">Dependencies: 2 packages outdated (chromadb, nicegui)</span>
+                <span class="msg-time">14:25</span>
+            </div>
+            <div class="stream-msg">
+                <span class="msg-icon">🚀</span>
+                <span class="msg-text">Sprint prep gestart voor volgende sprint — 3 kandidaat-intakes gevonden</span>
+                <span class="msg-time">14:20</span>
+            </div>
+            <div class="stream-msg">
+                <span class="msg-icon">📡</span>
+                <span class="msg-text">Skill Radar bijgewerkt — AI-Engineering: level 2 → growth velocity ↗</span>
+                <span class="msg-time">14:15</span>
+            </div>
+            <div class="stream-msg">
+                <span class="msg-icon">🛡️</span>
+                <span class="msg-text">Governance audit: 9/9 artikelen compliant — score 94%</span>
+                <span class="msg-time">14:10</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- COMMAND PALETTE (Cmd+K overlay)              -->
+    <!-- ============================================ -->
+    <div class="cmd-overlay" id="cmd-overlay" onclick="if(event.target===this)closeCommandPalette()">
+        <div class="cmd-box">
+            <input class="cmd-input" id="cmd-input" type="text" placeholder="Zoek actie... (Esc om te sluiten)" oninput="filterCommands(this.value)">
+            <div class="cmd-results" id="cmd-results"></div>
+        </div>
+    </div>
+
+    <script>
+        // All available quick actions
+        const allActions = [
+            { icon: '🔍', label: 'Full System Pulse', page: 'Overview' },
+            { icon: '📋', label: 'Generate Status Report', page: 'Overview' },
+            { icon: '⏳', label: 'Decay Scan', page: 'Overview' },
+            { icon: '🩺', label: 'Run Dimension Check', page: 'Health' },
+            { icon: '📦', label: 'Dependency Audit', page: 'Health' },
+            { icon: '🧪', label: 'Test Regression Check', page: 'Health' },
+            { icon: '🚀', label: 'Start Sprint Prep', page: 'Planning' },
+            { icon: '✅', label: 'Close Sprint', page: 'Planning' },
+            { icon: '📝', label: 'New Intake', page: 'Planning' },
+            { icon: '📊', label: 'Recalculate Velocity', page: 'Planning' },
+            { icon: '🔄', label: 'Freshness Scan', page: 'Knowledge' },
+            { icon: '📥', label: 'Ingest Document', page: 'Knowledge' },
+            { icon: '🗺️', label: 'Coverage Check', page: 'Knowledge' },
+            { icon: '🛡️', label: 'Compliance Audit', page: 'Governance' },
+            { icon: '🔒', label: 'Security Scan', page: 'Governance' },
+            { icon: '⚖️', label: 'Impact Check', page: 'Governance' },
+            { icon: '📡', label: 'Update Skill Radar', page: 'Profile' },
+            { icon: '🎯', label: 'Next Challenge', page: 'Profile' },
+            { icon: '📚', label: 'Learning Scan', page: 'Profile' },
+            { icon: '❓', label: 'Submit Research Question', page: 'Research' },
+            { icon: '🔬', label: 'Run Research Loop', page: 'Research' },
+            { icon: '⭐', label: 'Grade Evidence', page: 'Research' },
+            { icon: '🔌', label: 'Check Adapter', page: 'Projects' },
+            { icon: '🔄', label: 'Sync Submodule', page: 'Projects' },
+            { icon: '🏥', label: 'Project Health', page: 'Projects' },
+            { icon: '🧩', label: 'Integration Scan', page: 'Projects' },
+        ];
+
+        // Page navigation
+        function showPage(name) {
+            document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+            document.getElementById('page-' + name).style.display = 'block';
+            document.querySelectorAll('.header-links a').forEach(a => a.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Initialize charts when page becomes visible
+            if (name === 'health') initHealthChart();
+            if (name === 'planning') initVelocityChart();
+            if (name === 'profile') initProfileCharts();
+        }
+
+        // Command Palette
+        function openCommandPalette() {
+            const overlay = document.getElementById('cmd-overlay');
+            overlay.classList.add('visible');
+            const input = document.getElementById('cmd-input');
+            input.value = '';
+            input.focus();
+            filterCommands('');
+        }
+        function closeCommandPalette() {
+            document.getElementById('cmd-overlay').classList.remove('visible');
+        }
+        function filterCommands(query) {
+            const results = document.getElementById('cmd-results');
+            results.innerHTML = '';
+            const q = query.toLowerCase();
+            const filtered = allActions.filter(a =>
+                a.label.toLowerCase().includes(q) || a.page.toLowerCase().includes(q)
+            );
+            filtered.forEach(a => {
+                const item = document.createElement('div');
+                item.className = 'cmd-item';
+                item.innerHTML = `<span class="ci-icon">${a.icon}</span><span class="ci-label">${a.label}</span><span class="ci-page">${a.page}</span>`;
+                item.onclick = () => { executeAction(a.label, a.page.toLowerCase()); closeCommandPalette(); };
+                results.appendChild(item);
+            });
+        }
+        // Keyboard shortcut: Cmd+K / Ctrl+K
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                openCommandPalette();
+            }
+            if (e.key === 'Escape') closeCommandPalette();
+        });
+
+        // Activity Stream
+        function toggleStream() {
+            const stream = document.getElementById('activity-stream');
+            const btn = document.getElementById('stream-toggle-btn');
+            if (stream.classList.contains('expanded')) {
+                stream.classList.remove('expanded');
+                stream.classList.add('collapsed');
+                btn.textContent = '▲';
+            } else {
+                stream.classList.remove('collapsed');
+                stream.classList.add('expanded');
+                btn.textContent = '▼';
+            }
+        }
+        function addStreamMessage(icon, text, level) {
+            const container = document.getElementById('stream-messages');
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+            const msgClass = level ? 'stream-msg msg-' + level : 'stream-msg';
+            const html = `<div class="${msgClass}"><span class="msg-icon">${icon}</span><span class="msg-text">${text}</span><span class="msg-time">${time}</span></div>`;
+            container.insertAdjacentHTML('afterbegin', html);
+            // Expand stream if collapsed
+            const stream = document.getElementById('activity-stream');
+            if (stream.classList.contains('collapsed')) {
+                stream.classList.remove('collapsed');
+                stream.classList.add('expanded');
+                document.getElementById('stream-toggle-btn').textContent = '▼';
+            }
+        }
+
+        // Quick Action executor (demo)
+        function executeAction(label, page) {
+            addStreamMessage('🔍', label + ' gestart...', '');
+            // Simulate execution
+            setTimeout(() => {
+                addStreamMessage('✅', label + ' afgerond', 'success');
+            }, 1200);
+        }
+
+        // Knowledge subtabs
+        function showKTab(name) {
+            document.querySelectorAll('#ktab-catalogus,#ktab-dekking,#ktab-versheid').forEach(t => t.classList.remove('active'));
+            document.getElementById('ktab-' + name).classList.add('active');
+            document.querySelectorAll('#knowledge-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Research subtabs
+        function showRTab(name) {
+            document.querySelectorAll('#rtab-form,#rtab-user,#rtab-agent,#rtab-auto').forEach(t => t.classList.remove('active'));
+            document.getElementById('rtab-' + name).classList.add('active');
+            document.querySelectorAll('#research-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Health multi-metric trend chart
+        function initHealthChart() {
+            const dates = ['Mar 23', 'Mar 24', 'Mar 25', 'Mar 26', 'Mar 27', 'Mar 28'];
+            Plotly.newPlot('health-trend-chart', [
+                {
+                    x: dates, y: [397, 451, 673, 1082, 1191, 1489],
+                    name: 'Test Files', type: 'scatter', mode: 'lines+markers',
+                    line: { color: '#4ecca3', width: 2 },
+                    marker: { size: 6 }
+                },
+                {
+                    x: dates, y: [2, 3, 3, 4, 4, 4],
+                    name: 'Packages', type: 'scatter', mode: 'lines+markers',
+                    yaxis: 'y2',
+                    line: { color: '#2196f3', width: 2, dash: 'dash' },
+                    marker: { size: 6 }
+                },
+                {
+                    x: dates, y: [0, 0, 2, 5, 8, 10],
+                    name: 'Knowledge Items', type: 'scatter', mode: 'lines+markers',
+                    yaxis: 'y3',
+                    line: { color: '#ce93d8', width: 2, dash: 'dot' },
+                    marker: { size: 6 }
+                }
+            ], {
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+                font: { color: '#8892b0', size: 12 },
+                margin: { t: 20, r: 80, b: 40, l: 60 },
+                legend: { orientation: 'h', y: -0.15 },
+                xaxis: { gridcolor: '#2a2a4a' },
+                yaxis: { title: 'Tests', gridcolor: '#2a2a4a', side: 'left' },
+                yaxis2: { title: 'Packages', overlaying: 'y', side: 'right', showgrid: false },
+                yaxis3: { title: 'Knowledge', overlaying: 'y', side: 'right', position: 0.95, showgrid: false },
+            }, { responsive: true, displayModeBar: false });
+        }
+
+        // Velocity bar chart
+        function initVelocityChart() {
+            const sprints = Array.from({length: 43}, (_, i) => `#${i+1}`);
+            const deltas = [81,40,31,24,0,1,2,0,100,78,0,36,51,56,59,43,34,79,30,53,29,39,49,34,0,0,0,35,11,4,0,70,56,71,83,0,0,26,0,0,0,67,65];
+            const colors = deltas.map(d =>
+                d > 60 ? '#4ecca3' : d > 30 ? '#2196f3' : d > 0 ? '#64ffda' : '#2a2a4a'
+            );
+
+            Plotly.newPlot('velocity-chart', [{
+                x: sprints, y: deltas, type: 'bar',
+                marker: { color: colors, line: { width: 0 } },
+                hovertemplate: 'Sprint %{x}<br>Δ Tests: %{y}<extra></extra>'
+            }], {
+                paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+                font: { color: '#8892b0', size: 11 },
+                margin: { t: 10, r: 20, b: 50, l: 50 },
+                xaxis: { gridcolor: '#2a2a4a', tickangle: -45 },
+                yaxis: { title: 'Test Delta', gridcolor: '#2a2a4a' },
+                bargap: 0.3,
+            }, { responsive: true, displayModeBar: false });
+        }
+
+        // Profile page charts (radar + goal overlay)
+        function initProfileCharts() {
+            const domains = ['AI-Engineering', 'Python', 'Governance', 'Testing', 'Security', 'Architecture', 'DevOps/Tooling', 'Methodiek'];
+            const current = [2.2, 1.0, 2.0, 1.5, 1.3, 2.0, 1.8, 1.9];
+            const goal = [2.8, 2.2, 2.5, 2.3, 2.1, 2.8, 2.3, 2.5];
+
+            // Goal Radar Chart (for the growth trajectory section)
+            if (document.getElementById('goal-radar-plot')) {
+                Plotly.newPlot('goal-radar-plot', [{
+                    type: 'scatterpolar',
+                    r: [...current, current[0]],
+                    theta: [...domains, domains[0]],
+                    fill: 'toself',
+                    fillcolor: 'rgba(78, 204, 163, 0.15)',
+                    line: { color: '#4ecca3', width: 2 },
+                    marker: { color: '#4ecca3', size: 8 },
+                    name: 'Huidig (2.1)',
+                }, {
+                    type: 'scatterpolar',
+                    r: [...goal, goal[0]],
+                    theta: [...domains, domains[0]],
+                    fill: 'none',
+                    line: { color: '#2196f3', width: 2, dash: 'dash' },
+                    marker: { size: 0 },
+                    name: 'Doel (6 mnd)',
+                }], {
+                    polar: {
+                        bgcolor: 'transparent',
+                        radialaxis: {
+                            visible: true, range: [0, 5],
+                            tickvals: [1, 2, 3, 4, 5],
+                            ticktext: ['Novice', 'Adv.B.', 'Comp.', 'Prof.', 'Expert'],
+                            gridcolor: '#2a2a4a',
+                            linecolor: '#2a2a4a',
+                            tickfont: { size: 9, color: '#666' },
+                        },
+                        angularaxis: {
+                            gridcolor: '#2a2a4a',
+                            linecolor: '#2a2a4a',
+                            tickfont: { size: 11, color: '#ccd6f6' },
+                        },
+                    },
+                    paper_bgcolor: 'transparent',
+                    font: { color: '#8892b0', size: 11 },
+                    margin: { t: 30, r: 40, b: 30, l: 40 },
+                    legend: { orientation: 'h', y: -0.15, font: { size: 10 } },
+                    showlegend: true,
+                }, { responsive: true, displayModeBar: false });
+            }
+        }
+    </script>
+</body>
+</html>

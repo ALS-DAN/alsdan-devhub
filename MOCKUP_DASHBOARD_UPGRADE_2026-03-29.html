@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub Dashboard - Upgrade Mockup 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1d1d1d;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Header & Navigation */
+        .header {
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 2rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4a9eff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .search-input::placeholder {
+            color: #909090;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            margin-top: -1px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .search-results.active {
+            display: block;
+        }
+
+        .search-result-item {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #3d3d3d;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .search-result-item:hover {
+            background: #383838;
+        }
+
+        .search-result-title {
+            color: #4a9eff;
+            font-weight: 500;
+        }
+
+        .search-result-meta {
+            color: #909090;
+            font-size: 0.85rem;
+            margin-top: 0.2rem;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            padding: 0 2rem;
+            background: #252525;
+            border-bottom: 1px solid #3d3d3d;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            border: none;
+            background: none;
+            color: #909090;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            color: #e0e0e0;
+        }
+
+        .tab.active {
+            color: #4a9eff;
+            border-bottom-color: #4a9eff;
+        }
+
+        /* Content Area */
+        .content {
+            min-height: calc(100vh - 200px);
+            padding: 2rem;
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Badges & Labels */
+        .badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge.core { background: #1e4d7f; color: #6fb3ff; }
+        .badge.agent { background: #1f5d2a; color: #6cff80; }
+        .badge.project { background: #6d4a1f; color: #ffb84d; }
+
+        .badge.gold { background: #5d4a1f; color: #ffd700; }
+        .badge.silver { background: #3d3d3d; color: #c0c0c0; }
+        .badge.bronze { background: #4d3a2a; color: #cd7f32; }
+        .badge.spec { background: #4d3d4d; color: #d0a0ff; }
+
+        .badge.status {
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge.status.pending { background: #5d5d2d; color: #ffff99; }
+        .badge.status.approved { background: #2d5d3d; color: #99ff99; }
+        .badge.status.in-progress { background: #5d3d2d; color: #ff9966; }
+        .badge.status.review { background: #3d4d5d; color: #99ccff; }
+        .badge.status.completed { background: #2d5d2d; color: #66ff99; }
+
+        .freshness-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .freshness-dot.fresh { background: #66ff99; }
+        .freshness-dot.moderate { background: #ffcc66; }
+        .freshness-dot.stale { background: #ff6666; }
+
+        /* Cards */
+        .card {
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .card:hover {
+            border-color: #4a9eff;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.1);
+        }
+
+        /* Screen 1: Knowledge Library */
+        .filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #909090;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+
+        .filter-input, .filter-select {
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 6px;
+            padding: 0.6rem;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: #4a9eff;
+        }
+
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .article-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-header {
+            margin-bottom: 1rem;
+        }
+
+        .article-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        .article-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #909090;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .article-author {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .article-summary {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .article-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .verification-score {
+            font-size: 0.85rem;
+            color: #66ff99;
+            font-weight: 600;
+        }
+
+        .rq-tags {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+        }
+
+        .rq-tag {
+            background: #3d4d5d;
+            color: #99ccff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .coverage-matrix {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #3d3d3d;
+        }
+
+        .coverage-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #e0e0e0;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .matrix-table th {
+            background: #3d3d3d;
+            color: #909090;
+            padding: 0.8rem;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid #4d4d4d;
+        }
+
+        .matrix-table td {
+            padding: 0.8rem;
+            border: 1px solid #3d3d3d;
+            font-size: 0.9rem;
+        }
+
+        .matrix-table tr:hover {
+            background: #383838;
+        }
+
+        .coverage-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .coverage-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .coverage-dot.good { background: #66ff99; }
+        .coverage-dot.moderate { background: #ffcc66; }
+        .coverage-dot.gap { background: #ff6666; }
+
+        /* Screen 2: Research Form */
+        .form-section {
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #e0e0e0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+        }
+
+        .form-label-hint {
+            font-size: 0.8rem;
+            color: #909090;
+            font-weight: normal;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 6px;
+            padding: 0.8rem;
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            font-family: inherit;
+            min-height: 40px;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #4a9eff;
+            box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+        }
+
+        .rq-list {
+            margin: 1.5rem 0;
+            border: 1px solid #3d3d3d;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .rq-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: #383838;
+            border-bottom: 1px solid #3d3d3d;
+            align-items: flex-start;
+        }
+
+        .rq-item:last-child {
+            border-bottom: none;
+        }
+
+        .rq-number {
+            background: #4a9eff;
+            color: #1d1d1d;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 0.3rem;
+        }
+
+        .rq-input {
+            flex: 1;
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 6px;
+            padding: 0.8rem;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .rq-remove {
+            background: #6d2d2d;
+            color: #ff9999;
+            border: 1px solid #8d4d4d;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            margin-top: 0.3rem;
+        }
+
+        .rq-remove:hover {
+            background: #8d2d2d;
+        }
+
+        .add-rq-btn {
+            padding: 0.8rem 1.5rem;
+            background: #2d5d3d;
+            color: #99ff99;
+            border: 1px solid #3d7d4d;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .add-rq-btn:hover {
+            background: #3d7d4d;
+        }
+
+        .slider-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #3d3d3d;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a9eff;
+            cursor: pointer;
+            border: 2px solid #1d1d1d;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a9eff;
+            cursor: pointer;
+            border: 2px solid #1d1d1d;
+        }
+
+        .slider-value {
+            background: #3d3d3d;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            color: #4a9eff;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .multiselect {
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 6px;
+            padding: 0.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .multiselect-item {
+            background: #4a9eff;
+            color: #1d1d1d;
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .multiselect-remove {
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .submit-btn {
+            padding: 1rem 2rem;
+            background: #1e4d7f;
+            color: #6fb3ff;
+            border: 1px solid #4a9eff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .submit-btn:hover {
+            background: #2d5d9f;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.2);
+        }
+
+        .requests-section {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid #3d3d3d;
+        }
+
+        .requests-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .request-card {
+            padding: 1.5rem;
+        }
+
+        .request-status-flow {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .status-step {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #3d3d3d;
+            position: relative;
+        }
+
+        .status-step.completed {
+            background: #66ff99;
+        }
+
+        .status-step.active {
+            background: #4a9eff;
+        }
+
+        .status-step.pending {
+            background: #555555;
+        }
+
+        .status-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #909090;
+            margin-top: 0.5rem;
+        }
+
+        /* Screen 3: Research Detail */
+        .detail-header {
+            margin-bottom: 2rem;
+        }
+
+        .detail-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #e0e0e0;
+            margin-bottom: 1rem;
+        }
+
+        .detail-status-line {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .status-flow {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .flow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .flow-step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background: #555555;
+            color: #e0e0e0;
+        }
+
+        .flow-step.completed .flow-step-circle {
+            background: #66ff99;
+            color: #1d1d1d;
+        }
+
+        .flow-step.active .flow-step-circle {
+            background: #4a9eff;
+            color: #1d1d1d;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.4);
+        }
+
+        .flow-step-label {
+            font-size: 0.75rem;
+            text-align: center;
+            color: #909090;
+        }
+
+        .flow-arrow {
+            width: 30px;
+            height: 2px;
+            background: #3d3d3d;
+            margin: 0 0.5rem;
+        }
+
+        .flow-arrow.completed {
+            background: #66ff99;
+        }
+
+        .flow-arrow.active {
+            background: #4a9eff;
+        }
+
+        .detail-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .detail-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .detail-right {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .detail-section {
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .detail-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a9eff;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .detail-field {
+            margin-bottom: 1.2rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid #3d3d3d;
+        }
+
+        .detail-field:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #909090;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+
+        .detail-value {
+            color: #e0e0e0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .rq-list-detail {
+            margin-top: 1rem;
+        }
+
+        .rq-detail-item {
+            background: #383838;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border-left: 3px solid #4a9eff;
+        }
+
+        .rq-detail-text {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.5rem;
+        }
+
+        .rq-detail-status {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: #909090;
+        }
+
+        .timeline {
+            margin-top: 2rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4a9eff;
+            margin-top: 0.5rem;
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 10px;
+            width: 2px;
+            height: calc(100% + 0.5rem);
+            background: #3d3d3d;
+        }
+
+        .timeline-item:last-child::after {
+            display: none;
+        }
+
+        .timeline-time {
+            color: #909090;
+            font-size: 0.85rem;
+            min-width: 100px;
+        }
+
+        .timeline-text {
+            color: #e0e0e0;
+        }
+
+        /* Screen 4: Discovery Engine */
+        .discovery-section {
+            margin-bottom: 3rem;
+        }
+
+        .discovery-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #e0e0e0;
+        }
+
+        .connections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .connection-card {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #2d2d2d 0%, #383838 100%);
+            border: 1px solid #4a9eff;
+            border-radius: 12px;
+        }
+
+        .connection-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.8rem;
+        }
+
+        .connection-arrow {
+            color: #909090;
+            font-size: 0.85rem;
+        }
+
+        .connection-topic {
+            background: #3d3d3d;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            color: #99ccff;
+            font-size: 0.85rem;
+            margin-top: 0.8rem;
+        }
+
+        .confidence-meter {
+            margin-top: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 6px;
+            background: #3d3d3d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4a9eff, #66ff99);
+            border-radius: 3px;
+        }
+
+        .confidence-label {
+            color: #4a9eff;
+            font-weight: 600;
+            font-size: 0.9rem;
+            min-width: 50px;
+        }
+
+        .gaps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .gap-item {
+            padding: 1rem;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .gap-info {
+            flex: 1;
+        }
+
+        .gap-domain {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.3rem;
+        }
+
+        .gap-score {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .gap-bar {
+            width: 120px;
+            height: 6px;
+            background: #3d3d3d;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .gap-fill {
+            height: 100%;
+            background: #ff6666;
+            border-radius: 3px;
+        }
+
+        .gap-percentage {
+            color: #ff9999;
+            font-weight: 600;
+            min-width: 40px;
+        }
+
+        .adopt-btn {
+            padding: 0.6rem 1.2rem;
+            background: #2d5d3d;
+            color: #99ff99;
+            border: 1px solid #3d7d4d;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .adopt-btn:hover {
+            background: #3d7d4d;
+        }
+
+        .scatter-placeholder {
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            color: #909090;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scatter-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .scatter-dot.red { background: #ff6666; }
+        .scatter-dot.blue { background: #4a9eff; }
+        .scatter-dot.green { background: #66ff99; }
+        .scatter-dot.purple { background: #d0a0ff; }
+        .scatter-dot.orange { background: #ffb84d; }
+
+        .scatter-text {
+            position: relative;
+            z-index: 10;
+            font-size: 1.1rem;
+            color: #909090;
+        }
+
+        /* Screen 5: Activity Feed */
+        .feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feed-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-toggle {
+            padding: 0.5rem 1rem;
+            background: #3d3d3d;
+            border: 1px solid #4d4d4d;
+            border-radius: 20px;
+            color: #909090;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-toggle.active {
+            background: #4a9eff;
+            color: #1d1d1d;
+            border-color: #4a9eff;
+        }
+
+        .feed-item {
+            padding: 1.5rem;
+            background: #2d2d2d;
+            border: 1px solid #3d3d3d;
+            border-radius: 12px;
+            display: flex;
+            gap: 1.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .feed-item:hover {
+            border-color: #4a9eff;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.1);
+        }
+
+        .feed-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .feed-icon.sprint { background: #1e4d7f; }
+        .feed-icon.knowledge { background: #1f5d2a; }
+        .feed-icon.research { background: #6d4a1f; }
+        .feed-icon.other { background: #3d3d3d; }
+
+        .feed-content {
+            flex: 1;
+        }
+
+        .feed-title {
+            font-weight: 600;
+            color: #e0e0e0;
+            margin-bottom: 0.3rem;
+        }
+
+        .feed-timestamp {
+            color: #909090;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 1200px) {
+            .detail-content {
+                grid-template-columns: 1fr;
+            }
+
+            .articles-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                max-width: none;
+            }
+
+            .tabs {
+                padding: 0 1rem;
+            }
+
+            .tab {
+                padding: 0.8rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .content {
+                padding: 1rem;
+            }
+
+            .filters {
+                grid-template-columns: 1fr;
+            }
+
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feed-item {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            ◆ DevHub Dashboard
+        </div>
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Zoeken in kennisbibliotheek, onderzoeken, documenten..." id="searchInput">
+            <div class="search-results" id="searchResults">
+                <div class="search-result-item" onclick="goToTab('knowledge')">
+                    <div class="search-result-title">Research: Agent Teams Activatie SPIKE</div>
+                    <div class="search-result-meta">Artikel · AI Engineering · SILVER</div>
+                </div>
+                <div class="search-result-item" onclick="goToTab('research')">
+                    <div class="search-result-title">Storage Interface Upgrade</div>
+                    <div class="search-result-meta">Onderzoek · Voorstel · PENDING</div>
+                </div>
+                <div class="search-result-item" onclick="goToTab('discovery')">
+                    <div class="search-result-title">Testing ↔ Security via input validation</div>
+                    <div class="search-result-meta">Verbinding · 78% confidence</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab(event, 'knowledge')">
+            📚 Kennisbibliotheek
+        </button>
+        <button class="tab" onclick="switchTab(event, 'research')">
+            🔬 Research Voorstel
+        </button>
+        <button class="tab" onclick="switchTab(event, 'detail')">
+            📋 Onderzoeksdetail
+        </button>
+        <button class="tab" onclick="switchTab(event, 'discovery')">
+            🔍 Discovery Engine
+        </button>
+        <button class="tab" onclick="switchTab(event, 'feed')">
+            📡 Activiteit
+        </button>
+    </div>
+
+    <!-- Screen 1: Knowledge Library -->
+    <div id="knowledge" class="content active">
+        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">Kennisbibliotheek</h2>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Ring</label>
+                <select class="filter-select">
+                    <option>Alle</option>
+                    <option selected>Core</option>
+                    <option>Agent</option>
+                    <option>Project</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Domein</label>
+                <select class="filter-select">
+                    <option>Alle</option>
+                    <option selected>AI Engineering</option>
+                    <option>Documentation</option>
+                    <option>Security</option>
+                    <option>Storage</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Graad</label>
+                <select class="filter-select">
+                    <option>Alle</option>
+                    <option>GOLD</option>
+                    <option selected>SILVER</option>
+                    <option>BRONZE</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Versheid</label>
+                <select class="filter-select">
+                    <option selected>Alle</option>
+                    <option>&lt; 30 dagen</option>
+                    <option>30-90 dagen</option>
+                    <option>&gt; 90 dagen</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Sorteer op</label>
+                <select class="filter-select">
+                    <option selected>Recentste</option>
+                    <option>Meest geverifieerd</option>
+                    <option>Meest relevant</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="articles-grid">
+            <!-- Article 1 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">Research: Agent Teams Activatie SPIKE</div>
+                    <div class="article-badges">
+                        <span class="badge core">Core</span>
+                        <span class="badge silver">SILVER</span>
+                        <span class="badge" style="background: #2d4d3d; color: #99ff99;">Ring 1</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot fresh"></span><span>2026-03-28</span>
+                    <span class="article-author">researcher-agent</span>
+                </div>
+                <div class="article-summary">
+                    Onderzoek naar de implementatie van Agent Teams in DevHub. Bevat spike-resultaten, proof-of-concept, en integratie-strategie voor multi-agent orchestratie.
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 92% geverifieerd</div>
+                    <div class="rq-tags">
+                        <span class="rq-tag">RQ1</span>
+                        <span class="rq-tag">RQ3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article 2 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">Knowledge Curation Pipeline Design</div>
+                    <div class="article-badges">
+                        <span class="badge core">Core</span>
+                        <span class="badge gold">GOLD</span>
+                        <span class="badge" style="background: #2d4d3d; color: #99ff99;">Ring 1</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot fresh"></span><span>2026-03-26</span>
+                    <span class="article-author">docs-agent</span>
+                </div>
+                <div class="article-summary">
+                    Complete architectuur van de kenniskuratiedispatcher. Behandelt drie-stromen governance, event-driven ingestie, en kwaliteitsbewaking volgens GOLD-standaarden.
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 98% geverifieerd</div>
+                    <div class="rq-tags">
+                        <span class="rq-tag">RQ2</span>
+                        <span class="rq-tag">RQ4</span>
+                        <span class="rq-tag">RQ5</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article 3 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">Diátaxis+ Documentatie Taxonomie</div>
+                    <div class="article-badges">
+                        <span class="badge core">Core</span>
+                        <span class="badge silver">SILVER</span>
+                        <span class="badge" style="background: #5d4a2d; color: #ffb84d;">Ring 2</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot fresh"></span><span>2026-03-28</span>
+                    <span class="article-author">docs-agent</span>
+                </div>
+                <div class="article-summary">
+                    Drie-lagen documentatie-taxonomie gebaseerd op Diátaxis. Bevat templates, content-matrixmapping, en integratie met kennisgradering (GOLD/SILVER/BRONZE/SPECULATIVE).
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 87% geverifieerd</div>
+                    <div class="rq-tags">
+                        <span class="rq-tag">RQ6</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article 4 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">OWASP ASI 2026 Security Audit Report</div>
+                    <div class="article-badges">
+                        <span class="badge core">Core</span>
+                        <span class="badge gold">GOLD</span>
+                        <span class="badge" style="background: #2d4d3d; color: #99ff99;">Ring 1</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot moderate"></span><span>2026-03-15</span>
+                    <span class="article-author">red-team-agent</span>
+                </div>
+                <div class="article-summary">
+                    Volledige veiligheidsbeoordeling volgens OWASP ASI 2026. Bevat bevindingen, herstelstappen, en verificatie-evidence. Actueel voor Fase 4.
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 95% geverifieerd</div>
+                    <div class="rq-tags">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article 5 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">Event Bus Lifecycle Hooks Implementation</div>
+                    <div class="article-badges">
+                        <span class="badge agent">Agent</span>
+                        <span class="badge bronze">BRONZE</span>
+                        <span class="badge" style="background: #5d4a2d; color: #ffb84d;">Ring 2</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot fresh"></span><span>2026-03-25</span>
+                    <span class="article-author">coder-agent</span>
+                </div>
+                <div class="article-summary">
+                    Implementatie-gids voor event-bus lifecycle hooks. Code-examples, testing-strategie, en troubleshooting voor Sprint 42 integratie.
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 78% geverifieerd</div>
+                    <div class="rq-tags">
+                        <span class="rq-tag">RQ3</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Article 6 -->
+            <div class="card article-card">
+                <div class="article-header">
+                    <div class="article-title">Storage Adapter Pattern for Multi-Backend</div>
+                    <div class="article-badges">
+                        <span class="badge project">Project</span>
+                        <span class="badge spec">SPECULATIVE</span>
+                        <span class="badge" style="background: #5d4a2d; color: #ffb84d;">Ring 3</span>
+                    </div>
+                </div>
+                <div class="article-meta">
+                    <span class="freshness-dot stale"></span><span>2026-02-18</span>
+                    <span class="article-author">researcher-agent</span>
+                </div>
+                <div class="article-summary">
+                    Voorstel voor multi-backend storage support. Bevat architectuur-schets, trade-offs, en roadmap. Nog niet gevalideerd - onderzoek lopende.
+                </div>
+                <div class="article-footer">
+                    <div class="verification-score">✓ 42% geverifieerd</div>
+                    <div class="rq-tags">
+                        <span class="rq-tag">RQ1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Coverage Matrix -->
+        <div class="coverage-matrix">
+            <h3 class="coverage-title">Domein Dekkingsmatrix</h3>
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th>Domein</th>
+                        <th>Ring</th>
+                        <th>Artikelen</th>
+                        <th>Gem. Graad</th>
+                        <th>Versheid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>AI Engineering</td>
+                        <td><span class="badge core" style="margin: 0;">Core</span></td>
+                        <td>8</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot good"></div>GOLD</div></td>
+                        <td><span class="freshness-dot fresh"></span>Recent</td>
+                    </tr>
+                    <tr>
+                        <td>Documentation</td>
+                        <td><span class="badge core" style="margin: 0;">Core</span></td>
+                        <td>6</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot good"></div>GOLD</div></td>
+                        <td><span class="freshness-dot fresh"></span>Recent</td>
+                    </tr>
+                    <tr>
+                        <td>Security</td>
+                        <td><span class="badge core" style="margin: 0;">Core</span></td>
+                        <td>5</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot good"></div>GOLD</div></td>
+                        <td><span class="freshness-dot moderate"></span>Matig</td>
+                    </tr>
+                    <tr>
+                        <td>Storage Systems</td>
+                        <td><span class="badge agent" style="margin: 0;">Agent</span></td>
+                        <td>7</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot moderate"></div>SILVER</div></td>
+                        <td><span class="freshness-dot fresh"></span>Recent</td>
+                    </tr>
+                    <tr>
+                        <td>Event Bus Architecture</td>
+                        <td><span class="badge agent" style="margin: 0;">Agent</span></td>
+                        <td>4</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot moderate"></div>SILVER</div></td>
+                        <td><span class="freshness-dot fresh"></span>Recent</td>
+                    </tr>
+                    <tr>
+                        <td>BORIS Integration</td>
+                        <td><span class="badge project" style="margin: 0;">Project</span></td>
+                        <td>3</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot moderate"></div>BRONZE</div></td>
+                        <td><span class="freshness-dot moderate"></span>Matig</td>
+                    </tr>
+                    <tr>
+                        <td>Testing Strategies</td>
+                        <td><span class="badge agent" style="margin: 0;">Agent</span></td>
+                        <td>2</td>
+                        <td><div class="coverage-cell"><div class="coverage-dot gap"></div>BRONZE</div></td>
+                        <td><span class="freshness-dot stale"></span>Oud</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Screen 2: Research Proposal Form -->
+    <div id="research" class="content">
+        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">Research Voorstel Indienen</h2>
+
+        <div class="form-section">
+            <h3 class="form-title">Onderzoeksvoorstel</h3>
+
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">
+                        Onderwerp
+                        <span class="form-label-hint">(bijv. "Agent Teams Orchestration", "Storage Multi-Backend")</span>
+                    </label>
+                    <input type="text" class="form-input" placeholder="Onderwerp van onderzoek" value="NiceGUI Dashboard Integration with Event Bus">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Achtergrond & Motivatie</label>
+                    <textarea class="form-textarea" placeholder="Waarom is dit onderzoek belangrijk? Wat is de business case?">DevHub dashboard moet real-time events via event bus kunnen verwerken. Huidige REST polling is niet schaalbaar voor Fase 4 Verbindingen. NiceGUI biedt WebSocket-support native. Dit onderzoek bepaalt integratie-strategie.</textarea>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Onderzoeksvragen (RQ1-6)</label>
+                    <div class="rq-list">
+                        <div class="rq-item">
+                            <div class="rq-number">1</div>
+                            <input type="text" class="rq-input" value="Hoe biedt NiceGUI native WebSocket-ondersteuning voor real-time events?">
+                            <button class="rq-remove">Verwijderen</button>
+                        </div>
+                        <div class="rq-item">
+                            <div class="rq-number">2</div>
+                            <input type="text" class="rq-input" value="Welke performance-karakteristieken heeft een NiceGUI-EventBus binding (latency, throughput)?">
+                            <button class="rq-remove">Verwijderen</button>
+                        </div>
+                        <div class="rq-item">
+                            <div class="rq-number">3</div>
+                            <input type="text" class="rq-input" value="Hoe bewaken we dashboard-state-consistency in multi-tab omgeving?">
+                            <button class="rq-remove">Verwijderen</button>
+                        </div>
+                    </div>
+                    <button class="add-rq-btn" onclick="addRQ(event)">+ RQ Toevoegen</button>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Scope: Wat IS inbegrepen</label>
+                    <textarea class="form-textarea" placeholder="Expliciete grenzen van dit onderzoek">NiceGUI WebSocket-API, event-binding architectuur, performance baseline, state management patterns, multi-panel synchronisatie, reconnect strategie.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Scope: Wat is NIET inbegrepen</label>
+                    <textarea class="form-textarea" placeholder="Wat valt buiten dit onderzoek?">Andere UI frameworks, native mobile apps, database event-sourcing, end-to-end encryption, compliance audits.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Gewenste Graad
+                        <span class="form-label-hint">GOLD=Production-ready, SILVER=Validated, BRONZE=Experienced, SPECULATIVE=Assumption</span>
+                    </label>
+                    <select class="form-select">
+                        <option>SPECULATIVE</option>
+                        <option>BRONZE</option>
+                        <option selected>SILVER</option>
+                        <option>GOLD</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Domein + Ring</label>
+                    <select class="form-select">
+                        <option>Core: AI Engineering</option>
+                        <option selected>Core: Documentation</option>
+                        <option>Agent: Storage Systems</option>
+                        <option>Agent: Event Bus Architecture</option>
+                        <option>Project: BORIS Integration</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        Diepte
+                        <span class="form-label-hint">QUICK=1-2h, STANDARD=1 dag, DEEP=2-3 dagen</span>
+                    </label>
+                    <select class="form-select">
+                        <option>QUICK (1-2 uur)</option>
+                        <option selected>STANDARD (1 dag)</option>
+                        <option>DEEP (2-3 dagen)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Gerelateerde Kennis (Multi-select)</label>
+                    <div class="multiselect">
+                        <div class="multiselect-item">Event Bus Lifecycle Hooks <span class="multiselect-remove">×</span></div>
+                        <div class="multiselect-item">NiceGUI Widgets Reference <span class="multiselect-remove">×</span></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Prioriteit (1-10)</label>
+                    <div class="slider-group">
+                        <input type="range" min="1" max="10" value="8" class="slider" id="prioritySlider" oninput="updateSlider(event)">
+                        <div class="slider-value" id="sliderValue">8</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Deadline (optioneel)</label>
+                    <input type="date" class="form-input" value="2026-04-15">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label class="form-label">Document Categorie</label>
+                    <select class="form-select">
+                        <option>TUTORIAL</option>
+                        <option>HOWTO</option>
+                        <option selected>REFERENCE</option>
+                        <option>EXPLANATION</option>
+                        <option>METHODOLOGY</option>
+                        <option>BEST_PRACTICE</option>
+                        <option>SOTA_REVIEW</option>
+                        <option>PLAYBOOK</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="submit-btn" style="margin-top: 2rem;">Voorstel Indienen</button>
+        </div>
+
+        <!-- Submitted Requests -->
+        <div class="requests-section">
+            <h3 class="form-title">Ingediende Verzoeken</h3>
+            <div class="requests-grid">
+                <!-- Pending -->
+                <div class="card request-card">
+                    <h4 style="color: #e0e0e0; margin-bottom: 0.8rem;">Research: Storage Adapter Pattern</h4>
+                    <span class="badge status pending">PENDING</span>
+                    <div class="request-status-flow">
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                    </div>
+                    <div class="status-labels">
+                        <span>PENDING</span>
+                        <span>APPROVED</span>
+                        <span>IN_PROGRESS</span>
+                        <span>REVIEW</span>
+                        <span>COMPLETED</span>
+                    </div>
+                    <div style="color: #909090; font-size: 0.85rem; margin-top: 1rem;">Ingediend: 2026-03-27</div>
+                </div>
+
+                <!-- Approved -->
+                <div class="card request-card">
+                    <h4 style="color: #e0e0e0; margin-bottom: 0.8rem;">SOTA: AI Agent Frameworks</h4>
+                    <span class="badge status approved">APPROVED</span>
+                    <div class="request-status-flow">
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                    </div>
+                    <div class="status-labels">
+                        <span>PENDING</span>
+                        <span>APPROVED</span>
+                        <span>IN_PROGRESS</span>
+                        <span>REVIEW</span>
+                        <span>COMPLETED</span>
+                    </div>
+                    <div style="color: #909090; font-size: 0.85rem; margin-top: 1rem;">Ingediend: 2026-03-20</div>
+                </div>
+
+                <!-- In Progress -->
+                <div class="card request-card">
+                    <h4 style="color: #e0e0e0; margin-bottom: 0.8rem;">Research: Event Bus Optimization</h4>
+                    <span class="badge status in-progress">IN_PROGRESS</span>
+                    <div class="request-status-flow">
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step active" style="flex: 0 0 20%;"></div>
+                        <div class="status-step pending" style="flex: 0 0 20%;"></div>
+                    </div>
+                    <div class="status-labels">
+                        <span>PENDING</span>
+                        <span>APPROVED</span>
+                        <span>IN_PROGRESS</span>
+                        <span>REVIEW</span>
+                        <span>COMPLETED</span>
+                    </div>
+                    <div style="color: #909090; font-size: 0.85rem; margin-top: 1rem;">Ingediend: 2026-03-15</div>
+                </div>
+
+                <!-- Review -->
+                <div class="card request-card">
+                    <h4 style="color: #e0e0e0; margin-bottom: 0.8rem;">Documentation: Testing Best Practices</h4>
+                    <span class="badge status review">REVIEW</span>
+                    <div class="request-status-flow">
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step active" style="flex: 0 0 20%;"></div>
+                    </div>
+                    <div class="status-labels">
+                        <span>PENDING</span>
+                        <span>APPROVED</span>
+                        <span>IN_PROGRESS</span>
+                        <span>REVIEW</span>
+                        <span>COMPLETED</span>
+                    </div>
+                    <div style="color: #909090; font-size: 0.85rem; margin-top: 1rem;">Ingediend: 2026-03-10</div>
+                </div>
+
+                <!-- Completed -->
+                <div class="card request-card">
+                    <h4 style="color: #e0e0e0; margin-bottom: 0.8rem;">Research: Agent Teams SPIKE Results</h4>
+                    <span class="badge status completed">COMPLETED</span>
+                    <div class="request-status-flow">
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                        <div class="status-step completed" style="flex: 0 0 20%;"></div>
+                    </div>
+                    <div class="status-labels">
+                        <span>PENDING</span>
+                        <span>APPROVED</span>
+                        <span>IN_PROGRESS</span>
+                        <span>REVIEW</span>
+                        <span>COMPLETED</span>
+                    </div>
+                    <div style="color: #909090; font-size: 0.85rem; margin-top: 1rem;">Ingediend: 2026-03-05</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 3: Research Detail -->
+    <div id="detail" class="content">
+        <div class="detail-header">
+            <div class="detail-title">Research: Agent Teams Activatie SPIKE</div>
+            <div class="detail-status-line">
+                <span class="badge status completed">COMPLETED</span>
+                <span class="badge" style="background: #1f5d2a; color: #99ff99;">Auto Stream</span>
+                <span style="color: #909090; font-size: 0.9rem;">Afgerond: 2026-03-26 · Ingediend: 2026-03-12</span>
+            </div>
+        </div>
+
+        <!-- Status Flow -->
+        <div class="status-flow">
+            <div class="flow-step completed">
+                <div class="flow-step-circle">1</div>
+                <div class="flow-step-label">PENDING</div>
+            </div>
+            <div class="flow-arrow completed"></div>
+            <div class="flow-step completed">
+                <div class="flow-step-circle">2</div>
+                <div class="flow-step-label">APPROVED</div>
+            </div>
+            <div class="flow-arrow completed"></div>
+            <div class="flow-step completed">
+                <div class="flow-step-circle">3</div>
+                <div class="flow-step-label">IN_PROGRESS</div>
+            </div>
+            <div class="flow-arrow completed"></div>
+            <div class="flow-step completed">
+                <div class="flow-step-circle">4</div>
+                <div class="flow-step-label">REVIEW</div>
+            </div>
+            <div class="flow-arrow completed"></div>
+            <div class="flow-step completed">
+                <div class="flow-step-circle">5</div>
+                <div class="flow-step-label">COMPLETED</div>
+            </div>
+        </div>
+
+        <!-- Detail Content -->
+        <div class="detail-content">
+            <!-- Left Column -->
+            <div class="detail-left">
+                <!-- Proposal Details -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Voorstel Details</div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Onderwerp</div>
+                        <div class="detail-value">Multi-Agent Orchestration Implementation & Testing</div>
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Motivatie</div>
+                        <div class="detail-value">DevHub-architectuur vereist agent-coördinatie voor parallelle taakuitvoering. Sprint 39 spike bepaalt feasibility van n8n vs. custom orchestration vs. autonomous agents.</div>
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Scope (IN)</div>
+                        <div class="detail-value">
+                            • n8n workflow automation API<br>
+                            • Custom orchestrator PoC<br>
+                            • Performance benchmarks<br>
+                            • Integration testing strategy<br>
+                            • Async task queue patterns
+                        </div>
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Scope (OUT)</div>
+                        <div class="detail-value">
+                            • Full production n8n deployment<br>
+                            • Kubernetes orchestration<br>
+                            • Agent fine-tuning<br>
+                            • Database event-sourcing
+                        </div>
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Graad</div>
+                        <span class="badge silver">SILVER</span> Gevalideerd
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Domein</div>
+                        <span class="badge core">Core</span> AI Engineering
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Diepte</div>
+                        STANDARD (2 dagen research + 1 dag PoC)
+                    </div>
+
+                    <div class="detail-field">
+                        <div class="detail-label">Deadline</div>
+                        2026-03-24 (voltooid op tijd)
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="detail-right">
+                <!-- Research Questions -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Onderzoeksvragen (RQ1-6)</div>
+
+                    <div class="rq-list-detail">
+                        <div class="rq-detail-item">
+                            <div class="rq-detail-text">RQ1: Hoe orkestreert n8n multi-step workflows met error-handling?</div>
+                            <div class="rq-detail-status">
+                                <span style="color: #66ff99;">✓ Beantwoord</span>
+                                <span style="color: #909090;">3 bronnen</span>
+                            </div>
+                        </div>
+
+                        <div class="rq-detail-item">
+                            <div class="rq-detail-text">RQ2: Wat zijn de performance-limieten van n8n vs. custom code?</div>
+                            <div class="rq-detail-status">
+                                <span style="color: #66ff99;">✓ Beantwoord</span>
+                                <span style="color: #909090;">Benchmark afgerond</span>
+                            </div>
+                        </div>
+
+                        <div class="rq-detail-item">
+                            <div class="rq-detail-text">RQ3: Hoe integreren we n8n met DevHub event bus?</div>
+                            <div class="rq-detail-status">
+                                <span style="color: #66ff99;">✓ Beantwoord</span>
+                                <span style="color: #909090;">PoC gebouwd</span>
+                            </div>
+                        </div>
+
+                        <div class="rq-detail-item">
+                            <div class="rq-detail-text">RQ4: Wat zijn de veiligheids- en compliance-implicaties?</div>
+                            <div class="rq-detail-status">
+                                <span style="color: #66ff99;">✓ Beantwoord</span>
+                                <span style="color: #909090;">OWASP ASI geverifieerd</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                <div class="detail-section">
+                    <div class="detail-section-title">Statusgeschiedenis</div>
+
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-12 09:45</div>
+                            <div class="timeline-text">Voorstel ingediend</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-13 14:20</div>
+                            <div class="timeline-text">Goedgekeurd door reviewer-agent</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-14 08:00</div>
+                            <div class="timeline-text">Research gestart — researcher-agent</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-24 16:30</div>
+                            <div class="timeline-text">Rapport ingediend voor review</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-26 10:15</div>
+                            <div class="timeline-text">QA-controle voltooid — als SILVER gekeurd</div>
+                        </div>
+
+                        <div class="timeline-item">
+                            <div class="timeline-time">2026-03-26 11:00</div>
+                            <div class="timeline-text">Gepubliceerd in kennisbibliotheek</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 4: Discovery Engine -->
+    <div id="discovery" class="content">
+        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">Discovery Engine</h2>
+
+        <!-- Undiscovered Connections -->
+        <div class="discovery-section">
+            <h3 class="discovery-subtitle">🔗 Onontdekte Verbindingen (ABC-paradigma)</h3>
+            <div class="connections-grid">
+                <div class="connection-card">
+                    <div class="connection-title">Testing QA ↔ Security AppSec</div>
+                    <div class="connection-arrow">via "input validation"</div>
+                    <div class="connection-topic">Testing Strategies (QA) kan input-validatiepatronen van Security hergebruiken</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 78%;"></div>
+                        </div>
+                        <div class="confidence-label">78%</div>
+                    </div>
+                </div>
+
+                <div class="connection-card">
+                    <div class="connection-title">AI Engineering ↔ Documentation</div>
+                    <div class="connection-arrow">via "prompt patterns"</div>
+                    <div class="connection-topic">Prompt engineering principes kunnen documentatie-templates verbeteren</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="confidence-label">65%</div>
+                    </div>
+                </div>
+
+                <div class="connection-card">
+                    <div class="connection-title">Storage ↔ Event Bus</div>
+                    <div class="connection-arrow">via "state synchronization"</div>
+                    <div class="connection-topic">Event-sourcing patterns kunnen storage consistency-problemen adresseren</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 82%;"></div>
+                        </div>
+                        <div class="confidence-label">82%</div>
+                    </div>
+                </div>
+
+                <div class="connection-card">
+                    <div class="connection-title">Security ↔ Knowledge Curation</div>
+                    <div class="connection-arrow">via "verification governance"</div>
+                    <div class="connection-topic">Security audit framework kan kennisbewaking-processen struktureren</div>
+                    <div class="confidence-meter">
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 71%;"></div>
+                        </div>
+                        <div class="confidence-label">71%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Knowledge Gap Scanner -->
+        <div class="discovery-section">
+            <h3 class="discovery-subtitle">⚠ Kennislacune Scanner</h3>
+            <div class="gaps-list">
+                <div class="gap-item">
+                    <div class="gap-info">
+                        <div class="gap-domain">Testing Strategies</div>
+                        <div class="gap-score">
+                            <span>Urgentie:</span>
+                            <div class="gap-bar">
+                                <div class="gap-fill" style="width: 92%;"></div>
+                            </div>
+                            <span class="gap-percentage">92%</span>
+                        </div>
+                    </div>
+                    <button class="adopt-btn" onclick="adoptAsProposal('Testing Strategies')">Overnemen</button>
+                </div>
+
+                <div class="gap-item">
+                    <div class="gap-info">
+                        <div class="gap-domain">n8n Workflow Patterns</div>
+                        <div class="gap-score">
+                            <span>Urgentie:</span>
+                            <div class="gap-bar">
+                                <div class="gap-fill" style="width: 85%;"></div>
+                            </div>
+                            <span class="gap-percentage">85%</span>
+                        </div>
+                    </div>
+                    <button class="adopt-btn" onclick="adoptAsProposal('n8n Workflow Patterns')">Overnemen</button>
+                </div>
+
+                <div class="gap-item">
+                    <div class="gap-info">
+                        <div class="gap-domain">Performance Optimization</div>
+                        <div class="gap-score">
+                            <span>Urgentie:</span>
+                            <div class="gap-bar">
+                                <div class="gap-fill" style="width: 68%;"></div>
+                            </div>
+                            <span class="gap-percentage">68%</span>
+                        </div>
+                    </div>
+                    <button class="adopt-btn" onclick="adoptAsProposal('Performance Optimization')">Overnemen</button>
+                </div>
+
+                <div class="gap-item">
+                    <div class="gap-info">
+                        <div class="gap-domain">BORIS Connector Patterns</div>
+                        <div class="gap-score">
+                            <span>Urgentie:</span>
+                            <div class="gap-bar">
+                                <div class="gap-fill" style="width: 56%;"></div>
+                            </div>
+                            <span class="gap-percentage">56%</span>
+                        </div>
+                    </div>
+                    <button class="adopt-btn" onclick="adoptAsProposal('BORIS Connector Patterns')">Overnemen</button>
+                </div>
+
+                <div class="gap-item">
+                    <div class="gap-info">
+                        <div class="gap-domain">Incident Response Playbooks</div>
+                        <div class="gap-score">
+                            <span>Urgentie:</span>
+                            <div class="gap-bar">
+                                <div class="gap-fill" style="width: 42%;"></div>
+                            </div>
+                            <span class="gap-percentage">42%</span>
+                        </div>
+                    </div>
+                    <button class="adopt-btn" onclick="adoptAsProposal('Incident Response Playbooks')">Overnemen</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thematic Clusters -->
+        <div class="discovery-section">
+            <h3 class="discovery-subtitle">📊 Thematische Clusters (embeddings)</h3>
+            <div class="scatter-placeholder">
+                <!-- Fake scatter plot -->
+                <div class="scatter-dot red" style="top: 15%; left: 10%;"></div>
+                <div class="scatter-dot red" style="top: 25%; left: 18%;"></div>
+                <div class="scatter-dot red" style="top: 20%; left: 25%;"></div>
+
+                <div class="scatter-dot blue" style="top: 50%; left: 55%;"></div>
+                <div class="scatter-dot blue" style="top: 60%; left: 65%;"></div>
+                <div class="scatter-dot blue" style="top: 55%; left: 72%;"></div>
+
+                <div class="scatter-dot green" style="top: 35%; left: 45%;"></div>
+                <div class="scatter-dot green" style="top: 45%; left: 38%;"></div>
+                <div class="scatter-dot green" style="top: 40%; left: 52%;"></div>
+
+                <div class="scatter-dot purple" style="top: 70%; left: 30%;"></div>
+                <div class="scatter-dot purple" style="top: 80%; left: 25%;"></div>
+                <div class="scatter-dot purple" style="top: 75%; left: 40%;"></div>
+
+                <div class="scatter-dot orange" style="top: 65%; left: 75%;"></div>
+                <div class="scatter-dot orange" style="top: 75%; left: 85%;"></div>
+                <div class="scatter-dot orange" style="top: 70%; left: 90%;"></div>
+
+                <div class="scatter-text">
+                    Domeinen gerangschikt op semantic gelijkenis<br>
+                    <span style="font-size: 0.85rem; color: #606060;">Rode cluster: Security, Blauwe cluster: AI/Orchestration, Groene cluster: Storage, Purple cluster: Documentation, Orange cluster: Monitoring</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Screen 5: Activity Feed -->
+    <div id="feed" class="content">
+        <h2 style="margin-bottom: 2rem; font-size: 1.5rem;">Activiteit Feed</h2>
+
+        <div class="feed-filters">
+            <button class="filter-toggle active" onclick="toggleFilter(event)">Alle</button>
+            <button class="filter-toggle" onclick="toggleFilter(event)">🎯 Sprint Afgerond</button>
+            <button class="filter-toggle" onclick="toggleFilter(event)">📚 Kennis Toegevoegd</button>
+            <button class="filter-toggle" onclick="toggleFilter(event)">🔬 Onderzoek Ingediend</button>
+            <button class="filter-toggle" onclick="toggleFilter(event)">✓ Verificatie</button>
+            <button class="filter-toggle" onclick="toggleFilter(event)">🔗 Verbindingen</button>
+        </div>
+
+        <div class="feed-list">
+            <div class="feed-item">
+                <div class="feed-icon sprint">🎯</div>
+                <div class="feed-content">
+                    <div class="feed-title">Sprint 43 afgerond — DevHub Dashboard NiceGUI Upgrade</div>
+                    <div class="feed-timestamp">Vandaag om 14:30 · 12 commits, 8 files changed</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon knowledge">📚</div>
+                <div class="feed-content">
+                    <div class="feed-title">Kennis toegevoegd — RESEARCH_AGENT_TEAMS_SPIKE.md</div>
+                    <div class="feed-timestamp">Vandaag om 11:15 · Auto-stream · 92% geverifieerd</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon research">🔬</div>
+                <div class="feed-content">
+                    <div class="feed-title">Research ingediend — Claude Desktop/Cowork/Code + NotebookLM</div>
+                    <div class="feed-timestamp">Gisteren om 16:45 · Status: PENDING APPROVAL</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon sprint">🎯</div>
+                <div class="feed-content">
+                    <div class="feed-title">Sprint 42 afgerond — Event Bus Lifecycle Hooks</div>
+                    <div class="feed-timestamp">3 maart om 10:00 · Alle tests ✓ (882 passed)</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon knowledge">📚</div>
+                <div class="feed-content">
+                    <div class="feed-title">Documentatie gereed — Diátaxis+ Taxonomie POC</div>
+                    <div class="feed-timestamp">28 februari om 15:30 · REFERENCE categorie · SILVER graad</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon other">✓</div>
+                <div class="feed-content">
+                    <div class="feed-title">Verificatie voltooid — Knowledge Curation Pipeline Design</div>
+                    <div class="feed-timestamp">27 februari om 09:00 · 98% geverifieerd (GOLD)</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon research">🔬</div>
+                <div class="feed-content">
+                    <div class="feed-title">Research afgerond — OWASP ASI 2026 Security Audit Report</div>
+                    <div class="feed-timestamp">24 februari om 13:20 · 95% geverifieerd</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon other">🔗</div>
+                <div class="feed-content">
+                    <div class="feed-title">Verbinding ontdekt — Testing ↔ Security (78% confidence)</div>
+                    <div class="feed-timestamp">22 februari om 11:00 · Discovery Engine · Automatisch</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon sprint">🎯</div>
+                <div class="feed-content">
+                    <div class="feed-title">Sprint 41 afgerond — Kennispipeline Track K Golf 3</div>
+                    <div class="feed-timestamp">20 februari om 16:00 · Hele kennispipeline operationeel</div>
+                </div>
+            </div>
+
+            <div class="feed-item">
+                <div class="feed-icon knowledge">📚</div>
+                <div class="feed-content">
+                    <div class="feed-title">Artikel gepubliceerd — Event Bus Architecture Patterns</div>
+                    <div class="feed-timestamp">18 februari om 10:30 · HOWTO categorie · BRONZE graad</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(e, tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.content');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+
+            e.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        function goToTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.content');
+
+            tabs.forEach((tab, idx) => {
+                if (tab.textContent.toLowerCase().includes(tabName.toLowerCase())) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            contents.forEach(content => content.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById('searchResults').classList.remove('active');
+        }
+
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.length > 0) {
+                searchResults.classList.add('active');
+            }
+        });
+
+        searchInput.addEventListener('input', () => {
+            if (searchInput.value.length > 0) {
+                searchResults.classList.add('active');
+            } else {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.search-bar')) {
+                searchResults.classList.remove('active');
+            }
+        });
+
+        // Slider
+        function updateSlider(e) {
+            document.getElementById('sliderValue').textContent = e.target.value;
+        }
+
+        // Add RQ
+        function addRQ(e) {
+            e.preventDefault();
+            const rqList = document.querySelector('.rq-list');
+            const count = rqList.querySelectorAll('.rq-item').length + 1;
+            const newRQ = document.createElement('div');
+            newRQ.className = 'rq-item';
+            newRQ.innerHTML = `
+                <div class="rq-number">${count}</div>
+                <input type="text" class="rq-input" placeholder="Onderzoeksvraag ${count}">
+                <button class="rq-remove" onclick="this.parentElement.remove()">Verwijderen</button>
+            `;
+            rqList.appendChild(newRQ);
+        }
+
+        // Adopt as proposal
+        function adoptAsProposal(domain) {
+            alert(`"${domain}" is overgenomen als research-voorstel. U kunt nu het formulier invullen.`);
+            document.querySelector('.form-input').value = domain;
+            switchTab({ target: document.querySelectorAll('.tab')[1] }, 'research');
+        }
+
+        // Toggle filter
+        function toggleFilter(e) {
+            e.target.classList.toggle('active');
+        }
+
+        // Remove multiselect item
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.multiselect-remove')) {
+                e.target.closest('.multiselect-item').remove();
+            }
+        });
+    </script>
+</body>
+</html>

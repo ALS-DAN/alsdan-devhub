@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevHub Dashboard — Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+            color: #e0e6ed;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(224, 230, 237, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #5b9dd9 0%, #7cb9e8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            font-size: 13px;
+            color: #8a9aaa;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: rgba(91, 157, 217, 0.15);
+            border: 1px solid rgba(91, 157, 217, 0.3);
+            border-radius: 20px;
+            color: #5b9dd9;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #5b9dd9;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .grid.two-col {
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+        }
+
+        /* Card Styling */
+        .card {
+            background: rgba(26, 31, 46, 0.8);
+            border: 1px solid rgba(224, 230, 237, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            border-color: rgba(91, 157, 217, 0.3);
+            box-shadow: 0 8px 16px rgba(91, 157, 217, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #e0e6ed;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* Charts Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 16px;
+        }
+
+        /* Radar Chart */
+        .radar-container {
+            position: relative;
+            height: 350px;
+        }
+
+        /* Sprint Timeline */
+        .sprint-timeline {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            overflow-x: auto;
+            padding: 8px 0;
+        }
+
+        .sprint-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(91, 157, 217, 0.1);
+            border: 1px solid rgba(91, 157, 217, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 90px;
+        }
+
+        .sprint-item:hover {
+            background: rgba(91, 157, 217, 0.2);
+            border-color: rgba(91, 157, 217, 0.4);
+        }
+
+        .sprint-item.active {
+            background: rgba(91, 157, 217, 0.3);
+            border-color: #5b9dd9;
+        }
+
+        .sprint-number {
+            font-size: 13px;
+            font-weight: 600;
+            color: #5b9dd9;
+        }
+
+        .sprint-status {
+            font-size: 11px;
+            color: #8a9aaa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(224, 230, 237, 0.05);
+        }
+
+        .sprint-status.completed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4caf50;
+        }
+
+        .sprint-status.active {
+            background: rgba(91, 157, 217, 0.2);
+            color: #5b9dd9;
+        }
+
+        /* Package Cards */
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .package-card {
+            background: rgba(91, 157, 217, 0.08);
+            border: 1px solid rgba(91, 157, 217, 0.2);
+            border-radius: 10px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .package-card:hover {
+            background: rgba(91, 157, 217, 0.15);
+            border-color: rgba(91, 157, 217, 0.4);
+        }
+
+        .package-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #e0e6ed;
+            margin-bottom: 8px;
+        }
+
+        .package-version {
+            font-size: 12px;
+            color: #8a9aaa;
+            margin-bottom: 12px;
+        }
+
+        .health-bar {
+            height: 6px;
+            background: rgba(224, 230, 237, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .health-text {
+            font-size: 11px;
+            color: #8a9aaa;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Knowledge Pipeline Flow */
+        .pipeline-flow {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            overflow-x: auto;
+        }
+
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+            padding: 16px;
+            background: rgba(91, 157, 217, 0.1);
+            border: 2px solid rgba(91, 157, 217, 0.2);
+            border-radius: 10px;
+            min-width: 120px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pipeline-stage:hover {
+            background: rgba(91, 157, 217, 0.2);
+            border-color: rgba(91, 157, 217, 0.4);
+        }
+
+        .pipeline-stage.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: #4caf50;
+        }
+
+        .pipeline-stage-icon {
+            font-size: 24px;
+        }
+
+        .pipeline-stage-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #e0e6ed;
+        }
+
+        .pipeline-stage-status {
+            font-size: 10px;
+            color: #8a9aaa;
+        }
+
+        .pipeline-arrow {
+            font-size: 20px;
+            color: rgba(91, 157, 217, 0.3);
+            flex-shrink: 0;
+        }
+
+        /* Progress Bars - Fase Tracker */
+        .fase-item {
+            margin-bottom: 20px;
+        }
+
+        .fase-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .fase-label {
+            font-weight: 600;
+            color: #e0e6ed;
+        }
+
+        .fase-percentage {
+            color: #8a9aaa;
+        }
+
+        .fase-bar {
+            height: 8px;
+            background: rgba(224, 230, 237, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .fase-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #5b9dd9 0%, #7cb9e8 100%);
+            border-radius: 4px;
+            transition: width 0.4s ease;
+        }
+
+        .fase-progress.complete {
+            background: linear-gradient(90deg, #4caf50 0%, #8bc34a 100%);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid.two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 16px;
+                align-items: flex-start;
+            }
+
+            .header-info {
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+
+            body {
+                padding: 16px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+
+            .card-title {
+                font-size: 14px;
+            }
+
+            .chart-container {
+                height: 250px;
+            }
+
+            .radar-container {
+                height: 300px;
+            }
+        }
+
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #e0e6ed;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(224, 230, 237, 0.1);
+            font-size: 12px;
+            color: #8a9aaa;
+            text-align: center;
+        }
+
+        /* Accent Colors */
+        .accent-green { color: #4caf50; }
+        .accent-blue { color: #5b9dd9; }
+        .accent-amber { color: #ffc107; }
+        .accent-red { color: #f44336; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>DevHub Dashboard — Demo</h1>
+            <div class="header-info">
+                <span class="status-badge">
+                    <div class="status-dot"></div>
+                    System: Active
+                </span>
+                <span id="current-date"></span>
+            </div>
+        </div>
+
+        <!-- Row 1: Project Health & Test Trend -->
+        <div class="grid">
+            <!-- Project Health (Radar) -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">📊</span>
+                    Project Health — 6 Dimensions
+                </div>
+                <div class="radar-container">
+                    <canvas id="healthRadar"></canvas>
+                </div>
+                <div style="margin-top: 16px; font-size: 12px; color: #8a9aaa;">
+                    <div style="margin-bottom: 8px;">✓ Tests (95%) | Code Quality (82%) | Security (78%)</div>
+                    <div>✗ Documentation (45%) | Knowledge (35%)</div>
+                </div>
+            </div>
+
+            <!-- Test Trend -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">📈</span>
+                    Test Growth — Last 10 Sprints
+                </div>
+                <div class="chart-container">
+                    <canvas id="testTrend"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Sprint Progress -->
+        <div class="card">
+            <div class="card-title">
+                <span class="card-icon">🏃</span>
+                Sprint Progress (38-42)
+            </div>
+            <div class="sprint-timeline">
+                <div class="sprint-item" data-tooltip="Sprint 38: Event Bus POC">
+                    <span class="sprint-number">S38</span>
+                    <span class="sprint-status completed">✓ Done</span>
+                </div>
+                <div class="sprint-item" data-tooltip="Sprint 39: Agent Teams">
+                    <span class="sprint-number">S39</span>
+                    <span class="sprint-status completed">✓ Done</span>
+                </div>
+                <div class="sprint-item" data-tooltip="Sprint 40: Vector Ops">
+                    <span class="sprint-number">S40</span>
+                    <span class="sprint-status completed">✓ Done</span>
+                </div>
+                <div class="sprint-item" data-tooltip="Sprint 41: Security Scanner">
+                    <span class="sprint-number">S41</span>
+                    <span class="sprint-status completed">✓ Done</span>
+                </div>
+                <div class="sprint-item active" data-tooltip="Sprint 42: Event Bus Lifecycle (ACTIVE)">
+                    <span class="sprint-number">S42</span>
+                    <span class="sprint-status active">● Active</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Package Status & Knowledge Pipeline -->
+        <div class="grid two-col">
+            <!-- Package Status -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">📦</span>
+                    Package Status
+                </div>
+                <div class="packages-grid">
+                    <div class="package-card">
+                        <div class="package-name">devhub-core</div>
+                        <div class="package-version">v0.2.0</div>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: 95%;"></div>
+                        </div>
+                        <div class="health-text">
+                            <span>Health</span>
+                            <span class="accent-green">95%</span>
+                        </div>
+                    </div>
+                    <div class="package-card">
+                        <div class="package-name">devhub-storage</div>
+                        <div class="package-version">v0.3.0</div>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: 88%;"></div>
+                        </div>
+                        <div class="health-text">
+                            <span>Health</span>
+                            <span class="accent-green">88%</span>
+                        </div>
+                    </div>
+                    <div class="package-card">
+                        <div class="package-name">devhub-vectorstore</div>
+                        <div class="package-version">v0.3.0</div>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: 82%;"></div>
+                        </div>
+                        <div class="health-text">
+                            <span>Health</span>
+                            <span class="accent-green">82%</span>
+                        </div>
+                    </div>
+                    <div class="package-card">
+                        <div class="package-name">devhub-documents</div>
+                        <div class="package-version">v0.1.0</div>
+                        <div class="health-bar">
+                            <div class="health-fill" style="width: 75%;"></div>
+                        </div>
+                        <div class="health-text">
+                            <span>Health</span>
+                            <span class="accent-amber">75%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Pipeline -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="card-icon">🔄</span>
+                    Knowledge Pipeline — E2E Flow
+                </div>
+                <div class="pipeline-flow">
+                    <div class="pipeline-stage active">
+                        <div class="pipeline-stage-icon">📥</div>
+                        <div class="pipeline-stage-label">Ingest</div>
+                        <div class="pipeline-stage-status">Active</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-stage active">
+                        <div class="pipeline-stage-icon">🗂️</div>
+                        <div class="pipeline-stage-label">Vectorstore</div>
+                        <div class="pipeline-stage-status">1.2M</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-stage active">
+                        <div class="pipeline-stage-icon">🔍</div>
+                        <div class="pipeline-stage-label">Query</div>
+                        <div class="pipeline-stage-status">Ready</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-stage active">
+                        <div class="pipeline-stage-icon">📄</div>
+                        <div class="pipeline-stage-label">Generate</div>
+                        <div class="pipeline-stage-status">Active</div>
+                    </div>
+                    <div class="pipeline-arrow">→</div>
+                    <div class="pipeline-stage active">
+                        <div class="pipeline-stage-icon">🚀</div>
+                        <div class="pipeline-stage-label">Publish</div>
+                        <div class="pipeline-stage-status">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Fase Tracker -->
+        <div class="card">
+            <div class="card-title">
+                <span class="card-icon">🎯</span>
+                Fase Progress — Roadmap 2026
+            </div>
+            <div style="padding: 8px 0;">
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 0: Foundation</span>
+                        <span class="fase-percentage">100%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress complete" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 1: Contracts & Adapters</span>
+                        <span class="fase-percentage">100%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress complete" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 2: Agents & Skills</span>
+                        <span class="fase-percentage">100%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress complete" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 3: Knowledge Pipeline</span>
+                        <span class="fase-percentage">100%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress complete" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 4: Connections & Integration</span>
+                        <span class="fase-percentage">65%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress" style="width: 65%;"></div>
+                    </div>
+                </div>
+                <div class="fase-item">
+                    <div class="fase-header">
+                        <span class="fase-label">Fase 5: Scale & Optimization</span>
+                        <span class="fase-percentage">0%</span>
+                    </div>
+                    <div class="fase-bar">
+                        <div class="fase-progress" style="width: 0%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>DevHub Health Dashboard — Generated on <span id="footer-date"></span> | Sprint 42 (Event Bus) | Fase 4: Verbindingen</p>
+        </div>
+    </div>
+
+    <script>
+        // Set current date
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('nl-NL', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        document.getElementById('current-date').textContent = dateStr;
+        document.getElementById('footer-date').textContent = dateStr;
+
+        // Chart.js default options for dark theme
+        Chart.defaults.color = '#8a9aaa';
+        Chart.defaults.borderColor = 'rgba(224, 230, 237, 0.1)';
+
+        // 1. Project Health Radar Chart
+        const radarCtx = document.getElementById('healthRadar').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Tests', 'Code Quality', 'Documentation', 'Security', 'Knowledge', 'Governance'],
+                datasets: [{
+                    label: 'Current Health',
+                    data: [95, 82, 45, 78, 35, 90],
+                    fill: true,
+                    backgroundColor: 'rgba(91, 157, 217, 0.2)',
+                    borderColor: 'rgb(91, 157, 217)',
+                    pointBackgroundColor: 'rgb(91, 157, 217)',
+                    pointBorderColor: '#1a1f2e',
+                    pointHoverBackgroundColor: '#1a1f2e',
+                    pointHoverBorderColor: 'rgb(91, 157, 217)',
+                    tension: 0.1,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            color: '#8a9aaa',
+                            stepSize: 20
+                        },
+                        grid: {
+                            color: 'rgba(224, 230, 237, 0.1)'
+                        },
+                        pointLabels: {
+                            color: '#e0e6ed',
+                            font: {
+                                size: 12,
+                                weight: '600'
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 2. Test Growth Trend
+        const trendCtx = document.getElementById('testTrend').getContext('2d');
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: ['S33', 'S34', 'S35', 'S36', 'S37', 'S38', 'S39', 'S40', 'S41', 'S42'],
+                datasets: [{
+                    label: 'Test Count',
+                    data: [400, 480, 550, 650, 780, 950, 1080, 1200, 1310, 1424],
+                    borderColor: 'rgb(76, 175, 80)',
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgb(76, 175, 80)',
+                    pointBorderColor: '#1a1f2e',
+                    pointHoverBackgroundColor: '#1a1f2e',
+                    pointHoverBorderColor: 'rgb(76, 175, 80)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#e0e6ed',
+                            usePointStyle: true,
+                            padding: 16
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#e0e6ed',
+                        bodyColor: '#e0e6ed',
+                        borderColor: 'rgba(76, 175, 80, 0.5)',
+                        borderWidth: 1,
+                        padding: 10,
+                        displayColors: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#8a9aaa'
+                        },
+                        grid: {
+                            color: 'rgba(224, 230, 237, 0.1)'
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: '#8a9aaa'
+                        },
+                        grid: {
+                            color: 'rgba(224, 230, 237, 0.05)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Interactive sprint items
+        document.querySelectorAll('.sprint-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sprint-item').forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Interactive pipeline stages
+        document.querySelectorAll('.pipeline-stage').forEach((stage, index) => {
+            stage.addEventListener('click', function() {
+                document.querySelectorAll('.pipeline-stage').forEach(s => s.classList.remove('active'));
+                for (let i = 0; i <= index; i++) {
+                    document.querySelectorAll('.pipeline-stage')[i].classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
