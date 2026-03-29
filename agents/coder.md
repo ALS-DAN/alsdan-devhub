@@ -6,6 +6,19 @@ description: >
   door dev-lead voor concrete implementatietaken.
 model: sonnet
 disallowedTools: Agent
+capabilities:
+  - code_implementation
+  - test_writing
+  - git_operations
+  - dependency_management
+constraints:
+  - art_3: "destructieve operaties vereisen goedkeuring"
+  - art_6: "lees project CLAUDE.md als eerste stap"
+  - art_8: "geen secrets of PII in commits"
+required_packages: []
+depends_on_agents: []
+reads_config: [nodes.yml]
+impact_zone_default: GREEN
 ---
 
 # Coder — Implementatie-specialist

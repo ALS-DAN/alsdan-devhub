@@ -1,13 +1,14 @@
 """E2e tests voor plugin-laag: agent-definities.
 
 Valideert dat alle agent .md bestanden correct zijn gestructureerd
-en voldoen aan de Fase 0 plugin-specificatie.
+en voldoen aan de Fase 0 plugin-specificatie + Fase 4 machine-leesbare standaard.
 """
 
 import re
 from pathlib import Path
 
 import pytest
+import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 AGENTS_DIR = REPO_ROOT / "agents"
@@ -106,3 +107,47 @@ class TestAgentDefinitions:
         fm = _parse_frontmatter(AGENTS_DIR / "coder.md")
         assert "disallowedTools" in fm
         assert "Agent" in fm["disallowedTools"]
+
+
+def _parse_yaml_frontmatter(path: Path) -> dict:
+    """Parse YAML frontmatter via yaml.safe_load (ondersteunt arrays en nested data)."""
+    text = path.read_text(encoding="utf-8")
+    match = re.match(r"^---\s*\n(.*?)\n---", text, re.DOTALL)
+    if not match:
+        return {}
+    return yaml.safe_load(match.group(1)) or {}
+
+
+class TestAgentMachineReadability:
+    """Valideer machine-leesbare frontmatter (Art. 4.6, Sprint 46)."""
+
+    @pytest.mark.parametrize("agent_name", REQUIRED_AGENTS)
+    def test_agent_has_capabilities(self, agent_name: str):
+        """Elke agent moet capabilities in frontmatter hebben."""
+        fm = _parse_yaml_frontmatter(AGENTS_DIR / f"{agent_name}.md")
+        assert "capabilities" in fm, f"{agent_name} mist 'capabilities' in frontmatter"
+        caps = fm["capabilities"]
+        assert isinstance(caps, list), f"{agent_name} capabilities moet een lijst zijn"
+        assert len(fm["capabilities"]) > 0, f"{agent_name} capabilities mag niet leeg zijn"
+
+    @pytest.mark.parametrize("agent_name", REQUIRED_AGENTS)
+    def test_agent_has_constraints(self, agent_name: str):
+        """Elke agent moet constraints in frontmatter hebben."""
+        fm = _parse_yaml_frontmatter(AGENTS_DIR / f"{agent_name}.md")
+        assert "constraints" in fm, f"{agent_name} mist 'constraints' in frontmatter"
+        assert isinstance(fm["constraints"], list), f"{agent_name} constraints moet een lijst zijn"
+        assert len(fm["constraints"]) > 0, f"{agent_name} constraints mag niet leeg zijn"
+
+    @pytest.mark.parametrize("agent_name", REQUIRED_AGENTS)
+    def test_agent_frontmatter_is_valid_yaml(self, agent_name: str):
+        """Agent frontmatter moet valide YAML zijn."""
+        fm = _parse_yaml_frontmatter(AGENTS_DIR / f"{agent_name}.md")
+        assert fm, f"{agent_name} frontmatter is niet parsebaar als YAML"
+        assert "name" in fm, f"{agent_name} mist 'name' na YAML parse"
+
+    def test_reviewer_has_machine_readability_check(self):
+        """Reviewer moet machine_readability_check capability hebben."""
+        fm = _parse_yaml_frontmatter(AGENTS_DIR / "reviewer.md")
+        assert "machine_readability_check" in fm.get(
+            "capabilities", []
+        ), "reviewer mist machine_readability_check capability"

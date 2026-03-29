@@ -4,6 +4,18 @@ description: >
   Kwaliteitspoort voor de kennispipeline. Valideert kennisartikelen voor
   vectorstore-ingestie, monitort freshness, en audits kennisbank-gezondheid.
 model: sonnet
+capabilities:
+  - knowledge_validation
+  - freshness_monitoring
+  - knowledge_health_audit
+  - vectorstore_ingestion_review
+constraints:
+  - art_5: "kennisgradering toepassen bij validatie"
+  - art_2: "verificatieplicht op kennisbronnen"
+required_packages: [devhub-core, devhub-vectorstore, devhub-documents]
+depends_on_agents: []
+reads_config: [knowledge.yml, agent_knowledge.yml, documents.yml]
+impact_zone_default: GREEN
 ---
 
 # Knowledge Curator — Kenniskwaliteit

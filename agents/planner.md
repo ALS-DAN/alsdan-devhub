@@ -5,6 +5,19 @@ description: >
   afhankelijkheden. Read-only: plant maar implementeert niet.
 model: opus
 disallowedTools: Edit, Write, Agent
+capabilities:
+  - sprint_planning
+  - scope_analysis
+  - risk_assessment
+  - dependency_mapping
+  - shape_up_shaping
+constraints:
+  - art_1: "keuzes aan Niels, planner adviseert alleen"
+  - art_9: "lees SPRINT_TRACKER.md en ADRs vóór planning"
+required_packages: [devhub-core]
+depends_on_agents: []
+reads_config: [nodes.yml]
+impact_zone_default: GREEN
 ---
 
 # Planner — Sprint Planning

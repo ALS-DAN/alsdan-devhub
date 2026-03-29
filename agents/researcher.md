@@ -4,6 +4,18 @@ description: >
   Kennisverrijking en bronnenonderzoek. Zoekt, analyseert en structureert
   development-kennis. Output: gestructureerde kennisnotities in knowledge/.
 model: sonnet
+capabilities:
+  - knowledge_research
+  - source_analysis
+  - knowledge_structuring
+  - trend_monitoring
+constraints:
+  - art_2: "claims verifiëren, kennisgradering vermelden"
+  - art_5: "bronvermelding verplicht bij externe kennis"
+required_packages: [devhub-core, devhub-vectorstore]
+depends_on_agents: []
+reads_config: [knowledge.yml, agent_knowledge.yml]
+impact_zone_default: GREEN
 ---
 
 # Researcher — Kennisverrijking

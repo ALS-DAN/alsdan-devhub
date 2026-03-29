@@ -4,8 +4,8 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 45
-test_baseline: 1682
+laatste_sprint: 46
+test_baseline: 1735
 laatst_bijgewerkt: 2026-03-29
 ---
 
@@ -201,6 +201,16 @@ _FEAT: Overkoepelend NiceGUI web-dashboard met 7 panelen (Overview, Health, Plan
 
 ---
 
+## Fase 4 — Dual-Format Machine-Leesbare Systeembestanden (Sprint 46)
+
+_FEAT: Alle systeembestanden (DEV_CONSTITUTION, agent-definities, ADRs) verrijkt met machine-leesbare YAML-blokken en Mermaid-diagrammen. Art. 4.6 machine-leesbaarheidsverplichting + reviewer enforcement + MACHINE_READABILITY_STANDARD.md._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| Dual-Format Machine-Leesbare Systeembestanden | FEAT | S | ✅ DONE | ████████████ | 9 YAML-blokken, 7 agents uitgebreid, 4 ADRs gestandaardiseerd, 3 Mermaid-diagrammen, Art. 4.6, +53 tests |
+
+---
+
 ## Golfplanning (Fase 3)
 
 ### Golf 0: Opruiming ✅
@@ -371,6 +381,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 43 | DevHub Dashboard NiceGUI | S (1 sprint) | S (1 sprint) | +65 | 100% |
 | 44 | Dashboard Bestaande Panelen Upgrade | S (1 sprint) | S (1 sprint) | +110 | 100% |
 | 45 | Dashboard Kennisbibliotheek & Research Upgrade | S (1 sprint) | S (1 sprint) | +81 | 100% |
+| 46 | Dual-Format Machine-Leesbare Systeembestanden | S (1 sprint) | S (1 sprint) | +53 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -380,10 +391,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 45 | Alle binnen geschatte tijd |
-| Test baseline | 1682 | Na Sprint 45 (Dashboard Kennisbibliotheek & Research Upgrade) |
-| Gemiddelde test-delta | +50.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
-| Schattingsnauwkeurigheid | 100% | 45/45 sprints binnen appetite |
+| Sprints afgerond | 46 | Alle binnen geschatte tijd |
+| Test baseline | 1735 | Na Sprint 46 (Dual-Format Machine-Leesbare Systeembestanden) |
+| Gemiddelde test-delta | +50.8 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
+| Schattingsnauwkeurigheid | 100% | 46/46 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -439,6 +450,7 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | DevHub Dashboard NiceGUI | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Dashboard Bestaande Panelen Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
 | Dashboard Kennisbibliotheek & Research Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
+| Dual-Format Machine-Leesbare Systeembestanden | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
 
 ### Afgeleide SLA's
 

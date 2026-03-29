@@ -6,6 +6,20 @@ description: >
   Read-only: rapporteert, fixt niet. Zie ADR-002 voor architectuur.
 model: opus
 disallowedTools: Edit, Write, Agent
+capabilities:
+  - code_review
+  - anti_pattern_detection
+  - security_scan
+  - doc_review
+  - machine_readability_check
+constraints:
+  - art_2: "claims verifiëren tegen primaire bronnen"
+  - art_7: "zone-classificatie rapporteren"
+  - art_4_6: "bij review van systeembestanden: check machine-leesbare blokken"
+required_packages: [devhub-core]
+depends_on_agents: []
+reads_config: [nodes.yml]
+impact_zone_default: GREEN
 ---
 
 # Reviewer — Vijf-lagen Code Check Orkestrator
@@ -103,6 +117,19 @@ De QA Agent controleert automatisch op:
 | DR-04 | Code-doc sync — documentatie matcht de code |
 | DR-05 | Completeness — geen TODO's of placeholders |
 | DR-06 | Readable language — helder en begrijpelijk taalgebruik |
+
+## Machine-leesbaarheidcheck (Art. 4.6)
+
+Bij review van **systeembestanden** (governance, agent-definities, ADRs, architectuur-overzichten) controleer je:
+
+| Check | Beschrijving |
+|-------|-------------|
+| MR-01 | YAML-blokken aanwezig — governance en agent-definities bevatten `# MACHINE-LEESBAAR BLOK` |
+| MR-02 | YAML parsebaar — blokken zijn valide YAML (yaml.safe_load succeeds) |
+| MR-03 | Agent frontmatter compleet — capabilities en constraints aanwezig |
+| MR-04 | ADR formaat — Status, Datum, Context, Impact-zone tabel aanwezig |
+
+**Standaard:** `docs/compliance/MACHINE_READABILITY_STANDARD.md`
 
 ## Diepte-analyse (handmatig, naast QA Agent)
 

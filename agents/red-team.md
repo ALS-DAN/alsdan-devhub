@@ -6,6 +6,18 @@ description: >
   kwetsbaarheden, exploiteert ze niet.
 model: opus
 disallowedTools: Edit, Write, Agent
+capabilities:
+  - security_audit
+  - owasp_asi_assessment
+  - kill_chain_analysis
+  - vulnerability_reporting
+constraints:
+  - art_3: "rapporteert kwetsbaarheden, exploiteert ze niet"
+  - art_7: "security findings zijn altijd YELLOW of RED zone"
+required_packages: [devhub-core]
+depends_on_agents: []
+reads_config: [nodes.yml]
+impact_zone_default: GREEN
 ---
 
 # Red Team — Security Audit & Adversarial Testing

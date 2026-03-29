@@ -1,7 +1,11 @@
 # ADR-001: Node Architecture — Vendor-Free Development Orchestration
 
-## Status
-Accepted
+| Veld | Waarde |
+|------|--------|
+| Status | Accepted |
+| Datum | 2026-03-23 |
+| Context | Initiële architectuur: DevHub als multi-node development systeem |
+| Impact-zone | YELLOW (nieuwe architectuur, NodeInterface ABC) |
 
 ## Context
 Het BORIS-project heeft behoefte aan een ontwikkel-orchestratiesysteem dat:
