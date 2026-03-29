@@ -469,28 +469,40 @@ class PlanningProvider(CachedProvider):
         """Haal sprint-historie op via SprintTrackerParser."""
         from devhub_dashboard.data.sprint_tracker_parser import SprintTrackerParser
 
-        parser = SprintTrackerParser(self._config.sprint_tracker_path)
+        parser = SprintTrackerParser(
+            self._config.sprint_tracker_path,
+            velocity_log_path=self._config.velocity_log_path,
+        )
         return parser.parse_sprint_history()
 
     def get_velocity_data(self) -> tuple[list[str], list[int]]:
         """Haal velocity data op via SprintTrackerParser."""
         from devhub_dashboard.data.sprint_tracker_parser import SprintTrackerParser
 
-        parser = SprintTrackerParser(self._config.sprint_tracker_path)
+        parser = SprintTrackerParser(
+            self._config.sprint_tracker_path,
+            velocity_log_path=self._config.velocity_log_path,
+        )
         return parser.get_velocity_data()
 
     def get_cycle_time_data(self) -> tuple[list[str], list[float]]:
         """Haal cycle time data op via SprintTrackerParser."""
         from devhub_dashboard.data.sprint_tracker_parser import SprintTrackerParser
 
-        parser = SprintTrackerParser(self._config.sprint_tracker_path)
+        parser = SprintTrackerParser(
+            self._config.sprint_tracker_path,
+            velocity_log_path=self._config.velocity_log_path,
+        )
         return parser.get_cycle_time_days()
 
     def get_derived_metrics(self) -> dict[str, float | int | str]:
         """Haal afgeleide metrics op via SprintTrackerParser."""
         from devhub_dashboard.data.sprint_tracker_parser import SprintTrackerParser
 
-        parser = SprintTrackerParser(self._config.sprint_tracker_path)
+        parser = SprintTrackerParser(
+            self._config.sprint_tracker_path,
+            velocity_log_path=self._config.velocity_log_path,
+        )
         return parser.get_derived_metrics()
 
 

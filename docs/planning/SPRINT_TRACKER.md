@@ -19,468 +19,165 @@ Fase 0 ✅ → Fase 1 ✅ → Fase 2 ✅ → Fase 2b ✅ → Fase 3 ✅ → Fase
 
 ---
 
-## Fase 0 (Afgerond 2026-03-23)
+## Strategisch Overzicht
 
-Fundament — tooling, infra, architectuurbeslissingen.
+### Now
 
-| Sprints | Tests | Duur |
-|---------|-------|------|
-| 2 (Quick Fixes + Planning Opschoning) | 0 → 397 | <1 dag |
+Geen actieve sprint. Laatste: Sprint 46 (Dual-Format Machine-Leesbare Systeembestanden) ✅
 
----
+### Next
 
-## Fase 1 (Afgerond 2026-03-23)
-
-Kernagents + Infra.
-
-| Sprints | Tests | Duur |
-|---------|-------|------|
-| 2 (FASE1_BOOTSTRAP + FASE2_SKILLS_GOVERNANCE) | 218 → 339 | 1 dag |
-
----
-
-## Fase 2 (Afgerond 2026-03-25)
-
-Skills + Governance (incl. 2b red-team).
-
-| Sprints | Tests | Duur |
-|---------|-------|------|
-| 4 (N8N_CICD + CODE_CHECK + UV_WORKSPACE + OPS_VALIDATIE) | 339 → 395 | 2 dagen |
-
----
-
-## Fase 3 — Knowledge & Memory (Afgerond 2026-03-27)
-
-**Start:** 2026-03-25 (na Ops Validatie SPIKE)
-**Baseline:** 395 tests | 6 agents | 8 skills | 3 packages
-**Eindstand:** 1191 tests | 6 agents | 8 skills | 3 packages (core v0.2.0, storage v0.3.0, vectorstore v0.3.0) + kennispipeline
-**Fase 3 doel:** Knowledge & Memory lagen operationeel — vectorstore, storage, KWP DEV, mentor-systeem, governance-automatisering.
-
-| Sprints | Tests | Duur |
-|---------|-------|------|
-| 22 (Sprint 7-28, 5 tracks + KP) | 395 → 1191 (+796) | 3 dagen |
-
-**Retrospective:** `knowledge/retrospectives/RETRO_FASE3_KNOWLEDGE_MEMORY.md`
-
----
-
-## Intermezzo — Provider Pattern (Sprint 30)
-
-_Standalone sprint tussen Fase 3 en Fase 4. BorisAdapter verhuisd van devhub-core naar BORIS repo (Provider Pattern / SPI). DevHub behoudt alleen het contract (NodeInterface ABC) en discovery (NodeRegistry + sys.path support)._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Provider Pattern | FEAT | S | ✅ DONE | ████████████ | BorisAdapter → BORIS, registry sys.path support, +4 tests |
-
-**Test-impact:** 1202 → 673 devhub tests (netto -529). Tests zijn verhuisd naar BORIS repo, niet verwijderd.
-
----
-
-## Intermezzo — Claude Optimalisatie (Sprint 31)
-
-_Research-sprint: actualiseer Claude Code optimalisatie-bevindingen, beantwoord open vragen, schrijf actiepunten._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Claude Optimalisatie Research | RESEARCH | XS | ✅ DONE | ████████████ | Actualisatie + open vragen + conclusie |
-
----
-
-## Intermezzo — Diátaxis+ Taxonomie PoC (Sprint 32)
-
-_Documentatie-taxonomie uitgebreid van 4 naar 12 categorieën (3 lagen), PoC document + taxonomie-referentie gegenereerd._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Diátaxis+ Taxonomie & PoC | FEAT | S | ✅ DONE | ████████████ | DocumentCategory enum, 8 templates, 2 documenten, +70 tests |
-
----
-
-## Intermezzo — Research Compas Configuratie & Contracts (Sprint 33)
-
-_Drie-ringen domeinstructuur (Core/Agent/Project), KnowledgeDomain 4→16, RQ-tagging op contracts, knowledge.yml + agent_knowledge.yml configuratie, KnowledgeConfig parser._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Research Compas — Configuratie & Contracts | FEAT | S | ✅ DONE | ████████████ | 16 domeinen, RQ-tags, agent profiles, +56 tests |
-
----
-
-## Intermezzo — Documentatie-productie Pipeline (Sprint 34)
-
-_DocumentService orchestrator verbindt vectorstore → documents → storage. FolderRouter voor node-specifieke routing. CredentialResolver voor OAuth2. BORIS-blauwdruk als node-config._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Doc Pipeline & BORIS-blauwdruk | FEAT | S | ✅ DONE | ████████████ | DocumentService, FolderRouter, 4 documenten, +71 tests |
-
----
-
-## Intermezzo — Research Compas Runtime & Bootstrap (Sprint 35)
-
-_KnowledgeScanner (pre-task knowledge scan), ConfigDrivenBootstrap (Ring 1 auto-bootstrap), KnowledgeHealthChecker (7e health dimensie). Kennisketen end-to-end operationeel._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Research Compas — Runtime & Bootstrap | FEAT | S | ✅ DONE | ████████████ | KnowledgeScanner, ConfigDrivenBootstrap, KnowledgeHealthChecker, +83 tests |
-
----
-
-## Intermezzo — Node-Guardrails & Procesverbetering (Sprint 36+37)
-
-_Skill-guardrails: node-keuze als hard gate, DevHub/BORIS-pad splitsing, 4 procesregels per skill. Toegepast op devhub-sprint (Sprint 36) en devhub-sprint-prep, devhub-health, devhub-review (Sprint 37)._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Node-Guardrails devhub-sprint | CHORE | XS | ✅ DONE | ████████████ | Node-keuze stap, DevHub-pad, mode-bewaking |
-| Node-Guardrails 3 skills | CHORE | XS | ✅ DONE | ████████████ | sprint-prep, health, review — zelfde guardrails |
-
----
-
-## Intermezzo — DriveSyncAdapter (Sprint 38)
-
-_Google Drive sync via filesystem adapter. Lokale folder-sync strategie i.p.v. Google Cloud API._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| DriveSyncAdapter | FEAT | S | ✅ DONE | ████████████ | Google Drive via filesystem sync, +26 tests |
-
-**Test-impact:** 882 → 1357 tests (+475). Inclusief nieuwe storage-tests.
-
----
-
-## Fase 4 — Agent Teams SPIKE (Sprint 39)
-
-_SPIKE: onderzoek of Claude Code Agent Teams DevHub's agents kan upgraden. Conclusie: GEPARKEERD — custom agents niet als teammates, nog experimenteel._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Agent Teams Activatie | SPIKE | XS | ✅ DONE | ████████████ | Fact-finding + gate-check → GEPARKEERD herbevestigd |
-
----
-
-## Fase 4 — n8n Event Scheduler SPIKE (Sprint 40)
-
-_SPIKE: onderzoek n8n als externe event-scheduler. Conclusie: GO — `claude -p` via Execute Command, file-based event queue, Docker lokaal, <$5/maand. 3 PoC workflows ontworpen, prioriteringsmatrix voor 9 IDEAs._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| n8n Event Scheduler | SPIKE | XS | ✅ DONE | ████████████ | GO — architectuur + 2 PoC ontwerpen + prioriteringsmatrix |
-
----
-
-## Fase 4 — n8n Docker Setup (Sprint 41)
-
-_CHORE: Docker infrastructure productie-waardig gemaakt. Health check RED→YELLOW, deps gepind, pip/wheel CVEs gefixt._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| n8n Docker Setup | CHORE | XS | ✅ DONE | ████████████ | Health RED→YELLOW, lint fixes, deps gepind, entrypoint gefixed |
-
----
-
-## Fase 4 — Event Bus Lifecycle Hooks (Sprint 42)
-
-_FEAT: Lightweight event bus met pub/sub en typed events. EventBusInterface ABC, 10 typed event subclasses, InMemoryEventBus (thread-safe, recursie-detectie), AnalysisPipeline + DevOrchestrator integratie, wiring helpers. Alle agents kunnen nu reactief samenwerken via lifecycle hooks._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Event Bus Lifecycle Hooks | FEAT | S | ✅ DONE | ████████████ | EventBus ABC + InMemoryEventBus + 10 events + integraties, +67 tests |
-
----
-
-## Fase 4 — DevHub Dashboard NiceGUI (Sprint 43)
-
-_FEAT: Overkoepelend NiceGUI web-dashboard met 7 panelen (Overview, Health, Planning, Knowledge, Governance, Growth, Research). Research-paneel met 3-stromen tabs + Event Bus integratie. Nieuw package devhub-dashboard v0.1.0._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| DevHub Dashboard NiceGUI | FEAT | S | ✅ DONE | ████████████ | 7 panelen, ResearchQueueManager, EventBus consumer, +65 tests |
-| Dashboard Bestaande Panelen Upgrade | FEAT | S | ✅ DONE | ████████████ | 5 panelen upgraded, SprintTrackerParser, CachedProvider, GovernanceProvider, GrowthProvider, +110 tests |
-| Dashboard Kennisbibliotheek & Research Upgrade | FEAT | S | ✅ DONE | ████████████ | ArticleParser, KnowledgeProvider, ResearchQueueItem v2, knowledge_card, status_flow, 3 nieuwe pagina's, +81 tests |
-
----
-
-## Fase 4 — Dual-Format Machine-Leesbare Systeembestanden (Sprint 46)
-
-_FEAT: Alle systeembestanden (DEV_CONSTITUTION, agent-definities, ADRs) verrijkt met machine-leesbare YAML-blokken en Mermaid-diagrammen. Art. 4.6 machine-leesbaarheidsverplichting + reviewer enforcement + MACHINE_READABILITY_STANDARD.md._
-
-| Sprint | Type | Size | Status | Hill | Toelichting |
-|--------|------|------|--------|------|-------------|
-| Dual-Format Machine-Leesbare Systeembestanden | FEAT | S | ✅ DONE | ████████████ | 9 YAML-blokken, 7 agents uitgebreid, 4 ADRs gestandaardiseerd, 3 Mermaid-diagrammen, Art. 4.6, +53 tests |
-
----
-
-## Golfplanning (Fase 3)
-
-### Golf 0: Opruiming ✅
-
-| Sprint | Track | Size | Status | Hill |
-|--------|-------|------|--------|------|
-| Quick Fixes Ops Validatie | — | XS | ✅ DONE | ████████████ |
-| Planning Opschoning | — | XS | ✅ DONE | ████████████ |
-
-### Golf 1: Fundament ✅
-
-| Sprint | Track | Size | Status | Hill | Codepad |
-|--------|-------|------|--------|------|---------|
-| Storage: Interface + LocalAdapter | B | S | ✅ DONE | ████████████ | `packages/devhub-storage/` |
-| Vectorstore: Interface + ChromaDB | C | S | ✅ DONE | ████████████ | `packages/devhub-vectorstore/` |
-| Planning & Tracking Systeem | — | S | ✅ DONE | ████████████ | `docs/planning/` + `skills/` + `agents/` |
-| Mentor: Skill Radar + Contracts | M | S | ✅ DONE | ████████████ | `contracts/growth_contracts.py` + `skills/` |
-| Governance: QA Checks | G | S | ✅ DONE | ████████████ | `agents/qa_agent.py` |
-
-### Golf 2: Uitbouw ✅
-
-| Sprint | Track | Size | Status | Hill | Geblokkeerd door |
-|--------|-------|------|--------|------|------------------|
-| Storage: Google Drive adapter | B | S | ✅ DONE | ████████████ | — |
-| Vectorstore: Weaviate + Multi-tenancy | C | S | ✅ DONE | ████████████ | — |
-| Mentor: Challenge Engine + Scaffolding | M | S | ✅ DONE | ████████████ | Mentor S1 ✅ |
-| Governance: SecurityScanner | G | S | ✅ DONE | ████████████ | Governance S1 ✅ |
-
-### Golf 3: Verrijking ✅
-
-| Sprint | Track | Size | Status | Hill | Geblokkeerd door |
-|--------|-------|------|--------|------|------------------|
-| Storage: SharePoint adapter | B | S | ✅ DONE | ████████████ | Track B S2 ✅ |
-| Vectorstore: Embeddings + DevHub Weaviate | C | S | ✅ DONE | ████████████ | Track C S2 ✅ |
-| Mentor: Research Advisor + Dashboard | M | S | ✅ DONE | ████████████ | Mentor S2 ✅ |
-
-### Kennispipeline Track (toegevoegd Golf 3+)
-
-_Nieuwe track — niet voorzien in originele planning. Uitgegroeid uit Track C vectorstore-werk._
-
-| Sprint | Track | Size | Status | Hill | Toelichting |
-|--------|-------|------|--------|------|-------------|
-| KP Golf 1: Research Contracts + DocumentInterface | KP | S | ✅ DONE | ████████████ | +79 tests, 931 totaal |
-| Track C S5: EmbeddingProvider implementaties | C | S | ✅ DONE | ████████████ | +30 tests, 961 totaal |
-| KP Golf 2A: KnowledgeCurator + Researcher verrijking | KP | S | ✅ DONE | ████████████ | +53 tests, 1014 totaal |
-| KP Golf 2B: KWP DEV Bootstrap | KP | S | ✅ DONE | ████████████ | +29 tests, 1043 totaal |
-| KP Golf 3: Analyse Pipeline | KP | S | ✅ DONE | ████████████ | +39 tests, 1082 totaal |
-
-### Golf 4: Afsluiting & Integratie
-
-| Sprint | Track | Size | Status | Hill | Geblokkeerd door |
-|--------|-------|------|--------|------|------------------|
-| Storage: Reconciliation engine | B | S | ✅ DONE | ████████████ | Track B S3 ✅ |
-| KWP DEV setup | — | S | ✅ DONE | ████████████ | KP Golf 2B ✅ |
-| SPIKE: Sprint Lifecycle Hygiene | — | XS | ✅ DONE | ████████████ | — |
-| FEAT: Lifecycle Hygiene Implementatie | — | S | ✅ DONE | ████████████ | SPIKE ✅ |
-| FEAT: Lifecycle Hygiene Afronding | — | XS | ✅ DONE | ████████████ | FEAT Implementatie ✅ |
-
----
-
-## Kritiek pad
-
-```
-Track C (Vectorstore) is het langste pad naar het Fase 3 einddoel (KWP DEV):
-
-Track C S1 → Track C S2 → Track C S3 → KWP DEV setup
-  (1 sprint)    (1 sprint)    (0.5 sprint)   (0.5 sprint)
-                                              = ~3 sprints totaal
-
-Track B loopt parallel maar is niet blokkerend voor KWP DEV.
-Mentor en Governance zijn complementair maar niet op het kritieke pad.
-```
-
-### Afhankelijkheidsdiagram
-
-```
-Golf 0                Golf 1              Golf 2              Golf 3              Golf 4
-──────                ──────              ──────              ──────              ──────
-Quick Fixes ✅
-                   ┌─ Track B S1 ──────── Track B S2 ──────── Track B S3 ──────── Track B S4
-Planning ──────────┤
-Opschoning         ├─ Track C S1 ──────── Track C S2 ──────── Track C S3 ─┐
-                   │                                                       ├──── KWP DEV
-                   ├─ Mentor S1 ─────────  Mentor S2 ─────────  Mentor S3  │
-                   │                                                       │
-                   └─ Governance S1 ────── Governance S2                   │
-                                                                           │
-                                           Claude Optimalisatie ───────────┘
-                                           (background research)
-```
-
----
-
-## Hill Chart Legenda
-
-Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fases:
-
-```
-            ╱╲
-    Uphill ╱  ╲ Downhill
-   (figuring  (executing
-    it out)    with confidence)
-  ╱            ╲
-╱                ╲
-
-░░░░░░░░░░░░  Niet gestart
-▓░░░░░░░░░░░  Net gestart, veel onbekenden
-▓▓▓░░░░░░░░░  Verkennend, aanpak aan het vormen
-▓▓▓▓▓▓░░░░░░  Halverwege uphill, kernbeslissingen genomen
-▓▓▓▓▓▓▓░░░░░  Top van de hill — alles duidelijk, klaar om uit te voeren
-▓▓▓▓▓▓▓▓▓░░░  Downhill, implementatie loopt
-▓▓▓▓▓▓▓▓▓▓▓░  Bijna klaar, laatste details
-████████████  Afgerond
-```
-
-**Stilstaande dot = blokkade.** Als een sprint meerdere updates geen beweging toont, is er een probleem.
-
----
-
-## Velocity Tracking
-
-### Sprint Log
-
-| # | Sprint | Gepland | Werkelijk | Tests Δ | Schatting-nauwkeurigheid |
-|---|--------|---------|-----------|---------|--------------------------|
-| 1 | FASE1_BOOTSTRAP | 1 sprint | 1 sprint | +81 | 100% |
-| 2 | FASE2_SKILLS_GOVERNANCE | 1 sprint | 1 sprint | +40 | 100% |
-| 3 | N8N_CICD_FOUNDATION | 1 sprint | 1 sprint | +31 | 100% |
-| 4 | CODE_CHECK_ARCHITECTUUR | 1 sprint | 1 sprint | +24 | 100% |
-| 5 | UV_WORKSPACE_TRANSITIE | 1 sprint | 1 sprint | +0* | 100% |
-| 6 | OPERATIONELE_VALIDATIE | 1 sprint | 1 sprint (SPIKE) | +1 | 100% |
-| 7 | Quick Fixes | XS (<1.5u) | XS (<1u) | +2 | 100% |
-| 8 | Planning Opschoning | XS (<1u) | XS (<1u) | +0 | 100% |
-| 9 | Storage Interface + LocalAdapter | S (1 sprint) | S (1 sprint) | +100 | 100% |
-| 10 | Vectorstore Interface + ChromaDB | S (1 sprint) | S (1 sprint) | +78 | 100% |
-| 11 | Planning & Tracking Systeem | S (1 sprint) | S (1 sprint) | +0 | 100% |
-| 12 | Mentor: Skill Radar + Contracts | S (1 sprint) | S (1 sprint) | +36 | 100% |
-| 13 | Governance: QA Checks | S (1 sprint) | S (1 sprint) | +51 | 100% |
-| 14 | Storage: Google Drive adapter | S (1 sprint) | S (1 sprint) | +56 | 100% |
-| 15 | Vectorstore: Weaviate + Multi-tenancy | S (1 sprint) | S (1 sprint) | +59 | 100% |
-| 16 | Mentor: Challenge Engine + Scaffolding | S (1 sprint) | S (1 sprint) | +43 | 100% |
-| 17 | Governance: SecurityScanner | S (1 sprint) | S (1 sprint) | +34 | 100% |
-| 18 | KP Golf 1: Research Contracts + DocumentInterface | S (1 sprint) | S (1 sprint) | +79 | 100% |
-| 19 | Track C S5: EmbeddingProvider implementaties | S (1 sprint) | S (1 sprint) | +30 | 100% |
-| 20 | KP Golf 2A: KnowledgeCurator + Researcher verrijking | S (1 sprint) | S (1 sprint) | +53 | 100% |
-| 21 | KP Golf 2B: KWP DEV Bootstrap | S (1 sprint) | S (1 sprint) | +29 | 100% |
-| 22 | KP Golf 3: Analyse Pipeline | S (1 sprint) | S (1 sprint) | +39 | 100% |
-| 23 | Mentor S3: Research Advisor + Dashboard | S (1 sprint) | S (1 sprint) | +49 | 100% |
-| 24 | Storage: SharePoint adapter | S (1 sprint) | S (1 sprint) | +34 | 100% |
-| 25 | SPIKE: Sprint Lifecycle Hygiene | XS (<1u) | XS (<1u) | +0 | 100% |
-| 26 | FEAT: Lifecycle Hygiene Implementatie | S (1 sprint) | S (1 sprint) | +0 | 100% |
-| 27 | FEAT: Lifecycle Hygiene Afronding | XS (<1u) | XS (<1u) | +0 | 100% |
-| 28 | Storage: Reconciliation Engine | S (1 sprint) | S (1 sprint) | +35 | 100% |
-| 29 | KWP DEV Operationeel | S (1 sprint) | S (1 sprint) | +11 | 100% |
-| 30 | Provider Pattern | S (1 sprint) | S (1 sprint) | +4* | 100% |
-| 31 | Claude Optimalisatie Research | XS (<1u) | XS (<1u) | +0 | 100% |
-| 32 | Diátaxis+ Taxonomie & PoC | S (1 sprint) | S (1 sprint) | +70 | 100% |
-| 33 | Research Compas — Config & Contracts | S (1 sprint) | S (1 sprint) | +56 | 100% |
-| 34 | Doc Pipeline & BORIS-blauwdruk | S (1 sprint) | S (1 sprint) | +71 | 100% |
-| 35 | Research Compas — Runtime & Bootstrap | S (1 sprint) | S (1 sprint) | +83 | 100% |
-| 36 | Node-Guardrails devhub-sprint | XS (<1u) | XS (<1u) | +0 | 100% |
-| 37 | Node-Guardrails 3 skills | XS (<1u) | XS (<1u) | +0 | 100% |
-| 38 | DriveSyncAdapter | S (1 sprint) | S (1 sprint) | +475* | 100% |
-| 39 | Agent Teams SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
-| 40 | n8n Event Scheduler SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
-| 41 | n8n Docker Setup | XS (<1u) | XS (<1u) | +0 | 100% |
-| 42 | Event Bus Lifecycle Hooks | S (1 sprint) | S (1 sprint) | +67 | 100% |
-| 43 | DevHub Dashboard NiceGUI | S (1 sprint) | S (1 sprint) | +65 | 100% |
-| 44 | Dashboard Bestaande Panelen Upgrade | S (1 sprint) | S (1 sprint) | +110 | 100% |
-| 45 | Dashboard Kennisbibliotheek & Research Upgrade | S (1 sprint) | S (1 sprint) | +81 | 100% |
-| 46 | Dual-Format Machine-Leesbare Systeembestanden | S (1 sprint) | S (1 sprint) | +53 | 100% |
-
-*\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
-*\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
-*\* DriveSyncAdapter: +26 nieuwe tests, netto +475 door inclusie BORIS-project tests in workspace.*
-
-### Afgeleide metrics
-
-| Metric | Waarde | Toelichting |
-|--------|--------|-------------|
-| Sprints afgerond | 46 | Alle binnen geschatte tijd |
-| Test baseline | 1735 | Na Sprint 46 (Dual-Format Machine-Leesbare Systeembestanden) |
-| Gemiddelde test-delta | +50.8 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
-| Schattingsnauwkeurigheid | 100% | 46/46 sprints binnen appetite |
-| Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
-
----
-
-## Cycle Time
-
-### Item Lifecycle Tracking
-
-| Item | Inbox datum | Sprint start | Sprint klaar | Cycle time |
-|------|-------------|--------------|--------------|------------|
-| FASE1_BOOTSTRAP | 2026-03-23 | 2026-03-23 | 2026-03-23 | <1 dag |
-| FASE2_SKILLS_GOVERNANCE | 2026-03-23 | 2026-03-23 | 2026-03-23 | <1 dag |
-| RED_TEAM_AGENT | 2026-03-23 | 2026-03-23 | 2026-03-25 | 2 dagen |
-| N8N_CICD_FOUNDATION | 2026-03-24 | 2026-03-24 | 2026-03-25 | 1 dag |
-| CODE_CHECK_ARCHITECTUUR | 2026-03-23 | 2026-03-25 | 2026-03-25 | 2 dagen |
-| OPS_VALIDATIE | 2026-03-25 | 2026-03-25 | 2026-03-25 | <1 dag |
-| Quick Fixes | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
-| Planning Opschoning | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
-| Storage Interface | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
-| Vectorstore Interface | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
-| Planning & Tracking | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| Mentor S1 | 2026-03-23 | 2026-03-26 | 2026-03-26 | 3 dagen |
-| Governance S1 | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
-| Storage: Google Drive | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
-| Vectorstore: Weaviate | 2026-03-24 | 2026-03-26 | 2026-03-26 | 2 dagen |
-| Mentor: Challenge Engine | 2026-03-23 | 2026-03-26 | 2026-03-26 | 3 dagen |
-| Governance: SecurityScanner | 2026-03-25 | 2026-03-26 | 2026-03-26 | 1 dag |
-| KP Golf 1: Research Contracts | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| Track C S5: EmbeddingProvider | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| KP Golf 2A: KnowledgeCurator | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| KP Golf 2B: KWP DEV Bootstrap | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| KP Golf 3: Analyse Pipeline | 2026-03-26 | 2026-03-26 | 2026-03-26 | <1 dag |
-| Mentor S3: Research Advisor | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
-| Storage: SharePoint adapter | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
-| SPIKE: Lifecycle Hygiene | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
-| FEAT: Lifecycle Hygiene Impl. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
-| FEAT: Lifecycle Hygiene Afr. | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
-| Storage: Reconciliation Engine | 2026-03-24 | 2026-03-27 | 2026-03-27 | 3 dagen |
-| KWP DEV Operationeel | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
-| Provider Pattern | 2026-03-27 | 2026-03-27 | 2026-03-27 | <1 dag |
-| Claude Optimalisatie Research | 2026-03-23 | 2026-03-27 | 2026-03-27 | 4 dagen |
-| Diátaxis+ Taxonomie & PoC | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Research Compas Config & Contracts | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Doc Pipeline & BORIS-blauwdruk | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Research Compas Runtime & Bootstrap | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Node-Guardrails devhub-sprint | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Node-Guardrails 3 skills | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| DriveSyncAdapter | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Agent Teams SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| n8n Event Scheduler SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| n8n Docker Setup | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Event Bus Lifecycle Hooks | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| DevHub Dashboard NiceGUI | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
-| Dashboard Bestaande Panelen Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
-| Dashboard Kennisbibliotheek & Research Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
-| Dual-Format Machine-Leesbare Systeembestanden | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
-
-### Afgeleide SLA's
-
-| Metric | Huidig | Doel |
+| Intake | Stroom | Type |
 |--------|--------|------|
-| Inbox → Sprint start | 0-2 dagen | <7 dagen |
-| Sprint duur | <1 dag (intensief) | 1-3 dagen |
-| Inbox → Parked | 1-2 dagen | n.v.t. |
+| Planning-herstructurering Drie Lagen | Governance | CHORE |
+| Dashboard NiceGUI → FastAPI+HTMX | Gebruikerservaring | FEAT |
+| Kennisketen End-to-End | Kennis & Research | FEAT |
+
+### Later
+
+- Fase 5: Agent Teams, plugin marketplace, 2e project PoC
+- n8n Event Scheduler implementatie (SPIKE GO, wacht op Docker setup)
+- Mentor Supervisor Systeem
 
 ---
 
-## Capaciteitsplanning
+## Fase 0-3 (Afgerond)
 
-**Context:** Niels werkt solo, avonduren + weekenden.
+| Fase | Sprints | Tests | Duur | Kern |
+|------|---------|-------|------|------|
+| 0 — Fundament | 2 | 0 → 397 | <1 dag | Tooling, infra, architectuurbeslissingen |
+| 1 — Kernagents | 2 | 218 → 339 | 1 dag | Agents + infra |
+| 2 — Skills | 4 | 339 → 395 | 2 dagen | Skills + governance + red-team |
+| 3 — Knowledge | 22 | 395 → 1191 | 3 dagen | Vectorstore, storage, mentor, governance, kennispipeline |
 
-### Golf 1-3 capaciteit (gerealiseerd)
+_Fase 3 golfplanning: [archive/FASE3_GOLFPLANNING_ARCHIEF.md](archive/FASE3_GOLFPLANNING_ARCHIEF.md)_
+_Fase 3 retrospective: `knowledge/retrospectives/RETRO_FASE3_KNOWLEDGE_MEMORY.md`_
 
-| Week | Beschikbaar | Allocatie | Status |
-|------|-------------|-----------|--------|
-| Week 1 (26 mrt) | Normaal | Golf 0 + Track B S1 + Track C S1 | ✅ Afgerond |
-| Week 2 (26 mrt) | Normaal | Golf 1 (alle tracks) + Golf 2 (alle tracks) | ✅ Afgerond |
-| Week 3 (27 mrt) | Normaal | Kennispipeline Golf 1-3 + Track C S5 + Golf 4 (KWP DEV) | ✅ Afgerond |
+---
 
-### Golf 4+ capaciteit (huidig)
+## Work Streams
 
-| Week | Beschikbaar | Allocatie | Status |
-|------|-------------|-----------|--------|
-| Week 4 (27 mrt+) | Normaal | Golf 4: Lifecycle Hygiene FEAT + Afronding | ✅ Afgerond |
+### Kern-platform
 
-**Advies:** Niet meer dan 2 feature-sprints tegelijk.
+_Packages, contracts, event bus, runtime-infra_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 1 | FASE1_BOOTSTRAP | FEAT | +81 | Kernagents + infra |
+| 2 | FASE2_SKILLS_GOVERNANCE | FEAT | +40 | Skills + governance |
+| 5 | UV_WORKSPACE_TRANSITIE | CHORE | +0 | UV workspace herstructurering |
+| 30 | Provider Pattern | FEAT | +4 | BorisAdapter → BORIS, registry sys.path support |
+| 42 | Event Bus Lifecycle Hooks | FEAT | +67 | EventBus ABC + InMemoryEventBus + 10 events |
+
+**Totaal:** 5 sprints | +192 tests
+
+### Kennis & Research
+
+_Kennispipeline, vectorstore, Research Compas, documentatie_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 10 | Vectorstore Interface + ChromaDB | FEAT | +78 | Interface + ChromaDB adapter |
+| 15 | Vectorstore: Weaviate + Multi-tenancy | FEAT | +59 | Weaviate adapter |
+| 18 | KP Golf 1: Research Contracts | FEAT | +79 | DocumentInterface + contracts |
+| 19 | Track C S5: EmbeddingProvider | FEAT | +30 | Embedding implementaties |
+| 20 | KP Golf 2A: KnowledgeCurator | FEAT | +53 | Curator + Researcher verrijking |
+| 21 | KP Golf 2B: KWP DEV Bootstrap | FEAT | +29 | Knowledge Workspace DEV |
+| 22 | KP Golf 3: Analyse Pipeline | FEAT | +39 | Analyse pipeline |
+| 29 | KWP DEV Operationeel | FEAT | +11 | KWP DEV operationeel |
+| 32 | Diataxis+ Taxonomie & PoC | FEAT | +70 | 12 categorien, 8 templates |
+| 33 | Research Compas — Config & Contracts | FEAT | +56 | 16 domeinen, RQ-tags, agent profiles |
+| 34 | Doc Pipeline & BORIS-blauwdruk | FEAT | +71 | DocumentService, FolderRouter |
+| 35 | Research Compas — Runtime & Bootstrap | FEAT | +83 | KnowledgeScanner, ConfigDrivenBootstrap |
+
+**Totaal:** 12 sprints | +658 tests
+
+### Governance & Kwaliteit
+
+_DEV_CONSTITUTION, security, tests, guardrails, health_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 4 | CODE_CHECK_ARCHITECTUUR | FEAT | +24 | Code check architectuur |
+| 13 | Governance: QA Checks | FEAT | +51 | QA agent checks |
+| 17 | Governance: SecurityScanner | FEAT | +34 | Security scanner |
+| 25 | SPIKE: Lifecycle Hygiene | SPIKE | +0 | Onderzoek lifecycle |
+| 26 | FEAT: Lifecycle Hygiene Impl. | FEAT | +0 | Implementatie |
+| 27 | FEAT: Lifecycle Hygiene Afr. | CHORE | +0 | Afronding |
+| 36 | Node-Guardrails devhub-sprint | CHORE | +0 | Node-keuze, DevHub-pad |
+| 37 | Node-Guardrails 3 skills | CHORE | +0 | sprint-prep, health, review |
+| 46 | Dual-Format Systeembestanden | FEAT | +53 | YAML-blokken, Art. 4.6, reviewer enforcement |
+
+**Totaal:** 9 sprints | +162 tests
+
+### Integraties
+
+_Google Drive, n8n, BorisAdapter, externe systemen_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 3 | N8N_CICD_FOUNDATION | FEAT | +31 | n8n CI/CD fundament |
+| 9 | Storage Interface + LocalAdapter | FEAT | +100 | Storage ABC + lokale adapter |
+| 14 | Storage: Google Drive adapter | FEAT | +56 | Google Drive adapter |
+| 24 | Storage: SharePoint adapter | FEAT | +34 | SharePoint adapter |
+| 28 | Storage: Reconciliation Engine | FEAT | +35 | Reconciliation engine |
+| 38 | DriveSyncAdapter | FEAT | +475 | Google Drive via filesystem sync |
+| 40 | n8n Event Scheduler SPIKE | SPIKE | +0 | GO — architectuur + PoC |
+| 41 | n8n Docker Setup | CHORE | +0 | Health RED→YELLOW, deps gepind |
+
+**Totaal:** 8 sprints | +731 tests
+
+### Gebruikerservaring
+
+_Dashboard, mentor-systeem, skills, agent UX_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 12 | Mentor: Skill Radar + Contracts | FEAT | +36 | Growth contracts + skill radar |
+| 16 | Mentor: Challenge Engine | FEAT | +43 | Challenge engine + scaffolding |
+| 23 | Mentor S3: Research Advisor | FEAT | +49 | Research advisor + dashboard |
+| 43 | DevHub Dashboard NiceGUI | FEAT | +65 | 7 panelen, ResearchQueueManager |
+| 44 | Dashboard Panelen Upgrade | FEAT | +110 | 5 panelen upgraded, SprintTrackerParser |
+| 45 | Dashboard Kennisbibliotheek | FEAT | +81 | ArticleParser, 3 nieuwe pagina's |
+
+**Totaal:** 6 sprints | +384 tests
+
+### Verkenning
+
+_SPIKEs, research-sprints, proof-of-concepts_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 6 | OPERATIONELE_VALIDATIE | SPIKE | +1 | Ops validatie |
+| 31 | Claude Optimalisatie Research | RESEARCH | +0 | Actualisatie + conclusie |
+| 39 | Agent Teams SPIKE | SPIKE | +0 | GEPARKEERD — nog experimenteel |
+
+**Totaal:** 3 sprints | +1 tests
+
+### Meta
+
+_Planning, opschoning, tracking_
+
+| # | Sprint | Type | Tests Δ | Toelichting |
+|---|--------|------|---------|-------------|
+| 7 | Quick Fixes | CHORE | +2 | Ops validatie fixes |
+| 8 | Planning Opschoning | CHORE | +0 | Opschoning |
+| 11 | Planning & Tracking Systeem | FEAT | +0 | Planning systeem |
+
+**Totaal:** 3 sprints | +2 tests
+
+---
+
+## Metrics (samenvatting)
+
+| Metric | Waarde |
+|--------|--------|
+| Sprints afgerond | 46 |
+| Test baseline | 1735 |
+| Gem. test-delta | +50.8/sprint |
+| Schattingsnauwkeurigheid | 100% (46/46) |
+
+_Volledig overzicht: [VELOCITY_LOG.md](VELOCITY_LOG.md)_
 
 ---
 
@@ -488,11 +185,33 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | # | Risico | Impact | Status | Mitigatie |
 |---|--------|--------|--------|-----------|
-| R1 | Track B+C patroon-inconsistentie | Hoog | GEMITIGEERD | Beide S1's afgerond met consistent ABC + frozen dataclasses + factory patroon |
-| R2 | sentence-transformers dependency (~500MB) | Middel | GEMITIGEERD | Optional dependency + lazy loading geïmplementeerd in Track C S5 |
+| R1 | Track B+C patroon-inconsistentie | Hoog | GEMITIGEERD | Consistent ABC + frozen dataclasses + factory patroon |
+| R2 | sentence-transformers dependency (~500MB) | Middel | GEMITIGEERD | Optional dependency + lazy loading |
 | R3 | Weaviate versie-incompatibiliteit | Middel | GEMITIGEERD | Opgelost in Track C S2+S5 |
-| R4 | GA-06 raakt NodeInterface ABC | Middel | GEMITIGEERD | Concrete default methode (niet abstract), backward compatible |
+| R4 | GA-06 raakt NodeInterface ABC | Middel | GEMITIGEERD | Concrete default methode, backward compatible |
 | R5 | Capaciteitsoverschatting (avonduren) | Middel | OPEN | Conservatief plannen, max 2 parallel |
+
+---
+
+## Hill Chart Legenda
+
+```
+            /\
+    Uphill /  \ Downhill
+   (figuring  (executing
+    it out)    with confidence)
+  /            \
+/                \
+
+░░░░░░░░░░░░  Niet gestart
+▓░░░░░░░░░░░  Net gestart, veel onbekenden
+▓▓▓░░░░░░░░░  Verkennend, aanpak aan het vormen
+▓▓▓▓▓▓░░░░░░  Halverwege uphill, kernbeslissingen genomen
+▓▓▓▓▓▓▓░░░░░  Top van de hill — alles duidelijk
+▓▓▓▓▓▓▓▓▓░░░  Downhill, implementatie loopt
+▓▓▓▓▓▓▓▓▓▓▓░  Bijna klaar, laatste details
+████████████  Afgerond
+```
 
 ---
 
@@ -514,7 +233,8 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | Concept | Bron | Kennisgradering |
 |---------|------|----------------|
 | Hill Charts | Shape Up (Basecamp, 2019) | SILVER |
-| Golfplanning (parallel tracks) | AWS Prescriptive Guidance: Workstream Architecture | SILVER |
+| Now-Next-Later | Janna Bastow (ProdPad, 2019) | SILVER |
+| Work Streams | AWS Prescriptive Guidance: Workstream Architecture | SILVER |
 | Velocity tracking | Agile/Scrum body of knowledge (decennia) | GOLD |
 | Cycle time | Lean/Kanban (Taiichi Ohno, 1988) | GOLD |
 | Estimation accuracy | "Software Estimation" (McConnell, 2006) | GOLD |

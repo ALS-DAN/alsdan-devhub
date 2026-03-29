@@ -31,5 +31,9 @@ class DashboardConfig:
         return self.devhub_root / "docs" / "planning" / "inbox"
 
     @property
+    def velocity_log_path(self) -> Path:
+        return self.devhub_root / "docs" / "planning" / "VELOCITY_LOG.md"
+
+    @property
     def nodes_config_path(self) -> Path:
         return self.devhub_root / "config" / "nodes.yml"

@@ -60,9 +60,15 @@ class FaseInfo:
 class SprintTrackerParser:
     """Parsed SPRINT_TRACKER.md naar gestructureerde data."""
 
-    def __init__(self, tracker_path: Path) -> None:
+    def __init__(
+        self,
+        tracker_path: Path,
+        velocity_log_path: Path | None = None,
+    ) -> None:
         self._path = tracker_path
+        self._velocity_log_path = velocity_log_path
         self._content: str | None = None
+        self._velocity_content: str | None = None
 
     def _load(self) -> str:
         if self._content is None:
@@ -71,6 +77,15 @@ class SprintTrackerParser:
             else:
                 self._content = ""
         return self._content
+
+    def _load_velocity(self) -> str:
+        """Load velocity log content, falling back to tracker."""
+        if self._velocity_content is None:
+            if self._velocity_log_path and self._velocity_log_path.exists():
+                self._velocity_content = self._velocity_log_path.read_text(encoding="utf-8")
+            else:
+                self._velocity_content = self._load()
+        return self._velocity_content
 
     def parse_frontmatter(self) -> TrackerFrontmatter:
         """Parse YAML-achtige frontmatter."""
@@ -98,7 +113,7 @@ class SprintTrackerParser:
 
     def parse_sprint_history(self) -> list[SprintHistoryItem]:
         """Parse de velocity tracking tabel (Sprint Log)."""
-        content = self._load()
+        content = self._load_velocity()
         if not content:
             return []
 
@@ -153,7 +168,7 @@ class SprintTrackerParser:
 
     def parse_cycle_times(self) -> list[CycleTimeEntry]:
         """Parse de cycle time tabel."""
-        content = self._load()
+        content = self._load_velocity()
         if not content:
             return []
 
@@ -240,12 +255,25 @@ class SprintTrackerParser:
         return fases
 
     def _count_sprints_for_fase(self, fase_nr: int) -> int:
-        """Tel het aantal sprints in een fase-sectie."""
+        """Tel het aantal sprints in een fase-sectie.
+
+        Ondersteunt zowel de nieuwe drie-lagen structuur (met gecollabste
+        Fase 0-3 samenvattingstabel) als de legacy per-fase secties.
+        """
         content = self._load()
         if not content:
             return 0
 
-        # Zoek "Fase N" headers en tel ✅ DONE rijen
+        # Nieuwe structuur: parse sprint count uit samenvattingstabel
+        # Format: | 0 — Fundament | 2 | ... |
+        summary_match = re.search(
+            rf"\|\s*{fase_nr}\s*[—–-]\s*\w+.*?\|\s*(\d+)\s*\|",
+            content,
+        )
+        if summary_match:
+            return int(summary_match.group(1))
+
+        # Legacy: zoek "Fase N" headers en tel DONE rijen
         pattern = re.compile(
             rf"##\s+(?:Fase\s+{fase_nr}|Intermezzo).*?(?=\n##\s|\Z)",
             re.DOTALL,

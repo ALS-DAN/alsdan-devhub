@@ -30,5 +30,6 @@ class TestDashboardConfig:
         config = DashboardConfig(devhub_root=tmp_path)
         assert config.history_path == tmp_path / "data" / "dashboard_history"
         assert config.sprint_tracker_path == tmp_path / "docs" / "planning" / "SPRINT_TRACKER.md"
+        assert config.velocity_log_path == tmp_path / "docs" / "planning" / "VELOCITY_LOG.md"
         assert config.inbox_path == tmp_path / "docs" / "planning" / "inbox"
         assert config.nodes_config_path == tmp_path / "config" / "nodes.yml"
