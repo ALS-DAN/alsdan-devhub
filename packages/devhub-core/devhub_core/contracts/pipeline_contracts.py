@@ -7,8 +7,11 @@ orkestratieketen. Frozen voor immutability (conform ADR-049 pattern).
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import uuid
+from dataclasses import dataclass, field
+from datetime import UTC, datetime
 from enum import Enum
+from typing import Literal
 
 from devhub_documents.contracts import DocumentCategory, DocumentFormat, DocumentResult
 
@@ -96,3 +99,55 @@ class DocumentProductionResult:
     def __post_init__(self) -> None:
         if not self.storage_path or not self.storage_path.strip():
             raise ValueError("storage_path is required and cannot be empty")
+
+
+# ---------------------------------------------------------------------------
+# Research Proposal — Stroom 2 governance queue item
+# ---------------------------------------------------------------------------
+
+
+class ProposalStatus(Enum):
+    """Status van een research-voorstel in de governance queue."""
+
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    IN_PROGRESS = "IN_PROGRESS"
+    COMPLETED = "COMPLETED"
+
+
+def _default_proposal_id() -> str:
+    return f"rp-{uuid.uuid4().hex[:8]}"
+
+
+def _default_created_at() -> str:
+    return datetime.now(UTC).isoformat()
+
+
+@dataclass(frozen=True)
+class ResearchProposal:
+    """Voorstel voor kennisonderzoek — voor stroom 2 (goedkeuring) en stroom 3 (direct).
+
+    Geschreven naar config/research_queue.yml, gelezen door dashboard.
+    """
+
+    topic: str
+    domain: str
+    requesting_agent: str = ""
+    rationale: str = ""
+    priority: int = 3
+    proposed_depth: str = "STANDARD"  # QUICK, STANDARD, DEEP
+    stream: Literal[1, 2, 3] = 2
+    status: ProposalStatus = ProposalStatus.PENDING
+    proposal_id: str = field(default_factory=_default_proposal_id)
+    created_at: str = field(default_factory=_default_created_at)
+    approved_at: str = ""
+    completed_at: str = ""
+
+    def __post_init__(self) -> None:
+        if not self.topic or not self.topic.strip():
+            raise ValueError("topic is required")
+        if not self.domain or not self.domain.strip():
+            raise ValueError("domain is required")
+        if self.stream not in (1, 2, 3):
+            raise ValueError(f"stream must be 1, 2, or 3, got {self.stream}")

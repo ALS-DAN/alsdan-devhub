@@ -1,17 +1,22 @@
 """Tests voor event bus integraties — AnalysisPipeline, DevOrchestrator, wiring helpers."""
 
 from devhub_core.contracts.curator_contracts import ObservationType
+from pathlib import Path
+
 from devhub_core.contracts.event_contracts import (
     DocGenRequested,
     Event,
     KnowledgeGapDetected,
     ObservationEmitted,
+    ResearchCompleted,
     SprintClosed,
     TaskAssigned,
     TaskCompleted,
 )
 from devhub_core.events.in_memory_bus import InMemoryEventBus
 from devhub_core.events.integrations import (
+    wire_governance_router,
+    wire_ingestion_pipeline,
     wire_knowledge_pipeline,
     wire_sprint_lifecycle,
 )
@@ -255,3 +260,145 @@ class TestWireSprintLifecycle:
                 node_id="devhub",
             )
         )
+
+
+# ---------------------------------------------------------------------------
+# wire_ingestion_pipeline
+# ---------------------------------------------------------------------------
+
+
+class FakeIngestor:
+    """Fake KnowledgeIngestor voor tests."""
+
+    def __init__(self):
+        self.ingested_files: list[Path] = []
+
+    def ingest_file(self, path: Path):
+        self.ingested_files.append(path)
+
+
+class TestWireIngestionPipeline:
+    def test_research_completed_triggers_ingest(self, tmp_path) -> None:
+        bus = InMemoryEventBus()
+        ingestor = FakeIngestor()
+        wire_ingestion_pipeline(bus, ingestor)
+
+        # Maak een bestand aan zodat het pad bestaat
+        article = tmp_path / "test_article.md"
+        article.write_text("---\ntitle: Test\n---\nContent")
+
+        bus.publish(
+            ResearchCompleted(
+                source_agent="researcher",
+                domain="ai_engineering",
+                article_path=str(article),
+                grade="SILVER",
+                source_count=3,
+            )
+        )
+
+        assert len(ingestor.ingested_files) == 1
+        assert ingestor.ingested_files[0] == article
+
+    def test_nonexistent_path_skipped(self) -> None:
+        bus = InMemoryEventBus()
+        ingestor = FakeIngestor()
+        wire_ingestion_pipeline(bus, ingestor)
+
+        bus.publish(
+            ResearchCompleted(
+                source_agent="researcher",
+                domain="ai_engineering",
+                article_path="/nonexistent/path.md",
+                grade="SILVER",
+                source_count=1,
+            )
+        )
+
+        assert len(ingestor.ingested_files) == 0
+
+    def test_unsubscribe_stops_ingestion(self, tmp_path) -> None:
+        bus = InMemoryEventBus()
+        ingestor = FakeIngestor()
+        sub_id = wire_ingestion_pipeline(bus, ingestor)
+
+        bus.unsubscribe(sub_id)
+
+        article = tmp_path / "test.md"
+        article.write_text("content")
+        bus.publish(
+            ResearchCompleted(
+                source_agent="researcher",
+                domain="ai_engineering",
+                article_path=str(article),
+                grade="SILVER",
+            )
+        )
+
+        assert len(ingestor.ingested_files) == 0
+
+
+# ---------------------------------------------------------------------------
+# wire_governance_router
+# ---------------------------------------------------------------------------
+
+
+class FakeRouter:
+    """Fake GovernanceRouter voor tests."""
+
+    def __init__(self):
+        self.routed_events: list[KnowledgeGapDetected] = []
+
+    def route_gap(self, event):
+        self.routed_events.append(event)
+
+
+class TestWireGovernanceRouter:
+    def test_gap_detected_routes_to_router(self) -> None:
+        bus = InMemoryEventBus()
+        router = FakeRouter()
+        wire_governance_router(bus, router)
+
+        bus.publish(
+            KnowledgeGapDetected(
+                source_agent="analysis-pipeline",
+                domain="ai_engineering",
+                gap_description="Missing RAG patterns",
+                requesting_agent="coder",
+            )
+        )
+
+        assert len(router.routed_events) == 1
+        assert router.routed_events[0].domain == "ai_engineering"
+
+    def test_unsubscribe_stops_routing(self) -> None:
+        bus = InMemoryEventBus()
+        router = FakeRouter()
+        sub_id = wire_governance_router(bus, router)
+
+        bus.unsubscribe(sub_id)
+        bus.publish(
+            KnowledgeGapDetected(
+                source_agent="test",
+                domain="dev",
+                gap_description="gap",
+            )
+        )
+
+        assert len(router.routed_events) == 0
+
+    def test_multiple_events_all_routed(self) -> None:
+        bus = InMemoryEventBus()
+        router = FakeRouter()
+        wire_governance_router(bus, router)
+
+        for domain in ["ai_engineering", "sprint_planning", "python_architecture"]:
+            bus.publish(
+                KnowledgeGapDetected(
+                    source_agent="test",
+                    domain=domain,
+                    gap_description=f"Gap in {domain}",
+                )
+            )
+
+        assert len(router.routed_events) == 3

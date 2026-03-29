@@ -323,7 +323,7 @@ class TestEventHierarchy:
             assert issubclass(cls, Event), f"{cls.__name__} is not an Event subclass"
 
     def test_event_count(self) -> None:
-        """Verificatie dat we precies 10 event types hebben (v1 limiet)."""
+        """Verificatie dat we precies 13 event types hebben (v1 + kennisketen)."""
         from devhub_core.contracts import event_contracts
 
         event_classes = [
@@ -331,7 +331,7 @@ class TestEventHierarchy:
             for name, obj in vars(event_contracts).items()
             if isinstance(obj, type) and issubclass(obj, Event) and obj is not Event
         ]
-        assert len(event_classes) == 10
+        assert len(event_classes) == 13
 
 
 # ---------------------------------------------------------------------------

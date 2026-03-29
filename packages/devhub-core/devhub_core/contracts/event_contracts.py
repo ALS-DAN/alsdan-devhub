@@ -217,6 +217,58 @@ class ObservationEmitted(Event):
             raise ValueError("obs_type is required")
 
 
+# --- Knowledge pipeline lifecycle events ---
+
+
+@dataclass(frozen=True)
+class ResearchCompleted(Event):
+    """Gepubliceerd wanneer de research-loop een kennisartikel afrondt."""
+
+    domain: str = ""
+    article_path: str = ""
+    grade: str = ""
+    source_count: int = 0
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not self.domain:
+            raise ValueError("domain is required")
+        if not self.article_path:
+            raise ValueError("article_path is required")
+
+
+@dataclass(frozen=True)
+class KnowledgeIngested(Event):
+    """Gepubliceerd wanneer KnowledgeIngestor een artikel in de vectorstore plaatst."""
+
+    article_id: str = ""
+    domain: str = ""
+    chunk_count: int = 0
+    grade: str = ""
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not self.article_id:
+            raise ValueError("article_id is required")
+        if not self.domain:
+            raise ValueError("domain is required")
+
+
+@dataclass(frozen=True)
+class DocumentPublished(Event):
+    """Gepubliceerd wanneer DocumentService een document naar storage schrijft."""
+
+    document_path: str = ""
+    category: str = ""
+    storage_path: str = ""
+    node_id: str = ""
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
+        if not self.document_path:
+            raise ValueError("document_path is required")
+
+
 # ---------------------------------------------------------------------------
 # EventBusInterface ABC — volgt ResearchQueue patroon
 # ---------------------------------------------------------------------------
