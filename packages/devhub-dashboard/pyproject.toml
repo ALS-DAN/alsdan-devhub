@@ -1,0 +1,22 @@
+[project]
+name = "devhub-dashboard"
+version = "0.1.0"
+description = "Overkoepelend NiceGUI web-dashboard voor DevHub — health, planning, knowledge, governance, growth"
+requires-python = ">=3.11"
+dependencies = [
+    "devhub-core",
+    "devhub-storage",
+    "nicegui>=2.0",
+]
+
+[project.optional-dependencies]
+charts = ["plotly>=5.0"]
+dev = ["plotly>=5.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+devhub-core = { workspace = true }
+devhub-storage = { workspace = true }
