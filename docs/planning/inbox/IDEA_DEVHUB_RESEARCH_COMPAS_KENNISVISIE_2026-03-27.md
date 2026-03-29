@@ -2,7 +2,7 @@
 
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
-status: INBOX
+status: DONE
 fase: 3
 type: visiedocument (overkoepelend — raakt meerdere bestaande intakes)
 ---

@@ -4,9 +4,9 @@
 gegenereerd_door: "Cowork — alsdan-devhub"
 status: ACTIEF
 actieve_fase: null
-laatste_sprint: 42
-test_baseline: 1424
-laatst_bijgewerkt: 2026-03-28
+laatste_sprint: 45
+test_baseline: 1682
+laatst_bijgewerkt: 2026-03-29
 ---
 
 ## Fase-overzicht
@@ -189,6 +189,18 @@ _FEAT: Lightweight event bus met pub/sub en typed events. EventBusInterface ABC,
 
 ---
 
+## Fase 4 — DevHub Dashboard NiceGUI (Sprint 43)
+
+_FEAT: Overkoepelend NiceGUI web-dashboard met 7 panelen (Overview, Health, Planning, Knowledge, Governance, Growth, Research). Research-paneel met 3-stromen tabs + Event Bus integratie. Nieuw package devhub-dashboard v0.1.0._
+
+| Sprint | Type | Size | Status | Hill | Toelichting |
+|--------|------|------|--------|------|-------------|
+| DevHub Dashboard NiceGUI | FEAT | S | ✅ DONE | ████████████ | 7 panelen, ResearchQueueManager, EventBus consumer, +65 tests |
+| Dashboard Bestaande Panelen Upgrade | FEAT | S | ✅ DONE | ████████████ | 5 panelen upgraded, SprintTrackerParser, CachedProvider, GovernanceProvider, GrowthProvider, +110 tests |
+| Dashboard Kennisbibliotheek & Research Upgrade | FEAT | S | ✅ DONE | ████████████ | ArticleParser, KnowledgeProvider, ResearchQueueItem v2, knowledge_card, status_flow, 3 nieuwe pagina's, +81 tests |
+
+---
+
 ## Golfplanning (Fase 3)
 
 ### Golf 0: Opruiming ✅
@@ -356,6 +368,9 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | 40 | n8n Event Scheduler SPIKE | XS (<1u) | XS (<1u) | +0 | 100% |
 | 41 | n8n Docker Setup | XS (<1u) | XS (<1u) | +0 | 100% |
 | 42 | Event Bus Lifecycle Hooks | S (1 sprint) | S (1 sprint) | +67 | 100% |
+| 43 | DevHub Dashboard NiceGUI | S (1 sprint) | S (1 sprint) | +65 | 100% |
+| 44 | Dashboard Bestaande Panelen Upgrade | S (1 sprint) | S (1 sprint) | +110 | 100% |
+| 45 | Dashboard Kennisbibliotheek & Research Upgrade | S (1 sprint) | S (1 sprint) | +81 | 100% |
 
 *\* UV Workspace = herstructurering, geen nieuwe tests verwacht.*
 *\* Provider Pattern: +4 nieuwe tests, netto -529 door verhuizing BorisAdapter tests naar BORIS repo.*
@@ -365,10 +380,10 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 
 | Metric | Waarde | Toelichting |
 |--------|--------|-------------|
-| Sprints afgerond | 42 | Alle binnen geschatte tijd |
-| Test baseline | 1424 | Na Sprint 42 (Event Bus Lifecycle Hooks) |
-| Gemiddelde test-delta | +44.3 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
-| Schattingsnauwkeurigheid | 100% | 42/42 sprints binnen appetite |
+| Sprints afgerond | 45 | Alle binnen geschatte tijd |
+| Test baseline | 1682 | Na Sprint 45 (Dashboard Kennisbibliotheek & Research Upgrade) |
+| Gemiddelde test-delta | +50.7 | Per sprint (excl. UV workspace + Planning Opschoning + SPIKEs + FEAT hygiene + Provider Pattern + Node-Guardrails + Docker Setup) |
+| Schattingsnauwkeurigheid | 100% | 45/45 sprints binnen appetite |
 | Gemiddelde sprint-grootte | S-M | XS=1, S=2, M=3 (Fibonacci-achtig) |
 
 ---
@@ -421,6 +436,9 @@ Geïnspireerd op Shape Up (Basecamp). Het Hill Chart model toont werk in twee fa
 | n8n Event Scheduler SPIKE | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | n8n Docker Setup | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
 | Event Bus Lifecycle Hooks | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| DevHub Dashboard NiceGUI | 2026-03-28 | 2026-03-28 | 2026-03-28 | <1 dag |
+| Dashboard Bestaande Panelen Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
+| Dashboard Kennisbibliotheek & Research Upgrade | 2026-03-29 | 2026-03-29 | 2026-03-29 | <1 dag |
 
 ### Afgeleide SLA's
 

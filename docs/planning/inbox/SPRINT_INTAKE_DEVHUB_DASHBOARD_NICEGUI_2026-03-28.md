@@ -1,6 +1,6 @@
 ---
 gegenereerd_door: "Cowork — alsdan-devhub"
-status: INBOX
+status: DONE
 node: devhub
 sprint_type: FEAT
 fase: 4
@@ -77,6 +77,12 @@ NiceGUI wint op 5 van 8 dimensies voor DevHub's context:
   - Skill Radar visualisatie
   - Challenge Engine status
   - T-shape progressie
+- [ ] **Research & Kennisverzoeken paneel** (`/research`)
+  - **Agent-voorstellen (stroom 2):** kaartjes met research requests die agents hebben gegenereerd via `KnowledgeGapDetected` events. Per kaartje: domein, gap-beschrijving, bron-agent, prioriteit. Acties: Goedkeuren / Afwijzen / Aanpassen.
+  - **Niels-verzoeken (stroom 3):** formulier "Onderzoek aanvragen" — topic, domein, diepte (QUICK/STANDARD/DEEP), verwachte output (kennis-artikel, document, of beide). Submitted requests verschijnen in dezelfde queue.
+  - **Lopende onderzoeken:** status-tracker per research request — Wachtend / Goedgekeurd / In Uitvoering / Afgerond / Afgewezen. Progressie-indicator.
+  - **Auto-kennis log (stroom 1):** read-only overzicht van automatisch bijgewerkte basiskennis (KWP DEV). Wat is er bijgekomen, wat is afgewezen door KnowledgeCurator, freshness-status.
+  - **Research-resultaten:** link naar gegenereerde documenten in Google Drive per afgerond onderzoek.
 - [ ] **Tests** — pytest suite voor dashboard-componenten, integratietests met devhub-core
 
 ## Technische richting
@@ -96,12 +102,14 @@ packages/devhub-dashboard/
 │   │   ├── planning.py
 │   │   ├── knowledge.py
 │   │   ├── governance.py
-│   │   └── growth.py
+│   │   ├── growth.py
+│   │   └── research.py     # Research & Kennisverzoeken
 │   ├── components/
 │   │   ├── __init__.py
 │   │   ├── kpi_card.py     # Herbruikbare KPI card component
 │   │   ├── status_badge.py # Groen/geel/rood indicator
-│   │   └── trend_chart.py  # Plotly trend wrapper
+│   │   ├── trend_chart.py  # Plotly trend wrapper
+│   │   └── research_card.py # Research request kaartje met approve/reject
 │   ├── data/
 │   │   ├── __init__.py
 │   │   └── providers.py    # Data ophalen uit devhub-core, storage, vectorstore
@@ -125,7 +133,8 @@ packages/devhub-dashboard/
 
 - **Geblokkeerd door:** geen — alle benodigde packages (core, storage, vectorstore, documents) zijn operationeel
 - **BORIS-impact:** nee — dit is een DevHub-intern dashboard. Kan later uitgebreid worden met node-specifieke views (via BorisAdapter) maar dat is buiten scope.
-- **Event Bus relatie:** het dashboard kan later een Event Bus consumer worden (uit SPRINT_INTAKE_EVENT_BUS_LIFECYCLE_HOOKS). Voor nu: directe Python imports, geen event-driven architectuur nodig.
+- **Event Bus relatie:** het dashboard is een Event Bus consumer. Het Research-paneel luistert naar `KnowledgeGapDetected` events om agent-voorstellen te tonen. Event Bus (Sprint 42) is afgerond en operationeel — directe integratie mogelijk.
+- **Kennisketen relatie:** het Research-paneel is de menselijke interface voor stroom 2 (agent-geïnitieerde research met Niels-goedkeuring) en stroom 3 (Niels-geïnitieerde research). Geblokkeerd door: Pipeline-sprint (Knowledge Ingestion + Document Production) voor volledige end-to-end flow. Dashboard kan Research Queue tonen zonder werkende pipeline, maar resultaten verschijnen pas na pipeline-sprint.
 
 ## Fase-context
 
@@ -140,6 +149,9 @@ Niels heeft Fase 4 goedkeuring gegeven (zie beslissingen 2026-03-28).
 3. **Historische data:** waar opslaan? Optie A: devhub-storage (LocalAdapter). Optie B: SQLite naast de app. Optie C: in-memory voor nu, persistent later.
 4. **Theming:** Quasar (NiceGUI's default) biedt dark mode out-of-the-box. DevHub-specifiek kleurenschema wenselijk?
 5. **Health-skill integratie:** bestaande health-check logica hergebruiken of dupliceren? Liefst hergebruiken via devhub-core imports.
+6. **Research Queue persistentie:** waar slaat het dashboard goedgekeurde/afgewezen requests op? Opties: (A) YAML-bestand `config/research_queue.yml`, (B) devhub-storage via LocalAdapter, (C) in-memory + Event Bus history. YAML is simpelst en past bij bestaande config-patronen.
+7. **Research-formulier scope:** het Niels-verzoeken formulier (stroom 3) moet minimaal topic + domein + diepte bevatten. Moet het ook een DocumentCategory kiezen (welk type output)? Of bepaalt de pipeline dat automatisch?
+8. **Drie-stromen visuele scheiding:** hoe onderscheidt het Research-paneel de drie stromen visueel? Suggestie: tabs ("Agent-voorstellen" / "Mijn verzoeken" / "Auto-kennis log") of kleurcodering.
 
 ## DEV_CONSTITUTION impact
 
