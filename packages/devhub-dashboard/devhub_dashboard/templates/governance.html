@@ -4,6 +4,14 @@
 {% block content %}
 <div class="section-title">Governance & Compliance</div>
 
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qa-btn" hx-post="/api/actions/compliance-audit" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">✅ Compliance Audit</button>
+    <button class="qa-btn" hx-post="/api/actions/security-scan" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">🔒 Security Scan</button>
+    <span id="action-spinner" class="htmx-indicator" style="color: #4ecca3;">laden...</span>
+</div>
+<div id="action-result"></div>
+
 <!-- Compliance Gauge + Summary -->
 <div style="display:grid;grid-template-columns:200px 1fr;gap:24px;margin-bottom:24px;">
     <div class="card" style="text-align:center;">

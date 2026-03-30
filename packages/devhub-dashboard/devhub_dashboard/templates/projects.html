@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Projects{% endblock %}
+
+{% block content %}
+<div class="section-title">Projects & Packages</div>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qa-btn" hx-post="/api/actions/rescan-packages" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">🔍 Rescan Packages</button>
+    <span id="action-spinner" class="htmx-indicator" style="color: #4ecca3;">laden...</span>
+</div>
+<div id="action-result"></div>
+
+<!-- KPI Strip -->
+<div class="kpi-row">
+    {% for kpi in kpis %}
+    <div class="kpi-card">
+        <div class="kpi-label">{{ kpi.label }}{% if kpi.tip %}<span class="info"><span class="tip">{{ kpi.tip }}</span></span>{% endif %}</div>
+        <div class="kpi-value" style="color: {{ kpi.color }};">{{ kpi.value }}</div>
+        {% if kpi.sub %}<div class="kpi-sub">{{ kpi.sub }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Workspace Packages -->
+<div class="section-title">Workspace Packages <span class="info"><span class="tip">Python packages in de uv workspace (packages/). Versie en dependencies uit pyproject.toml.</span></span></div>
+{% if packages %}
+<div class="card">
+    <table>
+        <thead>
+            <tr><th>Package</th><th>Versie</th><th>Dependencies</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            {% for pkg in packages %}
+            <tr>
+                <td><strong>{{ pkg.name }}</strong></td>
+                <td>{{ pkg.version }}</td>
+                <td>{{ pkg.dep_count }}</td>
+                <td><span class="badge {{ pkg.badge_cls }}">{{ pkg.badge_label }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="color:#666;font-style:italic;">Geen packages gevonden.</div>
+{% endif %}
+
+<!-- Managed Projects -->
+<div class="section-title">Managed Projects <span class="info"><span class="tip">Externe projecten geregistreerd in config/nodes.yml. Beheerd via DevHub adapters.</span></span></div>
+{% if nodes %}
+<div class="grid-2">
+    {% for node in nodes %}
+    <div class="card" style="border-left:3px solid {% if node.enabled %}#4ecca3{% else %}#9e9e9e{% endif %};">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong>{{ node.name }}</strong>
+            <span class="badge {% if node.enabled %}badge-green{% else %}badge-grey{% endif %}">{% if node.enabled %}Actief{% else %}Inactief{% endif %}</span>
+        </div>
+        <table style="width:100%;font-size:13px;">
+            <tr><td style="color:#8892b0;">Node ID</td><td><code>{{ node.node_id }}</code></td></tr>
+            <tr><td style="color:#8892b0;">Adapter</td><td style="font-size:11px;">{{ node.adapter }}</td></tr>
+            <tr><td style="color:#8892b0;">DevAgents</td><td>{% if node.devagents %}✅ Enabled{% else %}❌ Disabled{% endif %}</td></tr>
+        </table>
+        {% if node.tags %}
+        <div style="margin-top:8px;">
+            {% for tag in node.tags %}
+            <span class="badge badge-blue" style="font-size:11px;">{{ tag }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="color:#666;font-style:italic;">Geen managed projects geregistreerd.</div>
+{% endif %}
+{% endblock %}

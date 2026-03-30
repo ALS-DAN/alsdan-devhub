@@ -4,6 +4,13 @@
 {% block content %}
 <div class="section-title">Research & Kennisverzoeken</div>
 
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qa-btn" hx-post="/api/actions/queue-refresh" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">🔄 Queue Refresh</button>
+    <span id="action-spinner" class="htmx-indicator" style="color: #4ecca3;">laden...</span>
+</div>
+<div id="action-result"></div>
+
 <!-- KPI Strip -->
 <div class="kpi-row">
     <div class="kpi-card">
@@ -30,13 +37,120 @@
 
 <!-- Tabs -->
 <div class="tab-nav">
-    <button class="tab-btn active" onclick="showTab('agent')">Agent <span class="badge badge-blue">{{ agent_items|length }}</span></button>
+    <button class="tab-btn active" onclick="showTab('form')">➕ Nieuw Voorstel</button>
+    <button class="tab-btn" onclick="showTab('agent')">Agent <span class="badge badge-blue">{{ agent_items|length }}</span></button>
     <button class="tab-btn" onclick="showTab('user')">User <span class="badge badge-green">{{ user_items|length }}</span></button>
     <button class="tab-btn" onclick="showTab('auto')">Auto <span class="badge badge-grey">{{ auto_items|length }}</span></button>
 </div>
 
+<!-- Nieuw Voorstel Tab (Form) -->
+<div id="tab-form" class="tab-content active">
+    <div class="card">
+        <div class="section-title" style="font-size:16px;">Research Intake Formulier <span class="info"><span class="tip">Dien een nieuw kennisverzoek in. Verplichte velden: topic, domein. Overige velden verrijken het voorstel.</span></span></div>
+        <form hx-post="/api/actions/submit-research" hx-target="#form-result" hx-swap="innerHTML" style="display:flex;flex-direction:column;gap:14px;">
+            <!-- Topic -->
+            <div>
+                <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Topic *</label>
+                <input type="text" name="topic" required placeholder="Onderwerp van het onderzoek" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+            </div>
+
+            <div class="grid-2" style="gap:14px;">
+                <!-- Domain -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Domein *</label>
+                    <select name="domain" required style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+                        <option value="">— Kies domein —</option>
+                        <option value="ai_engineering">AI Engineering</option>
+                        <option value="architecture">Architecture</option>
+                        <option value="governance">Governance</option>
+                        <option value="knowledge_management">Knowledge Management</option>
+                        <option value="python">Python</option>
+                        <option value="security">Security</option>
+                        <option value="testing">Testing</option>
+                        <option value="devops">DevOps</option>
+                    </select>
+                </div>
+
+                <!-- Depth -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Diepte</label>
+                    <select name="depth" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+                        <option value="QUICK">Quick (overzicht)</option>
+                        <option value="STANDARD" selected>Standard (analyse)</option>
+                        <option value="DEEP">Deep (volledig onderzoek)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Background -->
+            <div>
+                <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Achtergrond <span class="info"><span class="tip">Waarom is dit onderzoek nodig? Context en motivatie.</span></span></label>
+                <textarea name="background" rows="3" placeholder="Motivatie en context voor dit onderzoek..." style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;resize:vertical;"></textarea>
+            </div>
+
+            <!-- Research Questions -->
+            <div>
+                <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Research Questions <span class="info"><span class="tip">Expliciete vragen die het onderzoek moet beantwoorden. Eén per regel.</span></span></label>
+                <textarea name="research_questions" rows="3" placeholder="RQ1: Hoe werkt X?&#10;RQ2: Wat zijn de trade-offs van Y?&#10;RQ3: Welke alternatieven bestaan er?" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;resize:vertical;"></textarea>
+            </div>
+
+            <div class="grid-2" style="gap:14px;">
+                <!-- Scope In -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Scope In <span class="info"><span class="tip">Wat valt binnen het onderzoek.</span></span></label>
+                    <textarea name="scope_in" rows="2" placeholder="Wat valt erin..." style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;resize:vertical;"></textarea>
+                </div>
+
+                <!-- Scope Out -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Scope Out <span class="info"><span class="tip">Wat valt buiten het onderzoek.</span></span></label>
+                    <textarea name="scope_out" rows="2" placeholder="Wat valt erbuiten..." style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;resize:vertical;"></textarea>
+                </div>
+            </div>
+
+            <div class="grid-2" style="gap:14px;">
+                <!-- Expected Grade -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Verwachte Grade</label>
+                    <select name="expected_grade" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+                        <option value="">— Geen voorkeur —</option>
+                        <option value="GOLD">GOLD (externe bronverificatie)</option>
+                        <option value="SILVER">SILVER (interne validatie)</option>
+                        <option value="BRONZE">BRONZE (ervaringskennis)</option>
+                    </select>
+                </div>
+
+                <!-- Priority -->
+                <div>
+                    <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Prioriteit</label>
+                    <select name="priority" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+                        <option value="3">P3 — Low</option>
+                        <option value="2" selected>P2 — Medium</option>
+                        <option value="1">P1 — High</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Document Category -->
+            <div>
+                <label style="color:#8892b0;font-size:13px;display:block;margin-bottom:4px;">Document Categorie <span class="info"><span class="tip">Diátaxis categorie: tutorial, how-to, explanation, reference.</span></span></label>
+                <select name="document_category" style="width:100%;padding:10px 12px;background:#16213e;border:1px solid #2a2a4a;border-radius:8px;color:#ccd6f6;font-size:14px;">
+                    <option value="">— Geen voorkeur —</option>
+                    <option value="tutorial">Tutorial</option>
+                    <option value="how-to">How-to Guide</option>
+                    <option value="explanation">Explanation</option>
+                    <option value="reference">Reference</option>
+                </select>
+            </div>
+
+            <button type="submit" class="qa-btn" style="align-self:flex-start;background:#0f3460;border-color:#4ecca3;color:#4ecca3;font-weight:600;padding:10px 24px;">📝 Voorstel Indienen</button>
+        </form>
+        <div id="form-result" style="margin-top:12px;"></div>
+    </div>
+</div>
+
 <!-- Agent Tab -->
-<div id="tab-agent" class="tab-content active">
+<div id="tab-agent" class="tab-content">
     {% if agent_items %}
     {% for item in agent_items %}
     <a href="/research/{{ item.id }}" style="text-decoration:none;color:inherit;">

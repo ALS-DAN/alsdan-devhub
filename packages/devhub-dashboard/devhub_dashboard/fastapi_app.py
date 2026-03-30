@@ -153,6 +153,26 @@ def _health_to_level(status: HealthStatus) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Helper: sparkline SVG points from a list of values
+# ---------------------------------------------------------------------------
+
+
+def _sparkline(values: list[int | float], width: int = 100, height: int = 24) -> str:
+    """Convert a list of numeric values to SVG polyline points string."""
+    if not values or len(values) < 2:
+        return ""
+    mn, mx = min(values), max(values)
+    rng = mx - mn if mx != mn else 1
+    step = width / (len(values) - 1)
+    points = []
+    for i, v in enumerate(values):
+        x = round(i * step, 1)
+        y = round(height - ((v - mn) / rng) * (height - 2) - 1, 1)
+        points.append(f"{x},{y}")
+    return " ".join(points)
+
+
+# ---------------------------------------------------------------------------
 # Helper: build KPI and domain data for overview
 # ---------------------------------------------------------------------------
 
@@ -165,30 +185,35 @@ def _build_kpis(health, sprint, inbox_items, compliance, freshness):
             "value": sprint.test_baseline,
             "color": "#4ecca3",
             "sub": "baseline",
+            "tip": "Totaal aantal tests in de repository. Bron: pytest collectie.",
         },
         {
             "label": "Sprint",
             "value": f"#{sprint.nummer}",
             "color": "#2196f3",
             "sub": sprint.naam or "idle",
+            "tip": "Huidige sprint nummer en naam uit SPRINT_TRACKER.md.",
         },
         {
             "label": "Inbox",
             "value": len(inbox_items),
             "color": "#ffc107" if inbox_items else "#4ecca3",
             "sub": "intake items",
+            "tip": "Aantal sprint-intake items in docs/planning/inbox/ wachtend op verwerking.",
         },
         {
             "label": "Health",
             "value": health.overall.value.capitalize(),
             "color": "#4ecca3" if health.overall == HealthStatus.HEALTHY else "#ffc107",
             "sub": f"{len(health.checks)}/7 dimensies",
+            "tip": "Geaggregeerde health status over alle 7 dimensies. Cache TTL: 30s.",
         },
         {
             "label": "Fase",
             "value": sprint.fase or "?",
             "color": "#2196f3",
             "sub": "actief",
+            "tip": "Actieve ontwikkelfase (0-5) uit het faseplan in SPRINT_TRACKER.md.",
         },
     ]
     if compliance:
@@ -198,6 +223,7 @@ def _build_kpis(health, sprint, inbox_items, compliance, freshness):
                 "value": f"{compliance.percentage:.0f}%",
                 "color": "#4ecca3" if compliance.percentage >= 80 else "#ffc107",
                 "sub": f"{compliance.active}/{compliance.total} actief",
+                "tip": "DEV_CONSTITUTION compliance: percentage actieve artikelen.",
             }
         )
     if freshness:
@@ -207,6 +233,7 @@ def _build_kpis(health, sprint, inbox_items, compliance, freshness):
                 "value": f"{freshness.freshness_score:.0%}",
                 "color": "#4ecca3" if freshness.freshness_score >= 0.7 else "#ffc107",
                 "sub": f"{freshness.total_articles} items, {freshness.fresh_count} vers",
+                "tip": "Kennisartikelen jonger dan 30 dagen. Vers/verouderend/verlopen.",
             }
         )
     return kpis
@@ -328,18 +355,26 @@ def _build_activities(sprint, inbox_items):
 async def overview(request: Request):
     """Executive Summary — landing page."""
     health = _get_health().get_health_report()
-    sprint = _get_planning().get_sprint_info()
-    inbox_items = _get_planning().get_inbox_items()
+    planning = _get_planning()
+    sprint = planning.get_sprint_info()
+    inbox_items = planning.get_inbox_items()
+    _, deltas = planning.get_velocity_data()
     compliance = _get_governance().get_compliance_score()
     growth_data = _get_growth().get_skill_radar_data()
     freshness = _get_knowledge().get_freshness_summary()
+
+    # Add sparklines to KPIs
+    kpis = _build_kpis(health, sprint, inbox_items, compliance, freshness)
+    if deltas:
+        # Tests KPI gets velocity sparkline
+        kpis[0]["sparkline"] = _sparkline(deltas[-8:])
 
     return templates.TemplateResponse(
         request,
         "overview.html",
         {
             "active_page": "overview",
-            "kpis": _build_kpis(health, sprint, inbox_items, compliance, freshness),
+            "kpis": kpis,
             "domains": _build_domains(
                 health, sprint, inbox_items, compliance, growth_data, freshness
             ),
@@ -379,6 +414,208 @@ async def refresh_health(request: Request):
             "checks": checks,
             "status_badge": _STATUS_BADGE,
         },
+    )
+
+
+# ---------------------------------------------------------------------------
+# Quick Action endpoints (HTMX partials)
+# ---------------------------------------------------------------------------
+
+
+def _action_html(title: str, items: list[str], color: str = "#4ecca3") -> str:
+    """Build a simple HTML fragment for action results."""
+    rows = "".join(f'<div style="padding:4px 0;font-size:13px;">✓ {i}</div>' for i in items)
+    return (
+        f'<div class="card" style="border-left:3px solid {color};margin-top:12px;">'
+        f'<strong style="color:{color};">{title}</strong>{rows}</div>'
+    )
+
+
+@app.post("/api/actions/system-pulse", response_class=HTMLResponse)
+async def action_system_pulse(request: Request):
+    health = _get_health().get_health_report()
+    sprint = _get_planning().get_sprint_info()
+    compliance = _get_governance().get_compliance_score()
+    items = [
+        f"Health: {health.overall.value.capitalize()} ({len(health.checks)} dimensies)",
+        f"Sprint: #{sprint.nummer} — {sprint.naam or 'idle'}",
+        f"Compliance: {compliance.percentage:.0f}%" if compliance else "Compliance: n/a",
+    ]
+    return HTMLResponse(_action_html("System Pulse", items))
+
+
+@app.post("/api/actions/export-snapshot", response_class=HTMLResponse)
+async def action_export_snapshot(request: Request):
+    report = _get_health().get_health_report()
+    history = _get_history()
+    snapshot = HealthSnapshot.from_report(
+        report,
+        test_files=_get_health()._count_test_files(),
+        packages=_get_health()._count_packages(),
+    )
+    history.save_snapshot(snapshot)
+    return HTMLResponse(
+        _action_html("Snapshot Exported", [f"Timestamp: {snapshot.timestamp[:19]}"])
+    )
+
+
+@app.post("/api/actions/sprint-status", response_class=HTMLResponse)
+async def action_sprint_status(request: Request):
+    sprint = _get_planning().get_sprint_info()
+    items = [
+        f"Sprint #{sprint.nummer}: {sprint.naam or '—'}",
+        f"Status: {sprint.status}",
+        f"Fase: {sprint.fase or '?'}",
+        f"Test baseline: {sprint.test_baseline}",
+    ]
+    return HTMLResponse(_action_html("Sprint Status", items, "#2196f3"))
+
+
+@app.post("/api/actions/velocity-report", response_class=HTMLResponse)
+async def action_velocity_report(request: Request):
+    labels, deltas = _get_planning().get_velocity_data()
+    if labels:
+        items = [
+            f"{lbl}: +{delta} tests" for lbl, delta in zip(labels[-5:], deltas[-5:], strict=False)
+        ]
+    else:
+        items = ["Geen velocity data beschikbaar."]
+    return HTMLResponse(_action_html("Velocity Report", items, "#2196f3"))
+
+
+@app.post("/api/actions/dekking-scan", response_class=HTMLResponse)
+async def action_dekking_scan(request: Request):
+    coverage = _get_knowledge().get_domain_coverage()
+    if coverage:
+        items = [
+            f"{c.domain.replace('_', ' ').title()}: "
+            f"{c.article_count} artikelen, score {c.coverage_score:.0%}"
+            for c in coverage
+        ]
+    else:
+        items = ["Geen coverage data beschikbaar."]
+    return HTMLResponse(_action_html("Dekking Scan", items, "#ce93d8"))
+
+
+@app.post("/api/actions/freshness-check", response_class=HTMLResponse)
+async def action_freshness_check(request: Request):
+    f = _get_knowledge().get_freshness_summary()
+    items = [
+        f"Totaal: {f.total_articles} artikelen",
+        f"Vers (<30d): {f.fresh_count}",
+        f"Verouderend (30-90d): {f.aging_count}",
+        f"Verlopen (>90d): {f.stale_count}",
+        f"Score: {f.freshness_score:.0%}",
+    ]
+    return HTMLResponse(_action_html("Freshness Check", items, "#4ecca3"))
+
+
+@app.post("/api/actions/compliance-audit", response_class=HTMLResponse)
+async def action_compliance_audit(request: Request):
+    score = _get_governance().get_compliance_score()
+    articles = _get_governance().get_article_statuses()
+    items = [
+        f"Score: {score.percentage:.0f}% ({score.active}/{score.total} actief)",
+    ]
+    for a in articles[:5]:
+        items.append(f"Art. {a.article_id}: {a.title} — {a.status}")
+    return HTMLResponse(_action_html("Compliance Audit", items, "#4ecca3"))
+
+
+@app.post("/api/actions/security-scan", response_class=HTMLResponse)
+async def action_security_scan(request: Request):
+    sec = _get_governance().get_security_summary()
+    if sec:
+        items = [
+            f"Findings: {sec.total_findings}",
+            f"Critical: {sec.critical_count}",
+            f"High: {sec.high_count}",
+        ]
+    else:
+        items = ["Geen security audit data beschikbaar."]
+    return HTMLResponse(_action_html("Security Scan", items, "#f44336"))
+
+
+@app.post("/api/actions/update-radar", response_class=HTMLResponse)
+async def action_update_radar(request: Request):
+    data = _get_growth().get_skill_radar_data()
+    items = [f"{name}: Level {level} ({_DREYFUS.get(level, '?')})" for name, level in data]
+    return HTMLResponse(_action_html("Skill Radar", items, "#64ffda"))
+
+
+@app.post("/api/actions/next-challenge", response_class=HTMLResponse)
+async def action_next_challenge(request: Request):
+    challenges = _get_growth().get_challenges()
+    proposed = [c for c in challenges if c.get("status") == "PROPOSED"]
+    if proposed:
+        ch = proposed[0]
+        items = [f"{ch.get('title', '—')}", f"Domein: {ch.get('domain', '—')}"]
+    else:
+        items = ["Geen voorgestelde challenges beschikbaar."]
+    return HTMLResponse(_action_html("Next Challenge", items, "#ffc107"))
+
+
+@app.post("/api/actions/queue-refresh", response_class=HTMLResponse)
+async def action_queue_refresh(request: Request):
+    qm = _get_queue()
+    agent = len(qm.list_items(stream=RequestStream.AGENT.value))
+    user = len(qm.list_items(stream=RequestStream.USER.value))
+    auto = len(qm.list_items(stream=RequestStream.AUTO.value))
+    items = [
+        f"Agent: {agent} verzoeken",
+        f"User: {user} verzoeken",
+        f"Auto: {auto} verzoeken",
+        f"Totaal: {agent + user + auto}",
+    ]
+    return HTMLResponse(_action_html("Queue Status", items, "#ce93d8"))
+
+
+@app.post("/api/actions/submit-research", response_class=HTMLResponse)
+async def action_submit_research(request: Request):
+    """HTMX: submit a new research proposal via form."""
+    form = await request.form()
+    topic = form.get("topic", "").strip()
+    domain = form.get("domain", "").strip()
+    if not topic or not domain:
+        return HTMLResponse(_action_html("Fout", ["Topic en domein zijn verplicht."], "#f44336"))
+
+    depth = form.get("depth", "STANDARD")
+    background = form.get("background", "").strip()
+    rq_raw = form.get("research_questions", "").strip()
+    research_questions = [q.strip() for q in rq_raw.split("\n") if q.strip()] if rq_raw else []
+    scope_in = form.get("scope_in", "").strip()
+    scope_out = form.get("scope_out", "").strip()
+    expected_grade = form.get("expected_grade", "")
+    priority = int(form.get("priority", "2"))
+    document_category = form.get("document_category", "")
+
+    qm = _get_queue()
+    item = qm.create_user_request(
+        topic=topic,
+        domain=domain,
+        depth=depth,
+        document_category=document_category,
+    )
+    # Enrich with extended fields
+    item.background = background
+    item.research_questions = research_questions
+    item.scope_in = scope_in
+    item.scope_out = scope_out
+    item.expected_grade = expected_grade
+    item.priority = priority
+    qm.add_item(item)  # save enriched version
+
+    return HTMLResponse(
+        _action_html(
+            "Voorstel Ingediend",
+            [
+                f"Topic: {topic}",
+                f"Domein: {domain}",
+                f"Diepte: {depth}",
+                f"ID: {item.item_id}",
+            ],
+            "#4ecca3",
+        )
     )
 
 
@@ -436,24 +673,34 @@ async def health_page(request: Request):
             "label": "Overall",
             "value": report.overall.value.capitalize(),
             "color": ("#4ecca3" if report.overall == HealthStatus.HEALTHY else "#f44336"),
+            "tip": "Geaggregeerde status: Healthy als alle dimensies groen, anders worst-case.",
         },
         {
             "label": "Dimensies",
             "value": len(report.checks),
             "color": "#2196f3",
             "sub": "gecontroleerd",
+            "tip": "Health dimensies gecontroleerd (max 7).",
         },
         {
             "label": "P1 Alerts",
             "value": len(report.p1_findings),
             "color": "#f44336" if report.p1_findings else "#4ecca3",
+            "tip": "Prioriteit 1 findings: critical issues die directe actie vereisen.",
         },
         {
             "label": "P2 Alerts",
             "value": len(report.p2_findings),
             "color": "#ffc107" if report.p2_findings else "#4ecca3",
+            "tip": "Prioriteit 2 findings: aandachtspunten voor verbetering.",
         },
     ]
+
+    # Add sparklines from snapshot history
+    if snapshots:
+        test_vals = [s.test_files for s in snapshots[-8:]]
+        if len(test_vals) >= 2:
+            kpis[1]["sparkline"] = _sparkline(test_vals)  # Dimensies KPI
 
     # Snapshot table
     snapshot_rows = [
@@ -517,30 +764,35 @@ async def planning_page(request: Request):
             "value": metrics.get("sprints_afgerond", sprint.nummer),
             "color": "#64ffda",
             "sub": "afgerond",
+            "tip": "Totaal aantal afgeronde sprints uit SPRINT_TRACKER.md.",
         },
         {
             "label": "Accuracy",
             "value": str(metrics.get("estimation_accuracy", "—")),
             "color": "#4ecca3",
             "sub": "schattingen",
+            "tip": "Percentage sprints binnen geschatte omvang.",
         },
         {
             "label": "Avg Test Δ",
             "value": f"+{metrics.get('avg_test_delta', 0)}",
             "color": "#2196f3",
             "sub": "per sprint",
+            "tip": "Gemiddelde toename in tests per sprint.",
         },
         {
             "label": "Inbox",
             "value": len(inbox_items),
             "color": "#ffc107" if inbox_items else "#4ecca3",
             "sub": "items",
+            "tip": "Sprint-intake items wachtend in docs/planning/inbox/.",
         },
         {
             "label": "Fase",
             "value": sprint.fase or "?",
             "color": "#ce93d8",
             "sub": "actief",
+            "tip": "Huidige ontwikkelfase (0-5).",
         },
     ]
 
@@ -647,22 +899,26 @@ async def knowledge_page(request: Request):
             "label": "Kennis-items",
             "value": freshness.total_articles,
             "color": "#2196f3",
+            "tip": "Totaal aantal kennisartikelen in knowledge/. Gescand op YAML frontmatter.",
         },
         {
             "label": "Versheid",
             "value": f"{freshness.freshness_score:.0%}",
             "color": ("#4ecca3" if freshness.freshness_score >= 0.7 else "#ffc107"),
             "sub": (f"{freshness.fresh_count} vers, " f"{freshness.aging_count} verouderend"),
+            "tip": "Vers (<30d), verouderend (30-90d), verlopen (>90d). Score = vers / totaal.",
         },
         {
             "label": "GOLD",
             "value": grading.get("GOLD", 0),
             "color": "#FFD700",
+            "tip": "GOLD: bewezen kennis met externe bronverificatie.",
         },
         {
             "label": "SILVER",
             "value": grading.get("SILVER", 0),
             "color": "#C0C0C0",
+            "tip": "SILVER: gevalideerde kennis met interne bronnen.",
         },
     ]
 
@@ -817,6 +1073,23 @@ async def governance_page(request: Request):
 
     gauge_angle = int(score.percentage * 3.6)
 
+    # Normalize security summary to a dict with expected keys
+    sec_data = None
+    if security and isinstance(security, dict) and security.get("available"):
+        audit = security.get("audit_data")
+        if audit and hasattr(audit, "total_findings"):
+            sec_data = {
+                "total_findings": audit.total_findings,
+                "critical_count": audit.critical_count,
+                "high_count": audit.high_count,
+            }
+    elif security and hasattr(security, "total_findings"):
+        sec_data = {
+            "total_findings": security.total_findings,
+            "critical_count": getattr(security, "critical_count", 0),
+            "high_count": getattr(security, "high_count", 0),
+        }
+
     return templates.TemplateResponse(
         request,
         "governance.html",
@@ -825,20 +1098,20 @@ async def governance_page(request: Request):
             "score": score,
             "gauge_angle": gauge_angle,
             "articles": article_list,
-            "security": security,
+            "security": sec_data,
             "asi_bars": asi_bars,
         },
     )
 
 
 # ---------------------------------------------------------------------------
-# Growth page
+# Profile page
 # ---------------------------------------------------------------------------
 
 
-@app.get("/growth", response_class=HTMLResponse)
-async def growth_page(request: Request):
-    """Developer Growth."""
+@app.get("/profile", response_class=HTMLResponse)
+async def profile_page(request: Request):
+    """Developer Profile."""
     provider = _get_growth()
     radar_data = provider.get_skill_radar_data()
     broad, deep = provider.get_t_shape()
@@ -854,24 +1127,28 @@ async def growth_page(request: Request):
             "value": "BOUWEN",
             "color": "#2196f3",
             "sub": "O-B-B model",
+            "tip": "Ontwikkelfase volgens het Observeren-Bouwen-Beheersen model.",
         },
         {
             "label": "Sprints",
             "value": sprint_count,
             "color": "#4ecca3",
             "sub": "afgerond",
+            "tip": "Aantal afgeronde sprints als bewijs van development-ervaring.",
         },
         {
             "label": "Avg Level",
             "value": f"{avg_level:.1f}",
             "color": "#2196f3",
             "sub": _DREYFUS.get(round(avg_level), ""),
+            "tip": "Gewogen gemiddelde Dreyfus-niveau over alle domeinen (1=Novice, 5=Expert).",
         },
         {
             "label": "Domeinen",
             "value": len(radar_data),
             "color": "#64ffda",
             "sub": f"{len(broad)} broad, {len(deep)} deep",
+            "tip": "Breed (level≥2) = T-shape breedte, Diep (level≥3) = T-shape diepte.",
         },
     ]
 
@@ -911,9 +1188,9 @@ async def growth_page(request: Request):
 
     return templates.TemplateResponse(
         request,
-        "growth.html",
+        "profile.html",
         {
-            "active_page": "growth",
+            "active_page": "profile",
             "kpis": kpis,
             "radar_json": radar_json,
             "domain_cards": domain_cards,
@@ -925,6 +1202,111 @@ async def growth_page(request: Request):
             "recommendations": recommendations[:6],
         },
     )
+
+
+# ---------------------------------------------------------------------------
+# Projects page
+# ---------------------------------------------------------------------------
+
+
+@app.get("/projects", response_class=HTMLResponse)
+async def projects_page(request: Request):
+    """Projects & Packages."""
+    import tomllib
+
+    pkg_dir = _PKG_DIR.parent.parent  # packages/
+    packages = []
+    for toml_path in sorted(pkg_dir.glob("*/pyproject.toml")):
+        try:
+            data = tomllib.loads(toml_path.read_text(encoding="utf-8"))
+            proj = data.get("project", {})
+            name = proj.get("name", toml_path.parent.name)
+            version = proj.get("version", "?")
+            deps = proj.get("dependencies", [])
+            packages.append(
+                {
+                    "name": name,
+                    "version": version,
+                    "dep_count": len(deps),
+                    "badge_cls": "badge-green",
+                    "badge_label": "OK",
+                }
+            )
+        except Exception:
+            packages.append(
+                {
+                    "name": toml_path.parent.name,
+                    "version": "?",
+                    "dep_count": 0,
+                    "badge_cls": "badge-red",
+                    "badge_label": "Error",
+                }
+            )
+
+    # Managed projects from nodes.yml
+    import yaml
+
+    nodes = []
+    nodes_yml = _PKG_DIR.parents[2] / "config" / "nodes.yml"
+    if nodes_yml.exists():
+        try:
+            cfg = yaml.safe_load(nodes_yml.read_text(encoding="utf-8"))
+            for n in cfg.get("nodes", []):
+                nodes.append(
+                    {
+                        "node_id": n.get("node_id", "?"),
+                        "name": n.get("name", n.get("node_id", "?")),
+                        "adapter": n.get("adapter", "\u2014"),
+                        "enabled": n.get("enabled", False),
+                        "devagents": n.get("devagents_enabled", False),
+                        "tags": n.get("tags", []),
+                    }
+                )
+        except Exception:
+            pass
+
+    kpis = [
+        {
+            "label": "Packages",
+            "value": len(packages),
+            "color": "#4ecca3",
+            "tip": "Workspace packages in de uv monorepo (packages/).",
+        },
+        {
+            "label": "Projects",
+            "value": len(nodes),
+            "color": "#2196f3",
+            "tip": "Managed projecten geregistreerd in config/nodes.yml.",
+        },
+    ]
+
+    return templates.TemplateResponse(
+        request,
+        "projects.html",
+        {
+            "active_page": "projects",
+            "kpis": kpis,
+            "packages": packages,
+            "nodes": nodes,
+        },
+    )
+
+
+@app.post("/api/actions/rescan-packages", response_class=HTMLResponse)
+async def action_rescan_packages(request: Request):
+    """HTMX: rescan workspace packages."""
+    import tomllib
+
+    pkg_dir = _PKG_DIR.parent.parent
+    names = []
+    for toml_path in sorted(pkg_dir.glob("*/pyproject.toml")):
+        try:
+            data = tomllib.loads(toml_path.read_text(encoding="utf-8"))
+            names.append(data.get("project", {}).get("name", toml_path.parent.name))
+        except Exception:
+            names.append(toml_path.parent.name)
+    items = [f"{n}: OK" for n in names]
+    return HTMLResponse(_action_html("Package Scan", items))
 
 
 # ---------------------------------------------------------------------------

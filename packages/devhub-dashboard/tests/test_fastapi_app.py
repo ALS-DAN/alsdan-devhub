@@ -302,19 +302,19 @@ class TestGovernancePage:
         assert "89" in resp.text  # compliance percentage
 
 
-class TestGrowthPage:
-    """GET /growth — Developer Growth pagina."""
+class TestProfilePage:
+    """GET /profile — Developer Profile pagina."""
 
     def test_returns_200(self, client: TestClient) -> None:
-        resp = client.get("/growth")
+        resp = client.get("/profile")
         assert resp.status_code == 200
 
     def test_contains_title(self, client: TestClient) -> None:
-        resp = client.get("/growth")
-        assert "Developer Growth" in resp.text
+        resp = client.get("/profile")
+        assert "Developer Profile" in resp.text
 
     def test_contains_domains(self, client: TestClient) -> None:
-        resp = client.get("/growth")
+        resp = client.get("/profile")
         assert "Python" in resp.text
         assert "Architecture" in resp.text
 
@@ -346,6 +346,22 @@ class TestResearchDetailPage:
         assert "niet gevonden" in resp.text
 
 
+class TestProjectsPage:
+    """GET /projects — Projects & Packages pagina."""
+
+    def test_returns_200(self, client: TestClient) -> None:
+        resp = client.get("/projects")
+        assert resp.status_code == 200
+
+    def test_contains_title(self, client: TestClient) -> None:
+        resp = client.get("/projects")
+        assert "Projects" in resp.text
+
+    def test_contains_packages_section(self, client: TestClient) -> None:
+        resp = client.get("/projects")
+        assert "Workspace Packages" in resp.text
+
+
 class TestNavigation:
     """Header navigation links."""
 
@@ -355,5 +371,13 @@ class TestNavigation:
 
     def test_all_nav_links_present(self, client: TestClient) -> None:
         resp = client.get("/")
-        for page in ["Health", "Planning", "Knowledge", "Governance", "Growth", "Research"]:
+        for page in [
+            "Health",
+            "Planning",
+            "Knowledge",
+            "Governance",
+            "Profile",
+            "Research",
+            "Projects",
+        ]:
             assert page in resp.text

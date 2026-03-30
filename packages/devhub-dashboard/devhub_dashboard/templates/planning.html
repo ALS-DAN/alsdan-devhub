@@ -4,13 +4,22 @@
 {% block content %}
 <div class="section-title">Sprint & Planning</div>
 
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qa-btn" hx-post="/api/actions/sprint-status" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">🏃 Sprint Status</button>
+    <button class="qa-btn" hx-post="/api/actions/velocity-report" hx-target="#action-result" hx-swap="innerHTML" hx-indicator="#action-spinner">📈 Velocity Report</button>
+    <span id="action-spinner" class="htmx-indicator" style="color: #4ecca3;">laden...</span>
+</div>
+<div id="action-result"></div>
+
 <!-- KPI Strip -->
 <div class="kpi-row">
     {% for kpi in kpis %}
     <div class="kpi-card">
-        <div class="kpi-label">{{ kpi.label }}</div>
+        <div class="kpi-label">{{ kpi.label }}{% if kpi.tip %}<span class="info"><span class="tip">{{ kpi.tip }}</span></span>{% endif %}</div>
         <div class="kpi-value" style="color: {{ kpi.color }};">{{ kpi.value }}</div>
         {% if kpi.sub %}<div class="kpi-sub">{{ kpi.sub }}</div>{% endif %}
+        {% if kpi.sparkline %}<div class="sparkline-container"><svg width="100" height="24" viewBox="0 0 100 24"><polyline points="{{ kpi.sparkline }}" fill="none" stroke="{{ kpi.color }}" stroke-width="1.5"/></svg></div>{% endif %}
     </div>
     {% endfor %}
 </div>
