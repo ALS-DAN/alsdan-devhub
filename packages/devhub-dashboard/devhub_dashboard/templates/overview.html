@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Overview{% endblock %}
+
+{% block content %}
+<h2 class="section-title">Executive Summary</h2>
+
+<!-- Quick Actions -->
+<div class="quick-actions">
+    <button class="qa-btn"
+            hx-post="/api/actions/refresh-health"
+            hx-target="#health-result"
+            hx-swap="innerHTML"
+            hx-indicator="#health-spinner">
+        Refresh Health
+    </button>
+    <span id="health-spinner" class="htmx-indicator" style="color: #4ecca3;">laden...</span>
+</div>
+
+<!-- KPI Strip -->
+<div class="kpi-row">
+    {% for kpi in kpis %}
+    <div class="kpi-card">
+        <div class="kpi-label">{{ kpi.label }}</div>
+        <div class="kpi-value" style="color: {{ kpi.color }};">{{ kpi.value }}</div>
+        <div class="kpi-sub">{{ kpi.sub }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- HTMX Health Result (target for Quick Action) -->
+<div id="health-result"></div>
+
+<!-- System Pulse -->
+<h3 class="section-title">System Pulse</h3>
+<div class="grid-3" style="margin-bottom: 24px;">
+    {% for domain in domains %}
+    <div class="card" style="border-left: 3px solid
+        {% if domain.status == 'healthy' %}#4ecca3
+        {% elif domain.status == 'attention' %}#ffc107
+        {% elif domain.status == 'critical' %}#f44336
+        {% else %}#9e9e9e{% endif %};">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <strong>{{ domain.name }}</strong>
+            {% set badge = status_badge.get(domain.status, ("badge-grey", "Unknown")) %}
+            <span class="badge {{ badge[0] }}">{{ badge[1] }}</span>
+        </div>
+        <div style="font-size: 13px; color: #8892b0;">{{ domain.summary }}</div>
+        {% if domain.metric %}
+        <div style="font-size: 11px; color: #666; margin-top: 4px;">{{ domain.metric }}</div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Activity Feed -->
+<h3 class="section-title">Recente Activiteit</h3>
+{% if activities %}
+<div class="card">
+    {% for act in activities %}
+    <div class="activity-item">
+        <div class="activity-dot" style="background: {{ act.color }};"></div>
+        <div>
+            <div class="activity-text">{{ act.text }}</div>
+            <div class="activity-time">{{ act.detail }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="color: #666; font-style: italic;">Geen recente activiteit.</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+<div class="card">
+    <h3>Health Check
+        {% set badge = status_badge.get(overall_level, ("badge-grey", "Unknown")) %}
+        <span class="badge {{ badge[0] }}" style="margin-left: 8px;">{{ overall }}</span>
+    </h3>
+    <div class="grid-2">
+        {% for check in checks %}
+        <div class="dim-card">
+            <div class="dim-header">
+                <span class="dim-name">{{ check.dimension }}</span>
+                <span class="badge {{ check.badge_cls }}">{{ check.badge_label }}</span>
+            </div>
+            <div class="dim-summary">{{ check.summary }}</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>

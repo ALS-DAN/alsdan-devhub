@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "devhub-dashboard",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": ["run", "uvicorn", "devhub_dashboard.fastapi_app:app", "--host", "127.0.0.1", "--port", "8766"],
+      "port": 8766
+    }
+  ]
+}

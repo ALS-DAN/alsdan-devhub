@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <title>{% block title %}DevHub Dashboard{% endblock %}</title>
+</head>
+<body>
+    <header>
+        <h1>DevHub Dashboard</h1>
+        <div class="header-links">
+            <a href="/" {% if active_page == "overview" %}class="active"{% endif %}>Overview</a>
+            <a href="/health" {% if active_page == "health" %}class="active"{% endif %}>Health</a>
+            <a href="/planning" {% if active_page == "planning" %}class="active"{% endif %}>Planning</a>
+            <a href="/knowledge" {% if active_page == "knowledge" %}class="active"{% endif %}>Knowledge</a>
+            <a href="/governance" {% if active_page == "governance" %}class="active"{% endif %}>Governance</a>
+            <a href="/growth" {% if active_page == "growth" %}class="active"{% endif %}>Growth</a>
+            <a href="/research" {% if active_page == "research" %}class="active"{% endif %}>Research</a>
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
