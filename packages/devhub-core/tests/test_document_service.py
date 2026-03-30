@@ -10,10 +10,15 @@ from devhub_documents.contracts import (
 from devhub_documents.factory import DocumentFactory
 from devhub_core.agents.document_service import DocumentService
 from devhub_core.agents.folder_router import FolderRouter
+from devhub_core.contracts.event_contracts import (
+    DocumentPublished,
+    Event,
+)
 from devhub_core.contracts.pipeline_contracts import (
     DocumentProductionRequest,
     PublishStatus,
 )
+from devhub_core.events.in_memory_bus import InMemoryEventBus
 
 # Paden
 CONFIG_PATH = Path(__file__).resolve().parent.parent.parent.parent / "config" / "documents.yml"
@@ -315,3 +320,94 @@ class TestDocumentContent:
         assert "Context" in content
         assert "Probleem" in content
         assert "Oplossing" in content
+
+
+# ---------------------------------------------------------------------------
+# Tests: event bus integration
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def service_with_event_bus(
+    factory: DocumentFactory, router: FolderRouter
+) -> tuple[DocumentService, FakeStorage, InMemoryEventBus]:
+    storage = FakeStorage()
+    bus = InMemoryEventBus()
+    svc = DocumentService(
+        document_factory=factory,
+        folder_router=router,
+        storage=storage,
+        event_bus=bus,
+    )
+    return svc, storage, bus
+
+
+class TestEventBusIntegration:
+    def test_publish_event_on_successful_storage(
+        self, service_with_event_bus: tuple[DocumentService, FakeStorage, InMemoryEventBus]
+    ):
+        svc, _storage, bus = service_with_event_bus
+        received: list[Event] = []
+        bus.subscribe(DocumentPublished, received.append)
+
+        req = DocumentProductionRequest(
+            topic="Event Test",
+            category=DocumentCategory.PATTERN,
+            skip_vectorstore=True,
+        )
+        result = svc.produce(req)
+
+        assert result.publish_status == PublishStatus.PUBLISHED
+        assert len(received) == 1
+        evt = received[0]
+        assert isinstance(evt, DocumentPublished)
+        assert evt.source_agent == "document-service"
+        assert evt.category == "pattern"
+        assert evt.node_id == "devhub"
+        assert evt.storage_path == result.storage_path
+
+    def test_no_event_without_storage(self, factory: DocumentFactory, router: FolderRouter):
+        bus = InMemoryEventBus()
+        svc = DocumentService(document_factory=factory, folder_router=router, event_bus=bus)
+        received: list[Event] = []
+        bus.subscribe(DocumentPublished, received.append)
+
+        req = DocumentProductionRequest(
+            topic="No Storage",
+            category=DocumentCategory.HOWTO,
+            skip_vectorstore=True,
+        )
+        result = svc.produce(req)
+
+        assert result.publish_status == PublishStatus.SKIPPED
+        assert len(received) == 0
+
+    def test_no_event_without_bus(self, service_with_storage: tuple[DocumentService, FakeStorage]):
+        svc, _storage = service_with_storage
+        req = DocumentProductionRequest(
+            topic="No Bus",
+            category=DocumentCategory.PATTERN,
+            skip_vectorstore=True,
+        )
+        # Should not raise — graceful degradation
+        result = svc.produce(req)
+        assert result.publish_status == PublishStatus.PUBLISHED
+
+    def test_event_has_correct_document_path(
+        self, service_with_event_bus: tuple[DocumentService, FakeStorage, InMemoryEventBus]
+    ):
+        svc, _storage, bus = service_with_event_bus
+        received: list[Event] = []
+        bus.subscribe(DocumentPublished, received.append)
+
+        req = DocumentProductionRequest(
+            topic="Path Check",
+            category=DocumentCategory.ANALYSIS,
+            skip_vectorstore=True,
+        )
+        result = svc.produce(req)
+
+        assert len(received) == 1
+        evt = received[0]
+        assert isinstance(evt, DocumentPublished)
+        assert evt.document_path == result.document_result.path

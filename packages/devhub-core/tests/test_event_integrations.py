@@ -14,10 +14,13 @@ from devhub_core.contracts.event_contracts import (
     TaskCompleted,
 )
 from devhub_core.events.in_memory_bus import InMemoryEventBus
+from devhub_core.contracts.event_contracts import KnowledgeIngested
 from devhub_core.events.integrations import (
+    produce_from_knowledge,
     wire_governance_router,
     wire_ingestion_pipeline,
     wire_knowledge_pipeline,
+    wire_knowledge_to_docs,
     wire_sprint_lifecycle,
 )
 from devhub_core.research.in_memory_queue import InMemoryResearchQueue
@@ -402,3 +405,172 @@ class TestWireGovernanceRouter:
             )
 
         assert len(router.routed_events) == 3
+
+
+# ---------------------------------------------------------------------------
+# produce_from_knowledge
+# ---------------------------------------------------------------------------
+
+
+class FakeDocumentService:
+    """Fake DocumentService voor tests."""
+
+    def __init__(self):
+        self.produce_calls: list[object] = []
+
+    def produce(self, request):
+        self.produce_calls.append(request)
+        return FakeProductionResult(
+            storage_path=f"DevHub/knowledge/{request.category.value}/test.md",
+            category=request.category.value,
+        )
+
+
+class FakeProductionResult:
+    def __init__(self, storage_path: str = "", category: str = ""):
+        self.storage_path = storage_path
+        self.category = category
+
+
+class TestProduceFromKnowledge:
+    def test_builds_correct_request(self) -> None:
+        doc_svc = FakeDocumentService()
+        produce_from_knowledge(doc_svc, domain="ai_engineering", category="sota_review")
+
+        assert len(doc_svc.produce_calls) == 1
+        req = doc_svc.produce_calls[0]
+        assert req.knowledge_query == "ai_engineering"
+        assert req.category.value == "sota_review"
+        assert req.target_node == "devhub"
+
+    def test_custom_node_id(self) -> None:
+        doc_svc = FakeDocumentService()
+        produce_from_knowledge(
+            doc_svc, domain="testing_qa", category="best_practice", node_id="boris-buurts"
+        )
+
+        req = doc_svc.produce_calls[0]
+        assert req.target_node == "boris-buurts"
+
+    def test_returns_production_result(self) -> None:
+        doc_svc = FakeDocumentService()
+        result = produce_from_knowledge(doc_svc, domain="ai_engineering", category="sota_review")
+
+        assert result is not None
+        assert result.category == "sota_review"
+
+
+# ---------------------------------------------------------------------------
+# wire_knowledge_to_docs
+# ---------------------------------------------------------------------------
+
+
+class TestWireKnowledgeToDocs:
+    def test_ingested_event_triggers_document_production(self) -> None:
+        bus = InMemoryEventBus()
+        doc_svc = FakeDocumentService()
+        wire_knowledge_to_docs(bus, doc_svc)
+
+        bus.publish(
+            KnowledgeIngested(
+                source_agent="knowledge-ingestor",
+                article_id="ART-001",
+                domain="ai_engineering",
+                chunk_count=5,
+                grade="SILVER",
+            )
+        )
+
+        assert len(doc_svc.produce_calls) == 1
+        req = doc_svc.produce_calls[0]
+        assert req.knowledge_query == "ai_engineering"
+        assert req.category.value == "sota_review"
+
+    def test_custom_categories(self) -> None:
+        bus = InMemoryEventBus()
+        doc_svc = FakeDocumentService()
+        wire_knowledge_to_docs(bus, doc_svc, auto_produce_categories=("explanation", "reference"))
+
+        bus.publish(
+            KnowledgeIngested(
+                source_agent="knowledge-ingestor",
+                article_id="ART-002",
+                domain="python_architecture",
+                chunk_count=3,
+                grade="BRONZE",
+            )
+        )
+
+        assert len(doc_svc.produce_calls) == 2
+        categories = {req.category.value for req in doc_svc.produce_calls}
+        assert categories == {"explanation", "reference"}
+
+    def test_unsubscribe_stops_production(self) -> None:
+        bus = InMemoryEventBus()
+        doc_svc = FakeDocumentService()
+        sub_id = wire_knowledge_to_docs(bus, doc_svc)
+
+        bus.unsubscribe(sub_id)
+        bus.publish(
+            KnowledgeIngested(
+                source_agent="test",
+                article_id="ART-003",
+                domain="ai_engineering",
+                chunk_count=1,
+                grade="BRONZE",
+            )
+        )
+
+        assert len(doc_svc.produce_calls) == 0
+
+    def test_production_failure_does_not_crash(self) -> None:
+        """DocumentService.produce() kan falen — moet niet de event bus crashen."""
+        bus = InMemoryEventBus()
+
+        class FailingDocService:
+            def produce(self, request):
+                raise ValueError("Category not allowed")
+
+        wire_knowledge_to_docs(bus, FailingDocService())
+
+        # Should not raise
+        bus.publish(
+            KnowledgeIngested(
+                source_agent="test",
+                article_id="ART-004",
+                domain="invalid_domain",
+                chunk_count=1,
+                grade="SPECULATIVE",
+            )
+        )
+
+
+# ---------------------------------------------------------------------------
+# Contract export verificatie
+# ---------------------------------------------------------------------------
+
+
+class TestContractExports:
+    def test_new_events_are_exported(self) -> None:
+        from devhub_core.contracts import (
+            DocumentPublished,
+            KnowledgeIngested,
+            ResearchCompleted,
+            ResearchProposal,
+        )
+
+        assert DocumentPublished is not None
+        assert KnowledgeIngested is not None
+        assert ResearchCompleted is not None
+        assert ResearchProposal is not None
+
+    def test_new_events_in_all(self) -> None:
+        import devhub_core.contracts as contracts
+
+        for name in [
+            "DocumentPublished",
+            "KnowledgeIngested",
+            "ResearchCompleted",
+            "ResearchProposal",
+        ]:
+            assert name in contracts.__all__, f"{name} not in __all__"

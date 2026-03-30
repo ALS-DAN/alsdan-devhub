@@ -23,6 +23,10 @@ from devhub_documents.contracts import (
 from devhub_documents.factory import DocumentFactory
 
 from devhub_core.agents.folder_router import FolderRouter
+from devhub_core.contracts.event_contracts import (
+    DocumentPublished,
+    EventBusInterface,
+)
 from devhub_core.contracts.pipeline_contracts import (
     DocumentProductionRequest,
     DocumentProductionResult,
@@ -141,11 +145,13 @@ class DocumentService:
         folder_router: FolderRouter,
         storage: object | None = None,  # StorageInterface, lazy import
         vectorstore: object | None = None,  # VectorStoreInterface, lazy import
+        event_bus: EventBusInterface | None = None,
     ) -> None:
         self._factory = document_factory
         self._router = folder_router
         self._storage = storage
         self._vectorstore = vectorstore
+        self._bus = event_bus
 
     def produce(self, request: DocumentProductionRequest) -> DocumentProductionResult:
         """Produceer een document via de volledige pipeline.
@@ -208,7 +214,7 @@ class DocumentService:
         else:
             message = f"No storage configured, document at {doc_result.path}"
 
-        return DocumentProductionResult(
+        result = DocumentProductionResult(
             document_result=doc_result,
             storage_path=storage_path,
             publish_status=publish_status,
@@ -216,6 +222,19 @@ class DocumentService:
             node_id=request.target_node,
             message=message,
         )
+
+        if self._bus is not None and publish_status == PublishStatus.PUBLISHED:
+            self._bus.publish(
+                DocumentPublished(
+                    source_agent="document-service",
+                    document_path=doc_result.path,
+                    category=request.category.value,
+                    storage_path=storage_path,
+                    node_id=request.target_node,
+                )
+            )
+
+        return result
 
     def _query_knowledge(self, request: DocumentProductionRequest) -> KnowledgeContext:
         """Haal relevante kennis op uit de vectorstore."""

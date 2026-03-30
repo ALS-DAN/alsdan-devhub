@@ -9,9 +9,12 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import logging
+
 from devhub_core.contracts.event_contracts import (
     EventBusInterface,
     KnowledgeGapDetected,
+    KnowledgeIngested,
     ResearchCompleted,
     SprintClosed,
 )
@@ -19,6 +22,8 @@ from devhub_core.contracts.research_contracts import (
     ResearchQueue,
     ResearchRequest,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def wire_knowledge_pipeline(
@@ -123,3 +128,76 @@ def wire_governance_router(
         router.route_gap(event)
 
     return bus.subscribe(KnowledgeGapDetected, _handle_gap)
+
+
+def produce_from_knowledge(
+    document_service: Any,  # DocumentService — Any om circulaire import te voorkomen
+    domain: str,
+    category: str,
+    node_id: str = "devhub",
+) -> Any:  # DocumentProductionResult
+    """Produceer een document vanuit de vectorstore kennis over een domein.
+
+    Convenience helper die een DocumentProductionRequest opbouwt en
+    DocumentService.produce() aanroept.
+
+    Args:
+        document_service: DocumentService instantie.
+        domain: Kennisdomein (bijv. "ai_engineering").
+        category: Documentcategorie (bijv. "sota_review").
+        node_id: Target node ID.
+
+    Returns:
+        DocumentProductionResult van DocumentService.produce().
+    """
+    from devhub_core.contracts.pipeline_contracts import DocumentProductionRequest
+    from devhub_documents.contracts import DocumentCategory
+
+    request = DocumentProductionRequest(
+        topic=f"{domain} — kennisoverzicht",
+        category=DocumentCategory(category),
+        target_node=node_id,
+        knowledge_query=domain,
+    )
+    return document_service.produce(request)
+
+
+def wire_knowledge_to_docs(
+    bus: EventBusInterface,
+    document_service: Any,  # DocumentService — Any om circulaire import te voorkomen
+    auto_produce_categories: tuple[str, ...] = ("sota_review",),
+) -> str:
+    """Koppel KnowledgeIngested events aan automatische document-productie.
+
+    Wanneer kennis geïngest wordt, produceert dit automatisch een document
+    via DocumentService. Bedoeld voor stroom 1 (auto) kennis.
+
+    Args:
+        bus: De event bus.
+        document_service: DocumentService instantie met produce() methode.
+        auto_produce_categories: Documentcategorieën om te produceren.
+
+    Returns:
+        subscription_id voor eventuele unsubscribe.
+    """
+
+    def _handle_ingested(event: Any) -> None:
+        if not isinstance(event, KnowledgeIngested):
+            return
+        for category in auto_produce_categories:
+            try:
+                produce_from_knowledge(
+                    document_service,
+                    domain=event.domain,
+                    category=category,
+                    node_id="devhub",
+                )
+            except Exception:
+                logger.warning(
+                    "Auto document production failed for domain=%s category=%s",
+                    event.domain,
+                    category,
+                    exc_info=True,
+                )
+
+    return bus.subscribe(KnowledgeIngested, _handle_ingested)

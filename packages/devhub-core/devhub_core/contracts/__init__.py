@@ -53,6 +53,7 @@ from devhub_core.contracts.pipeline_contracts import (
     FolderRoute,
     KnowledgeContext,
     PublishStatus,
+    ResearchProposal,
 )
 from devhub_core.contracts.scanner_contracts import (
     BootstrapAuditReport,
@@ -63,6 +64,7 @@ from devhub_core.contracts.scanner_contracts import (
 )
 from devhub_core.contracts.event_contracts import (
     DocGenRequested,
+    DocumentPublished,
     Event,
     EventBusInterface,
     EventFilter,
@@ -70,8 +72,10 @@ from devhub_core.contracts.event_contracts import (
     EventLoopError,
     HealthDegraded,
     KnowledgeGapDetected,
+    KnowledgeIngested,
     ObservationEmitted,
     QACompleted,
+    ResearchCompleted,
     SprintClosed,
     SprintStarted,
     TaskAssigned,
@@ -128,6 +132,7 @@ __all__ = [
     "KnowledgeScanResult",
     "grade_gte",
     "DocGenRequested",
+    "DocumentPublished",
     "Event",
     "EventBusInterface",
     "EventFilter",
@@ -135,8 +140,11 @@ __all__ = [
     "EventLoopError",
     "HealthDegraded",
     "KnowledgeGapDetected",
+    "KnowledgeIngested",
     "ObservationEmitted",
     "QACompleted",
+    "ResearchCompleted",
+    "ResearchProposal",
     "SprintClosed",
     "SprintStarted",
     "TaskAssigned",
