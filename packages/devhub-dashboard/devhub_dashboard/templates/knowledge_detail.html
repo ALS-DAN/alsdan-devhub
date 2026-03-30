@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Knowledge Detail{% endblock %}
+
+{% block content %}
+{% if article %}
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <a href="/knowledge" style="color:#8892b0;text-decoration:none;">&larr; Catalogus</a>
+    <div class="section-title" style="margin:0;">{{ article.title }}</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;">
+    <!-- Main Content -->
+    <div>
+        <div class="card">
+            <div style="display:flex;gap:8px;margin-bottom:16px;">
+                <span class="badge" style="background:{{ article.grade_color }}22;color:{{ article.grade_color }};font-weight:700;">{{ article.grade }}</span>
+                <span class="badge badge-blue">{{ article.domain }}</span>
+                <span class="badge badge-grey">{{ article.ring }}</span>
+                <span class="badge" style="background:{{ article.freshness_color }}22;color:{{ article.freshness_color }};">{{ article.freshness_days }}d oud</span>
+            </div>
+            {% if content %}
+            <div class="article-content" style="line-height:1.7;color:#ccd6f6;white-space:pre-wrap;">{{ content }}</div>
+            {% else %}
+            <div style="color:#666;font-style:italic;">Geen markdown content beschikbaar.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+        <div class="card">
+            <div class="section-title" style="font-size:14px;">Metadata</div>
+            <table style="width:100%;font-size:13px;">
+                <tr><td style="color:#8892b0;padding:4px 0;">Auteur</td><td>{{ article.author or '—' }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Datum</td><td>{{ article.date or '—' }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Sprint</td><td>{{ article.sprint or '—' }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Versheid</td><td style="color:{{ article.freshness_color }};">{{ article.freshness_days }} dagen</td></tr>
+            </table>
+        </div>
+
+        {% if article.sources %}
+        <div class="card" style="margin-top:16px;">
+            <div class="section-title" style="font-size:14px;">Bronnen</div>
+            {% for src in article.sources %}
+            <div style="font-size:12px;color:#8892b0;padding:4px 0;word-break:break-all;">{{ src }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if article.rq_tags %}
+        <div class="card" style="margin-top:16px;">
+            <div class="section-title" style="font-size:14px;">Research Tags</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                {% for tag in article.rq_tags %}
+                <span class="badge badge-blue" style="font-size:11px;">{{ tag }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if related %}
+        <div class="card" style="margin-top:16px;">
+            <div class="section-title" style="font-size:14px;">Gerelateerd</div>
+            {% for r in related %}
+            <a href="/knowledge/{{ r.id }}" style="display:block;color:#4ecca3;font-size:13px;padding:4px 0;text-decoration:none;">{{ r.title }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:40px;">
+    <div style="font-size:48px;margin-bottom:16px;">📄</div>
+    <div style="color:#ccd6f6;font-size:18px;">Artikel niet gevonden</div>
+    <div style="color:#666;margin-top:8px;">ID: {{ article_id }}</div>
+    <a href="/knowledge" class="badge badge-blue" style="display:inline-block;margin-top:16px;text-decoration:none;padding:8px 16px;">Terug naar catalogus</a>
+</div>
+{% endif %}
+{% endblock %}

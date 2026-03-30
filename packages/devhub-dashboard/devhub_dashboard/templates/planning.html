@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Planning{% endblock %}
+
+{% block content %}
+<div class="section-title">Sprint & Planning</div>
+
+<!-- KPI Strip -->
+<div class="kpi-row">
+    {% for kpi in kpis %}
+    <div class="kpi-card">
+        <div class="kpi-label">{{ kpi.label }}</div>
+        <div class="kpi-value" style="color: {{ kpi.color }};">{{ kpi.value }}</div>
+        {% if kpi.sub %}<div class="kpi-sub">{{ kpi.sub }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Fase Pipeline -->
+<div class="section-title">Fase Pipeline</div>
+<div class="pipeline">
+    {% for fase in pipeline %}
+    {% if not loop.first %}
+    <div class="pipeline-line" style="background: {% if pipeline[loop.index0 - 1].done %}#4ecca3{% else %}#2a2a4a{% endif %};"></div>
+    {% endif %}
+    <div class="pipeline-node">
+        <div class="pipeline-circle" style="
+            {% if fase.done %}background:#4ecca3;color:#1a1a2e;
+            {% elif fase.active %}background:#2196f3;color:#fff;box-shadow:0 0 12px rgba(33,150,243,0.5);
+            {% else %}background:#2a2a4a;color:#666;{% endif %}">
+            {% if fase.done %}&#10003;{% else %}{{ fase.nummer }}{% endif %}
+        </div>
+        <div class="pipeline-label" style="color:{% if fase.done %}#4ecca3{% elif fase.active %}#2196f3{% else %}#666{% endif %};">Fase {{ fase.nummer }}</div>
+        <div class="pipeline-sub">{{ fase.name }}{% if fase.active %} &middot; actief{% endif %}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Kanban -->
+<div class="section-title">Planning Kanban</div>
+<div class="kanban">
+    <div class="kanban-col">
+        <h4><span style="color:#ffc107">&#9679;</span> INBOX <span class="badge badge-yellow">{{ inbox_kanban|length + inbox_extra }}</span></h4>
+        {% for item in inbox_kanban %}
+        <div class="kanban-item" style="border-color:#2196f3;">
+            <div class="ki-title">{{ item.title }}</div>
+            <div class="ki-meta"><span class="badge badge-blue">{{ item.type }}</span> <span>{{ item.node }}</span></div>
+        </div>
+        {% endfor %}
+        {% if inbox_extra > 0 %}
+        <div style="font-size:12px;color:#666;padding:8px;text-align:center">+{{ inbox_extra }} meer...</div>
+        {% endif %}
+    </div>
+    <div class="kanban-col">
+        <h4><span style="color:#2196f3">&#9679;</span> ACTIEF <span class="badge badge-blue">{% if actief_item %}1{% else %}0{% endif %}</span></h4>
+        {% if actief_item %}
+        <div class="kanban-item" style="border-color:#2196f3;">
+            <div class="ki-title">{{ actief_item.title }}</div>
+            <div class="ki-meta"><span class="badge badge-blue">{{ actief_item.type }}</span></div>
+        </div>
+        {% else %}
+        <div style="font-size:12px;color:#666;padding:20px;text-align:center;font-style:italic">Geen actieve sprint</div>
+        {% endif %}
+    </div>
+    <div class="kanban-col">
+        <h4><span style="color:#4ecca3">&#9679;</span> DONE <span class="badge badge-green">{{ done_items|length + done_extra }}</span></h4>
+        {% for item in done_items %}
+        <div class="kanban-item" style="border-color:#4ecca3;">
+            <div class="ki-title">{{ item.title }}</div>
+            <div class="ki-meta"><span class="badge badge-green">{{ item.type }}</span> {% if item.delta %}<span>{{ item.delta }} tests</span>{% endif %}</div>
+        </div>
+        {% endfor %}
+        {% if done_extra > 0 %}
+        <div style="font-size:12px;color:#666;padding:8px;text-align:center">+{{ done_extra }} meer...</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Velocity Chart -->
+{% if velocity_data %}
+<div class="section-title">Velocity — Test Delta per Sprint</div>
+<div class="card">
+    <div id="velocity-chart" style="height: 280px;"></div>
+</div>
+<script>
+(function() {
+    var v = {{ velocity_data | safe }};
+    Plotly.newPlot('velocity-chart', [{
+        x: v.labels, y: v.deltas, type: 'bar',
+        marker: {color: v.deltas.map(function(d) { return d > 0 ? '#4ecca3' : '#9e9e9e'; })},
+        name: 'Test Delta'
+    }], {
+        template: 'plotly_dark', paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+        margin: {l: 50, r: 20, t: 20, b: 60},
+        xaxis: {title: 'Sprint', gridcolor: '#2a2a4a'}, yaxis: {title: 'Tests Δ', gridcolor: '#2a2a4a'}
+    }, {responsive: true});
+})();
+</script>
+{% endif %}
+
+<!-- Cycle Time Chart -->
+{% if cycle_data %}
+<div class="section-title">Cycle Time Trend</div>
+<div class="card">
+    <div id="cycle-chart" style="height: 250px;"></div>
+</div>
+<script>
+(function() {
+    var c = {{ cycle_data | safe }};
+    Plotly.newPlot('cycle-chart', [{
+        x: c.labels, y: c.days, type: 'scatter', mode: 'lines+markers',
+        line: {color: '#2196f3', width: 2}, marker: {size: 6}, name: 'Cycle Time'
+    }], {
+        template: 'plotly_dark', paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+        margin: {l: 50, r: 20, t: 20, b: 60},
+        xaxis: {gridcolor: '#2a2a4a'}, yaxis: {title: 'Dagen', gridcolor: '#2a2a4a'}
+    }, {responsive: true});
+})();
+</script>
+{% endif %}
+
+<!-- Sprint Historie -->
+{% if history_rows %}
+<div class="section-title">Sprint Historie</div>
+<div class="card">
+    <table>
+        <thead><tr><th>#</th><th>Sprint</th><th>Type</th><th>Size</th><th>Tests Δ</th></tr></thead>
+        <tbody>
+            {% for h in history_rows %}
+            <tr><td>{{ h.nr }}</td><td>{{ h.naam }}</td><td>{{ h.type }}</td><td>{{ h.size }}</td><td>{{ h.delta }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

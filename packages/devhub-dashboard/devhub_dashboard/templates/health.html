@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Health{% endblock %}
+
+{% block content %}
+<div class="section-title">System Health — 7 Dimensies</div>
+
+<!-- KPI Strip -->
+<div class="kpi-row">
+    {% for kpi in kpis %}
+    <div class="kpi-card">
+        <div class="kpi-label">{{ kpi.label }}</div>
+        <div class="kpi-value" style="color: {{ kpi.color }};">{{ kpi.value }}</div>
+        {% if kpi.sub %}<div class="kpi-sub">{{ kpi.sub }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Dimension Cards -->
+<div class="section-title">Dimensie Details</div>
+{% if checks %}
+<div class="grid-2">
+    {% for check in checks %}
+    <div class="dim-card">
+        <div class="dim-header">
+            <span class="dim-name">{{ check.icon }} {{ check.label }}</span>
+            <span class="badge {{ check.badge_cls }}">{{ check.badge_label }}</span>
+        </div>
+        <div class="dim-summary">{{ check.summary }}</div>
+        {% for f in check.findings %}
+        <div class="dim-finding">{{ f.severity }}: {{ f.message }}{% if f.action %} — {{ f.action }}{% endif %}</div>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card" style="color: #666; font-style: italic;">Geen health checks beschikbaar.</div>
+{% endif %}
+
+<!-- Multi-metric Trend Chart -->
+<div class="section-title">Trend — Multi-metric</div>
+<div class="card">
+    <div id="health-trend-chart" style="height: 300px;"></div>
+</div>
+
+{% if trend_data %}
+<script>
+(function() {
+    var data = {{ trend_data | safe }};
+    Plotly.newPlot('health-trend-chart', [
+        {x: data.timestamps, y: data.tests, type: 'scatter', mode: 'lines+markers', name: 'Test bestanden', line: {color: '#4ecca3'}},
+        {x: data.timestamps, y: data.packages, type: 'scatter', mode: 'lines+markers', name: 'Packages', line: {color: '#2196f3'}},
+        {x: data.timestamps, y: data.knowledge, type: 'scatter', mode: 'lines+markers', name: 'Knowledge items', line: {color: '#ce93d8'}}
+    ], {
+        template: 'plotly_dark', paper_bgcolor: 'transparent', plot_bgcolor: 'transparent',
+        margin: {l: 50, r: 20, t: 20, b: 40}, legend: {orientation: 'h', y: -0.15},
+        xaxis: {gridcolor: '#2a2a4a'}, yaxis: {gridcolor: '#2a2a4a', title: 'Aantal'}
+    }, {responsive: true});
+})();
+</script>
+{% endif %}
+
+<!-- Health Snapshots Table -->
+<div class="section-title">Health Snapshots</div>
+{% if snapshot_rows %}
+<div class="card">
+    <table>
+        <thead>
+            <tr><th>Datum</th><th>Status</th><th>Dimensies</th><th>P1</th><th>P2</th><th>Tests</th></tr>
+        </thead>
+        <tbody>
+            {% for row in snapshot_rows %}
+            <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.overall }}</td>
+                <td>{{ row.dimensions }}</td>
+                <td>{{ row.p1 }}</td>
+                <td>{{ row.p2 }}</td>
+                <td>{{ row.tests }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="card" style="color: #666; font-style: italic;">Geen snapshots opgeslagen.</div>
+{% endif %}
+{% endblock %}

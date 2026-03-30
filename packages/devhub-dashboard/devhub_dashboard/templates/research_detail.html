@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+{% block title %}DevHub Dashboard — Research Detail{% endblock %}
+
+{% block content %}
+{% if item %}
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+    <a href="/research" style="color:#8892b0;text-decoration:none;">&larr; Research Queue</a>
+    <div class="section-title" style="margin:0;">{{ item.topic }}</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;">
+    <!-- Main Content -->
+    <div>
+        <!-- Status Flow -->
+        <div class="card" style="margin-bottom:16px;">
+            <div class="section-title" style="font-size:14px;">Status Flow</div>
+            <div class="pipeline" style="justify-content:flex-start;gap:8px;">
+                {% for status in ['QUEUED', 'IN_PROGRESS', 'REVIEW', 'COMPLETED'] %}
+                <div class="pipeline-node" style="min-width:auto;">
+                    <div class="pipeline-circle" style="width:28px;height:28px;font-size:11px;
+                        {% if item.status == status %}background:#2196f3;color:#fff;box-shadow:0 0 12px rgba(33,150,243,0.5);
+                        {% elif status in ['QUEUED'] and item.status != 'QUEUED' %}background:#4ecca3;color:#1a1a2e;
+                        {% elif status == 'IN_PROGRESS' and item.status in ['REVIEW', 'COMPLETED'] %}background:#4ecca3;color:#1a1a2e;
+                        {% elif status == 'REVIEW' and item.status == 'COMPLETED' %}background:#4ecca3;color:#1a1a2e;
+                        {% else %}background:#2a2a4a;color:#666;{% endif %}">
+                        {{ loop.index }}
+                    </div>
+                    <div style="font-size:10px;color:#8892b0;margin-top:4px;">{{ status }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {% if item.background %}
+        <div class="card" style="margin-bottom:16px;">
+            <div class="section-title" style="font-size:14px;">Achtergrond</div>
+            <div style="color:#ccd6f6;line-height:1.6;">{{ item.background }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.description %}
+        <div class="card" style="margin-bottom:16px;">
+            <div class="section-title" style="font-size:14px;">Beschrijving</div>
+            <div style="color:#ccd6f6;line-height:1.6;">{{ item.description }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.research_questions %}
+        <div class="card" style="margin-bottom:16px;">
+            <div class="section-title" style="font-size:14px;">Research Questions</div>
+            {% for q in item.research_questions %}
+            <div style="color:#ccd6f6;padding:4px 0;border-bottom:1px solid #2a2a4a;">{{ q }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if item.scope_in or item.scope_out %}
+        <div class="grid-2" style="margin-bottom:16px;">
+            {% if item.scope_in %}
+            <div class="card" style="border-left:3px solid #4ecca3;">
+                <div class="section-title" style="font-size:14px;color:#4ecca3;">Scope In</div>
+                {% for s in item.scope_in %}
+                <div style="color:#ccd6f6;font-size:13px;padding:2px 0;">&#10003; {{ s }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% if item.scope_out %}
+            <div class="card" style="border-left:3px solid #f44336;">
+                <div class="section-title" style="font-size:14px;color:#f44336;">Scope Out</div>
+                {% for s in item.scope_out %}
+                <div style="color:#ccd6f6;font-size:13px;padding:2px 0;">&#10007; {{ s }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if item.review_notes %}
+        <div class="card" style="margin-bottom:16px;border-left:3px solid #ffc107;">
+            <div class="section-title" style="font-size:14px;">Review Notes</div>
+            <div style="color:#ccd6f6;line-height:1.6;">{{ item.review_notes }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.rejection_reason %}
+        <div class="card" style="margin-bottom:16px;border-left:3px solid #f44336;">
+            <div class="section-title" style="font-size:14px;">Rejection Reason</div>
+            <div style="color:#f44336;line-height:1.6;">{{ item.rejection_reason }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.status_history %}
+        <div class="card">
+            <div class="section-title" style="font-size:14px;">Status Geschiedenis</div>
+            {% for entry in item.status_history %}
+            <div style="display:flex;gap:12px;padding:6px 0;border-bottom:1px solid #2a2a4a;font-size:13px;">
+                <span style="color:#8892b0;min-width:80px;">{{ entry.timestamp[:10] if entry.timestamp else '' }}</span>
+                <span class="badge badge-blue" style="font-size:11px;">{{ entry.status }}</span>
+                {% if entry.note %}<span style="color:#ccd6f6;">{{ entry.note }}</span>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+        <div class="card">
+            <div class="section-title" style="font-size:14px;">Details</div>
+            <table style="width:100%;font-size:13px;">
+                <tr><td style="color:#8892b0;padding:4px 0;">Status</td><td><span class="badge {% if item.status == 'COMPLETED' %}badge-green{% elif item.status == 'IN_PROGRESS' %}badge-blue{% else %}badge-yellow{% endif %}">{{ item.status }}</span></td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Stream</td><td>{{ item.stream }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Domein</td><td>{{ item.domain }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Diepte</td><td>{{ item.depth }}</td></tr>
+                <tr><td style="color:#8892b0;padding:4px 0;">Prioriteit</td><td>P{{ item.priority }}</td></tr>
+                {% if item.expected_grade %}<tr><td style="color:#8892b0;padding:4px 0;">Grade</td><td>{{ item.expected_grade }}</td></tr>{% endif %}
+                {% if item.document_category %}<tr><td style="color:#8892b0;padding:4px 0;">Categorie</td><td>{{ item.document_category }}</td></tr>{% endif %}
+                {% if item.source_agent %}<tr><td style="color:#8892b0;padding:4px 0;">Bron</td><td>{{ item.source_agent }}</td></tr>{% endif %}
+                {% if item.deadline %}<tr><td style="color:#8892b0;padding:4px 0;">Deadline</td><td>{{ item.deadline }}</td></tr>{% endif %}
+                <tr><td style="color:#8892b0;padding:4px 0;">Aangemaakt</td><td>{{ item.created_at }}</td></tr>
+                {% if item.updated_at %}<tr><td style="color:#8892b0;padding:4px 0;">Bijgewerkt</td><td>{{ item.updated_at }}</td></tr>{% endif %}
+            </table>
+        </div>
+
+        {% if item.completed_articles %}
+        <div class="card" style="margin-top:16px;">
+            <div class="section-title" style="font-size:14px;">Opgeleverde Artikelen</div>
+            {% for art in item.completed_articles %}
+            <a href="/knowledge/{{ art }}" style="display:block;color:#4ecca3;font-size:13px;padding:4px 0;text-decoration:none;">{{ art }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if item.related_articles %}
+        <div class="card" style="margin-top:16px;">
+            <div class="section-title" style="font-size:14px;">Gerelateerde Artikelen</div>
+            {% for art in item.related_articles %}
+            <a href="/knowledge/{{ art }}" style="display:block;color:#2196f3;font-size:13px;padding:4px 0;text-decoration:none;">{{ art }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% else %}
+<div class="card" style="text-align:center;padding:40px;">
+    <div style="font-size:48px;margin-bottom:16px;">🔬</div>
+    <div style="color:#ccd6f6;font-size:18px;">Research item niet gevonden</div>
+    <div style="color:#666;margin-top:8px;">ID: {{ item_id }}</div>
+    <a href="/research" class="badge badge-blue" style="display:inline-block;margin-top:16px;text-decoration:none;padding:8px 16px;">Terug naar queue</a>
+</div>
+{% endif %}
+{% endblock %}
